@@ -15,6 +15,7 @@
         "symfony/flex": "^2",
         "symfony/framework-bundle": "8.0.*",
         "symfony/runtime": "8.0.*",
+        "symfony/translation": "8.0.*",
         "symfony/yaml": "8.0.*"
     },
     "config": {
@@ -58,6 +59,13 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "cs-fix": "php-cs-fixer fix",
+        "cs-check": "php-cs-fixer fix --dry-run",
+        "phpstan": "phpstan analyse",
+        "qa": [
+            "@cs-fix",
+            "@phpstan"
         ]
     },
     "conflict": {
@@ -70,6 +78,12 @@
         }
     },
     "require-dev": {
+        "roave/security-advisories": "dev-latest",
+        "friendsofphp/php-cs-fixer": "^3.91",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-doctrine": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpstan/phpstan-symfony": "^2.0",
         "phpunit/phpunit": "^12.4",
         "symfony/browser-kit": "8.0.*",
         "symfony/css-selector": "8.0.*",
