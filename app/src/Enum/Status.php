@@ -22,7 +22,7 @@ enum Status: string implements TranslatableInterface
      */
     public function getTranslationKey(): string
     {
-        return 'status.'.$this->value;
+        return 'status.' . $this->value;
     }
 
     /**

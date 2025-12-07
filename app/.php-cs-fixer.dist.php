@@ -22,6 +22,7 @@ return (new PhpCsFixer\Config())
         'no_useless_else' => true,
         'no_useless_return' => true,
         'yoda_style' => false,
+        'concat_space' => ['spacing' => 'one'],
         'blank_line_before_statement' => [
             'statements' => ['foreach', 'return', 'if', 'try', 'while'],
         ],
