@@ -13,11 +13,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:status:list',
-    description: 'Выводит список всех возможных статусов и их параметры',
+    description: 'Displays a list of all possible statuses and their parameters',
 )]
 class StatusListCommand extends Command
 {
-    public function __construct(private string $statusEnumClass = Status::class)
+    public function __construct(private readonly string $statusEnumClass = Status::class)
     {
         parent::__construct();
     }
@@ -25,16 +25,16 @@ class StatusListCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $io->title('Справочник статусов (Enum Status)');
+        $io->title('Status Reference Guide (Enum Status)');
 
         $rows = [];
 
         foreach (($this->statusEnumClass)::cases() as $status) {
             $rows[] = [
-                $status->name,                      // Имя кейса (например, Active)
-                $status->value,                     // Значение в БД (active)
-                $status->getTranslationKey(),       // Ключ перевода
-                $status->getColor(),                // Цвет UI
+                $status->name,                     // Имя кейса (например, Active)
+                $status->value,                    // Значение в БД (active)
+                $status->getTranslationKey(),      // Ключ перевода
+                $status->getColor(),               // Цвет UI
                 $status->isVisible() ? '+' : '-',  // Видимость
                 $status->isEditable() ? '+' : '-', // Редактируемость
             ];
