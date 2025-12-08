@@ -114,7 +114,8 @@ class StatusTest extends TestCase
     {
         $this->expectException(\ValueError::class);
         $this->expectExceptionMessage('"invalid" is not a valid backing value for enum App\\Enum\\Status');
-        Status::from('invalid');
+        $unused = Status::from('invalid');
+        $this->assertInstanceOf(Status::class, $unused);
     }
 
     /**
