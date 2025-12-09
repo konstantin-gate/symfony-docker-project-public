@@ -22,7 +22,6 @@ class GreetingContactTest extends TestCase
         $this->assertEquals(Status::Active, $contact->getStatus());
         $this->assertNotNull($contact->getUnsubscribeToken());
         $this->assertEquals(64, strlen($contact->getUnsubscribeToken())); // 32 bytes in hex
-        $this->assertInstanceOf(\DateTimeImmutable::class, $contact->getCreatedAt());
         $this->assertEqualsWithDelta(
             new \DateTimeImmutable(),
             $contact->getCreatedAt(),
@@ -119,10 +118,10 @@ class GreetingContactTest extends TestCase
 
         // Try to modify the date (should not affect the entity)
         $newDate = $originalDate->modify('+1 day');
-        
+
         // Assert that the entity's date has not changed
         $this->assertEquals($originalDate, $contact->getCreatedAt());
-        
+
         // Assert that the new date is different from the entity's date
         $this->assertNotEquals($newDate, $contact->getCreatedAt());
     }
