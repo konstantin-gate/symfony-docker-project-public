@@ -8,8 +8,10 @@ use App\Enum\Status;
 use App\Greeting\Entity\GreetingContact;
 use App\Greeting\Enum\GreetingLanguage;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validation;
 
 class GreetingContactTest extends TestCase
@@ -216,7 +218,7 @@ class GreetingContactTest extends TestCase
         $contact->setEmail('invalid-email');
         $violations = $validator->validate($contact);
         $this->assertCount(1, $violations, 'Invalid email should have one violation.');
-        /** @var \Symfony\Component\Validator\ConstraintViolationInterface $violation */
+        /** @var ConstraintViolationInterface $violation */
         $violation = $violations[0];
         $this->assertEquals('This value is not a valid email address.', $violation->getMessage());
 
@@ -268,12 +270,46 @@ class GreetingContactTest extends TestCase
     public static function languageAndStatusProvider(): array
     {
         $data = [];
+
         foreach (GreetingLanguage::cases() as $language) {
             foreach (Status::cases() as $status) {
-                $data[sprintf('Language: %s, Status: %s', $language->name, $status->name)] = [$language, $status];
+                $data[\sprintf('Language: %s, Status: %s', $language->name, $status->name)] = [$language, $status];
             }
         }
 
         return $data;
+    }
+
+    public function testEquality(): void
+    {
+        $contact1 = new GreetingContact();
+        $contact1->setEmail('test@example.com');
+
+        $contact2 = new GreetingContact();
+        $contact2->setEmail('test@example.com');
+
+        // Different instances should not be equal
+        $this->assertNotSame($contact1, $contact2);
+        $this->assertNotEquals($contact1, $contact2); // Different IDs/tokens
+    }
+
+    #[RunInSeparateProcess]
+    public function testConstructorThrowsRandomException(): void
+    {
+        // Define a mock function in the entity's namespace using eval
+        // because we are in a separate process, this won't affect other tests.
+        eval('
+            namespace App\Greeting\Entity;
+
+            function random_bytes(int $length): string
+            {
+                throw new \Random\RandomException("Simulated random_bytes failure");
+            }
+        ');
+
+        $this->expectException(\Random\RandomException::class);
+        $this->expectExceptionMessage('Simulated random_bytes failure');
+
+        new GreetingContact();
     }
 }

@@ -7,6 +7,7 @@ namespace App\Greeting\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'greeting_log')]
@@ -26,6 +27,7 @@ class GreetingLog
     private \DateTimeImmutable $sentAt;
 
     #[ORM\Column]
+    #[Assert\PositiveOrZero]
     private int $year;
 
     public function __construct(GreetingContact $contact, int $year)
