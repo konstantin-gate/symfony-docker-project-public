@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Random\RandomException;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: GreetingContactRepository::class)]
 #[ORM\Table(name: 'greeting_contact')]
@@ -23,6 +24,7 @@ class GreetingContact
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\Email]
     private ?string $email = null;
 
     #[ORM\Column(type: 'string', enumType: GreetingLanguage::class, options: ['default' => 'cs'])]
