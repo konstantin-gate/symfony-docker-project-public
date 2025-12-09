@@ -38,7 +38,7 @@ class StatusListCommandTest extends KernelTestCase
 
         // Базовая проверка заголовка
         $output = $commandTester->getDisplay();
-        $this->assertStringContainsString('Справочник статусов', $output);
+        $this->assertStringContainsString('Status Reference Guide (Enum Status)', $output);
     }
 
     /**
@@ -184,7 +184,7 @@ class StatusListCommandTest extends KernelTestCase
         $output = $commandTester->getDisplay();
 
         // Assert: Příkaz zobrazil hlavičku
-        $this->assertStringContainsString('Справочник статусов', $output);
+        $this->assertStringContainsString('Status Reference Guide (Enum Status)', $output);
         $this->assertStringContainsString('Case Name', $output);
         $this->assertStringContainsString('DB Value', $output);
 

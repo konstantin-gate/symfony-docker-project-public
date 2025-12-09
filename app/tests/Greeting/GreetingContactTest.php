@@ -21,7 +21,7 @@ class GreetingContactTest extends TestCase
         $this->assertEquals(GreetingLanguage::Czech, $contact->getLanguage());
         $this->assertEquals(Status::Active, $contact->getStatus());
         $this->assertNotNull($contact->getUnsubscribeToken());
-        $this->assertEquals(64, strlen($contact->getUnsubscribeToken())); // 32 bytes in hex
+        $this->assertEquals(64, \strlen($contact->getUnsubscribeToken())); // 32 bytes in hex
         $this->assertEqualsWithDelta(
             new \DateTimeImmutable(),
             $contact->getCreatedAt(),
@@ -108,9 +108,12 @@ class GreetingContactTest extends TestCase
         // Token should be a valid hex string
         $token = $contact1->getUnsubscribeToken();
         $this->assertIsString($token);
-        $this->assertEquals(1, preg_match('/^[a-f0-9]{64}$/', $token));
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $token);
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     public function testDateTimeImmutability(): void
     {
         $contact = new GreetingContact();
