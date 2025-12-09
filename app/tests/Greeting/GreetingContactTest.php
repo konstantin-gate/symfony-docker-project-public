@@ -9,6 +9,7 @@ use App\Greeting\Entity\GreetingContact;
 use App\Greeting\Enum\GreetingLanguage;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Validation;
 
 class GreetingContactTest extends TestCase
 {
@@ -194,5 +195,38 @@ class GreetingContactTest extends TestCase
         $this->assertNotEmpty($defaultLanguage->getSubject());
         $this->assertStringEndsWith('.html.twig', $defaultLanguage->getTemplatePath());
         $this->assertStringContainsString($defaultLanguage->value, $defaultLanguage->getTemplatePath());
+    }
+
+    public function testEmailValidation(): void
+    {
+        $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
+        $contact = new GreetingContact();
+
+        // Test valid emails
+        $contact->setEmail('valid@example.com');
+        $violations = $validator->validate($contact);
+        $this->assertCount(0, $violations, 'Valid email should have no violations.');
+
+        $contact->setEmail('another.valid@sub.example.co.uk');
+        $violations = $validator->validate($contact);
+        $this->assertCount(0, $violations, 'Another valid email should have no violations.');
+
+        // Test invalid emails
+        $contact->setEmail('invalid-email');
+        $violations = $validator->validate($contact);
+        $this->assertCount(1, $violations, 'Invalid email should have one violation.');
+        $this->assertEquals('This value is not a valid email address.', $violations[0]->getMessage());
+
+        $contact->setEmail('invalid@');
+        $violations = $validator->validate($contact);
+        $this->assertCount(1, $violations, 'Invalid email (missing domain) should have one violation.');
+
+        $contact->setEmail('test@.com');
+        $violations = $validator->validate($contact);
+        $this->assertCount(1, $violations, 'Invalid email (invalid domain) should have one violation.');
+
+        $contact->setEmail(null);
+        $violations = $validator->validate($contact);
+        $this->assertCount(0, $violations, 'Null email should be valid if nullable.');
     }
 }
