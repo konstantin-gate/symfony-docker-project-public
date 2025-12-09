@@ -7,6 +7,7 @@ namespace App\Tests\Greeting;
 use App\Enum\Status;
 use App\Greeting\Entity\GreetingContact;
 use App\Greeting\Enum\GreetingLanguage;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Validation;
@@ -215,7 +216,9 @@ class GreetingContactTest extends TestCase
         $contact->setEmail('invalid-email');
         $violations = $validator->validate($contact);
         $this->assertCount(1, $violations, 'Invalid email should have one violation.');
-        $this->assertEquals('This value is not a valid email address.', $violations[0]->getMessage());
+        /** @var \Symfony\Component\Validator\ConstraintViolationInterface $violation */
+        $violation = $violations[0];
+        $this->assertEquals('This value is not a valid email address.', $violation->getMessage());
 
         $contact->setEmail('invalid@');
         $violations = $validator->validate($contact);
@@ -228,5 +231,49 @@ class GreetingContactTest extends TestCase
         $contact->setEmail(null);
         $violations = $validator->validate($contact);
         $this->assertCount(0, $violations, 'Null email should be valid if nullable.');
+    }
+
+    public function testSerialization(): void
+    {
+        $contact = new GreetingContact();
+        $contact->setEmail('test@example.com');
+        $contact->setLanguage(GreetingLanguage::English);
+        $contact->setStatus(Status::Active);
+
+        // Simulate serialization/deserialization
+        $serialized = serialize($contact);
+        $unserialized = unserialize($serialized);
+
+        $this->assertInstanceOf(GreetingContact::class, $unserialized);
+
+        $this->assertEquals($contact->getEmail(), $unserialized->getEmail());
+        $this->assertEquals($contact->getLanguage(), $unserialized->getLanguage());
+        $this->assertEquals($contact->getStatus(), $unserialized->getStatus());
+    }
+
+    #[DataProvider('languageAndStatusProvider')]
+    public function testLanguageAndStatusAssignment(GreetingLanguage $language, Status $status): void
+    {
+        $contact = new GreetingContact();
+        $contact->setLanguage($language);
+        $contact->setStatus($status);
+
+        $this->assertSame($language, $contact->getLanguage());
+        $this->assertSame($status, $contact->getStatus());
+    }
+
+    /**
+     * @return array<string, array{GreetingLanguage, Status}>
+     */
+    public static function languageAndStatusProvider(): array
+    {
+        $data = [];
+        foreach (GreetingLanguage::cases() as $language) {
+            foreach (Status::cases() as $status) {
+                $data[sprintf('Language: %s, Status: %s', $language->name, $status->name)] = [$language, $status];
+            }
+        }
+
+        return $data;
     }
 }
