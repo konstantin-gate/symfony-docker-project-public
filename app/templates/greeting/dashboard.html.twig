@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Greeting Dashboard{% endblock %}
+
+{% block body %}
+{% trans_default_domain 'greeting' %}
+<div class="container py-4">
+    <h1 class="mb-4 text-center">{{ 'dashboard.title'|trans }}</h1>
+
+    {# Flash messages #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                {# Flash messages often come from controllers which might not be translated, or use 'messages' domain #}
+                {{ message|trans({}, 'messages') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="row">
+        {# --- Часть 1: Импорт контактов --- #}
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">{{ 'dashboard.import_title'|trans }}</h5>
+                </div>
+                <div class="card-body">
+                    {{ form_start(import_form) }}
+                        <div class="mb-3">
+                            {{ form_label(import_form.emails) }}
+                            {{ form_widget(import_form.emails, {'attr': {'class': 'form-control', 'rows': 6}}) }}
+                            {{ form_errors(import_form.emails) }}
+                            <small class="text-muted">{{ 'dashboard.import_help'|trans }}</small>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(import_form.registrationDate) }}
+                            {{ form_widget(import_form.registrationDate, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(import_form.registrationDate) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(import_form.language) }}
+                            {{ form_widget(import_form.language, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_errors(import_form.language) }}
+                        </div>
+
+                        {{ form_widget(import_form.import) }}
+                    {{ form_end(import_form) }}
+                </div>
+            </div>
+        </div>
+
+        {# --- Часть 2: Отправка поздравлений --- #}
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">{{ 'dashboard.send_title'|trans }}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {# Фильтр #}
+                        <div class="row mb-3 align-items-end">
+                            <div class="col-md-6">
+                                <label for="dateFilter" class="form-label fw-bold">{{ 'dashboard.filter_date'|trans }}</label>
+                                <input type="date" id="dateFilter" class="form-control" onchange="filterContacts()">
+                                <small class="text-muted">{{ 'dashboard.filter_help'|trans }}</small>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <span class="badge bg-secondary" id="countBadge">{{ 'dashboard.total'|trans }}: 0</span>
+                            </div>
+                        </div>
+
+                        {# Список контактов #}
+                        <div class="border rounded p-2 mb-3 bg-light" style="max-height: 400px; overflow-y: auto;">
+                            {% if grouped_contacts is empty %}
+                                <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
+                            {% else %}
+                                {% for language, contacts in grouped_contacts %}
+                                    <div class="mb-2 contact-group">
+                                        <h6 class="border-bottom pb-1 text-primary sticky-top bg-light pt-2">
+                                            {{ ('language.' ~ language)|trans }}
+                                            <small class="text-muted fw-normal" style="font-size: 0.8rem">
+                                                (<a href="#" onclick="toggleGroup(this); return false;" class="text-decoration-none">{{ 'dashboard.select_all'|trans }}</a>)
+                                            </small>
+                                        </h6>
+                                        <div class="ps-2">
+                                            {% for contact in contacts %}
+                                                <div class="form-check contact-item" data-date="{{ contact.createdAt|date('Y-m-d') }}">
+                                                    <input class="form-check-input" type="checkbox" name="contacts[]" value="{{ contact.id }}" id="contact_{{ contact.id }}">
+                                                    <label class="form-check-label" for="contact_{{ contact.id }}">
+                                                        {{ contact.email }} 
+                                                        <small class="text-muted">- {{ contact.createdAt|date('d.m.Y') }}</small>
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        {# Поля письма #}
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">{{ 'dashboard.subject'|trans }}</label>
+                            <input type="text" name="subject" id="subject" class="form-control" required placeholder="{{ 'dashboard.subject_placeholder'|trans }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="body" class="form-label">{{ 'dashboard.body'|trans }}</label>
+                            <textarea name="body" id="body" class="form-control" rows="5" required placeholder="{{ 'dashboard.body_placeholder'|trans }}"></textarea>
+                        </div>
+
+                        <button type="submit" name="send_greeting" class="btn btn-success w-100 btn-lg">
+                            <i class="bi bi-send"></i> {{ 'dashboard.send_btn'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function filterContacts() {
+        const dateInput = document.getElementById('dateFilter').value;
+        const items = document.querySelectorAll('.contact-item');
+        let visibleCount = 0;
+
+        items.forEach(item => {
+            const itemDate = item.getAttribute('data-date');
+            
+            // Если дата не выбрана, показываем всех.
+            // Если выбрана, показываем тех, чья дата БОЛЬШЕ (моложе) выбранной.
+            if (!dateInput || itemDate >= dateInput) {
+                item.style.display = 'block';
+                // При скрытии можно снимать галочку, но лучше оставить выбор пользователя
+                // item.querySelector('input').disabled = false;
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+                // item.querySelector('input').disabled = true; // Опционально: не отправлять скрытых
+            }
+        });
+        
+        // Используем переводы для JS через data-атрибуты или жестко, пока оставим универсально
+        // В идеале, текст 'Показано' тоже должен приходить из переводов
+        document.getElementById('countBadge').textContent = '{{ 'dashboard.shown'|trans }}: ' + visibleCount;
+    }
+
+
+    function toggleGroup(link) {
+        // Находим родительский блок группы
+        const groupDiv = link.closest('.contact-group');
+        const checkboxes = groupDiv.querySelectorAll('.contact-item[style="display: block;"] input[type="checkbox"], .contact-item:not([style*="display"]) input[type="checkbox"]');
+        
+        // Проверяем, все ли видимые выбраны
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        
+        checkboxes.forEach(cb => {
+            cb.checked = !allChecked;
+        });
+    }
+
+    // Инициализация счетчика при загрузке
+    document.addEventListener('DOMContentLoaded', filterContacts);
+</script>
+{% endblock %}

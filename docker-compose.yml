@@ -38,6 +38,13 @@ services:
     depends_on:
       - php # Nginx не должен стартовать раньше PHP
 
+  # 4. Сервис для сборки фронтенда (Node.js)
+  node:
+    image: node:22-alpine # Используем официальный образ Node.js LTS на Alpine
+    working_dir: /var/www/html/app # Рабочая директория внутри контейнера, где находится Symfony-приложение
+    volumes:
+      - .:/var/www/html:delegated # Монтируем всю папку проекта, чтобы Node.js мог видеть assets/ и записывать в public/build
+
 volumes:
   db-data:
 

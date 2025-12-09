@@ -1,0 +1,30 @@
+import:
+    emails_label: 'Emails (разделенные запятой, пробелом или с новой строки)'
+    emails_placeholder: |
+        user@example.com, another@test.com
+        third@domain.org
+    date_label: 'Дата регистрации'
+    language_label: 'Язык'
+    submit: 'Импортировать контакты'
+
+language:
+    Czech: 'Чешский'
+    English: 'Английский'
+    Russian: 'Русский'
+
+dashboard:
+    title: 'Панель управления поздравлениями'
+    import_title: '1. Импорт Email'
+    import_help: 'Введите список email адресов.'
+    send_title: '2. Рассылка поздравлений'
+    filter_date: 'Фильтр по дате регистрации'
+    filter_help: 'Показать тех, кто моложе этой даты'
+    total: 'Всего'
+    shown: 'Показано'
+    no_contacts: 'Нет активных контактов.'
+    select_all: 'выбрать всех'
+    subject: 'Тема письма'
+    subject_placeholder: 'С Новым Годом!'
+    body: 'HTML Содержимое'
+    body_placeholder: '<h1>Поздравляем!</h1>...'
+    send_btn: 'Отправить поздравления'

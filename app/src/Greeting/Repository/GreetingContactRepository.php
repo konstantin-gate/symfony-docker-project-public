@@ -10,6 +10,11 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<GreetingContact>
+ *
+ * @method GreetingContact|null find($id, $lockMode = null, $lockVersion = null)
+ * @method GreetingContact|null findOneBy(array<string, mixed> $criteria, array<string, string> $orderBy = null)
+ * @method GreetingContact[]    findAll()
+ * @method GreetingContact[]    findBy(array<string, mixed> $criteria, array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class GreetingContactRepository extends ServiceEntityRepository
 {
