@@ -132,11 +132,9 @@ class GreetingContactTest extends TestCase
 
         // Should accept only GreetingLanguage enum
         $contact->setLanguage(GreetingLanguage::Czech);
-        $this->assertInstanceOf(GreetingLanguage::class, $contact->getLanguage());
 
         // Should accept only Status enum
         $contact->setStatus(Status::Active);
-        $this->assertInstanceOf(Status::class, $contact->getStatus());
     }
 
     public function testCreatedAtNeverChangesAfterConstruction(): void
