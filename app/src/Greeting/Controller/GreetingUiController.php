@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Greeting\Controller;
 
 use App\Enum\Status;
-use App\Greeting\Entity\GreetingContact;
+use App\Greeting\Enum\GreetingLanguage;
+use App\Greeting\Factory\GreetingContactFactory;
 use App\Greeting\Form\GreetingImportType;
 use App\Greeting\Repository\GreetingContactRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,46 +21,47 @@ class GreetingUiController extends AbstractController
     public function __construct(
         private readonly GreetingContactRepository $greetingContactRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly GreetingContactFactory $greetingContactFactory,
     ) {
     }
 
     #[Route('/dashboard', name: 'greeting_dashboard')]
     public function dashboard(Request $request): Response
     {
-        // --- Часть 1: Обработка импорта ---
+        // --- Část 1: Zpracování importu ---
         $importForm = $this->createForm(GreetingImportType::class);
         $importForm->handleRequest($request);
 
         if ($importForm->isSubmitted() && $importForm->isValid()) {
             $data = $importForm->getData();
-            $this->handleImport($data);
-            $this->addFlash('success', 'Контакты успешно импортированы.');
+            $countNewEmails = $this->handleImport($data);
+            $this->addFlash('success', 'Kontakty úspěšně importovány: ' . $countNewEmails);
 
             return $this->redirectToRoute('greeting_dashboard');
         }
 
-        // --- Часть 2: Обработка отправки (упрощенная) ---
+        // --- Část 2: Zpracování odeslání (zjednodušené) ---
         if ($request->isMethod('POST') && $request->request->has('send_greeting')) {
             $selectedIds = $request->request->all('contacts');
             $subject = $request->request->get('subject');
             $body = $request->request->get('body');
 
             if (empty($selectedIds)) {
-                $this->addFlash('error', 'Не выбрано ни одного контакта.');
+                $this->addFlash('error', 'Nebyl vybrán žádný kontakt.');
             } else {
-                // Здесь была бы логика отправки
+                // Zde by byla logika odesílání
                 $count = \count($selectedIds);
-                $this->addFlash('success', "Имитация отправки {$count} писем с темой '{$subject}'.");
+                $this->addFlash('success', "Simulace odeslání {$count} e-mailů s předmětem '{$subject}'.");
 
                 return $this->redirectToRoute('greeting_dashboard');
             }
         }
 
-        // --- Подготовка данных для списка. ---
-        // Получаем все активные контакты
+        // --- Příprava dat pro seznam. ---
+        // Získáme všechny aktivní kontakty
         $contacts = $this->greetingContactRepository->findBy(['status' => Status::Active], ['createdAt' => 'DESC']);
 
-        // Группируем по языку
+        // Seskupíme podle jazyka
         $groupedContacts = [];
 
         foreach ($contacts as $contact) {
@@ -73,36 +75,52 @@ class GreetingUiController extends AbstractController
         ]);
     }
 
-    private function handleImport(array $data): void
+    /**
+     * @param array{emails: string, registrationDate: \DateTime, language: GreetingLanguage} $data
+     *
+     * @return int
+     */
+    private function handleImport(array $data): int
     {
-        $rawEmails = $data['emails'];
-        /** @var \DateTimeImmutable $registrationDate */
-        $registrationDate = $data['registrationDate'];
         $language = $data['language'];
+        /** @var \DateTime $registrationDate */
+        $registrationDate = $data['registrationDate'];
+        $emails = $this->listEmailsIntoArray($data['emails']);
+        $newEmails = $this->greetingContactRepository->findNonExistingEmails($emails);
 
-        // Разделители: запятая, пробел, новая строка, точка с запятой
-        $emails = preg_split('/[\s,;]+/', $rawEmails, -1, \PREG_SPLIT_NO_EMPTY);
-        $uniqueEmails = array_unique($emails);
+        if (!empty($newEmails)) {
+            foreach ($newEmails as $email) {
+                $contact = $this->greetingContactFactory->create(
+                    $email,
+                    $language,
+                    \DateTimeImmutable::createFromMutable($registrationDate)
+                );
 
-        foreach ($uniqueEmails as $email) {
-            if (!filter_var($email, \FILTER_VALIDATE_EMAIL)) {
-                continue;
+                $this->entityManager->persist($contact);
             }
 
-            // Проверяем дубликаты (простая проверка)
-            if ($this->greetingContactRepository->findOneBy(['email' => $email])) {
-                continue;
-            }
-
-            $contact = new GreetingContact();
-            $contact->setEmail($email);
-            $contact->setLanguage($language);
-            $contact->setCreatedAt($registrationDate);
-            $contact->setStatus(Status::Active);
-
-            $this->entityManager->persist($contact);
+            $this->entityManager->flush();
         }
 
-        $this->entityManager->flush();
+        return \count($newEmails);
+    }
+
+    /**
+     * Seznam e-mailů do pole.
+     *
+     * @return array<string>
+     */
+    private function listEmailsIntoArray(string $rawEmails): array
+    {
+        // Oddělovače: čárka, mezera, nový řádek, středník
+        $emails = (array) preg_split('/[\s,;]+/', $rawEmails, -1, \PREG_SPLIT_NO_EMPTY);
+        $uniqueEmails = array_unique($emails);
+        /** @var array<string> $uniqueEmails */
+        $filteredEmails = array_filter(
+            $uniqueEmails,
+            static fn (string $email): bool => filter_var($email, \FILTER_VALIDATE_EMAIL) !== false
+        );
+
+        return array_values($filteredEmails);
     }
 }

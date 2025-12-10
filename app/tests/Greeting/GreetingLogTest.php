@@ -27,7 +27,7 @@ class GreetingLogTest extends TestCase
         $log = new GreetingLog($contact, -5);
         $violations = $validator->validate($log);
         $this->assertCount(1, $violations);
-        $this->assertSame('This value should be either positive or zero.', $violations[0]->getMessage());
+        $this->assertSame('This value should be either positive or zero.', $violations->get(0)->getMessage());
     }
 
     public function testConstructorAndGetters(): void

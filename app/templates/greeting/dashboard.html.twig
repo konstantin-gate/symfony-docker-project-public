@@ -7,11 +7,11 @@
 <div class="container py-4">
     <h1 class="mb-4 text-center">{{ 'dashboard.title'|trans }}</h1>
 
-    {# Flash messages #}
+    {# Zprávy flash #}
     {% for label, messages in app.flashes %}
         {% for message in messages %}
             <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
-                {# Flash messages often come from controllers which might not be translated, or use 'messages' domain #}
+                {# Zprávy flash často pocházejí z kontrolerů, které nemusí být přeloženy, nebo používají doménu 'messages' #}
                 {{ message|trans({}, 'messages') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
@@ -19,7 +19,7 @@
     {% endfor %}
 
     <div class="row">
-        {# --- Часть 1: Импорт контактов --- #}
+        {# --- Část 1: Import kontaktů --- #}
         <div class="col-md-4">
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-primary text-white">
@@ -52,7 +52,7 @@
             </div>
         </div>
 
-        {# --- Часть 2: Отправка поздравлений --- #}
+        {# --- Část 2: Odeslání pozdravů --- #}
         <div class="col-md-8">
             <div class="card shadow-sm">
                 <div class="card-header bg-success text-white">
@@ -60,7 +60,7 @@
                 </div>
                 <div class="card-body">
                     <form method="post">
-                        {# Фильтр #}
+                        {# Filtr #}
                         <div class="row mb-3 align-items-end">
                             <div class="col-md-6">
                                 <label for="dateFilter" class="form-label fw-bold">{{ 'dashboard.filter_date'|trans }}</label>
@@ -72,7 +72,7 @@
                             </div>
                         </div>
 
-                        {# Список контактов #}
+                        {# Seznam kontaktů #}
                         <div class="border rounded p-2 mb-3 bg-light" style="max-height: 400px; overflow-y: auto;">
                             {% if grouped_contacts is empty %}
                                 <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
@@ -90,7 +90,7 @@
                                                 <div class="form-check contact-item" data-date="{{ contact.createdAt|date('Y-m-d') }}">
                                                     <input class="form-check-input" type="checkbox" name="contacts[]" value="{{ contact.id }}" id="contact_{{ contact.id }}">
                                                     <label class="form-check-label" for="contact_{{ contact.id }}">
-                                                        {{ contact.email }} 
+                                                        {{ contact.email }}
                                                         <small class="text-muted">- {{ contact.createdAt|date('d.m.Y') }}</small>
                                                     </label>
                                                 </div>
@@ -101,7 +101,7 @@
                             {% endif %}
                         </div>
 
-                        {# Поля письма #}
+                        {# Pole e-mailu #}
                         <div class="mb-3">
                             <label for="subject" class="form-label">{{ 'dashboard.subject'|trans }}</label>
                             <input type="text" name="subject" id="subject" class="form-control" required placeholder="{{ 'dashboard.subject_placeholder'|trans }}">
@@ -130,40 +130,39 @@
 
         items.forEach(item => {
             const itemDate = item.getAttribute('data-date');
-            
-            // Если дата не выбрана, показываем всех.
-            // Если выбрана, показываем тех, чья дата БОЛЬШЕ (моложе) выбранной.
+
+            // Pokud není vybráno datum, zobrazíme všechny.
+            // Pokud je vybráno, zobrazíme ty, jejichž datum je VĚTŠÍ (mladší) než vybrané.
             if (!dateInput || itemDate >= dateInput) {
                 item.style.display = 'block';
-                // При скрытии можно снимать галочку, но лучше оставить выбор пользователя
+                // Při skrytí je možné zrušit zaškrtnutí, ale je lepší ponechat volbu uživatele.
                 // item.querySelector('input').disabled = false;
                 visibleCount++;
             } else {
                 item.style.display = 'none';
-                // item.querySelector('input').disabled = true; // Опционально: не отправлять скрытых
+                // item.querySelector('input').disabled = true; // Volitelné: neposílat skryté
             }
         });
-        
-        // Используем переводы для JS через data-атрибуты или жестко, пока оставим универсально
-        // В идеале, текст 'Показано' тоже должен приходить из переводов
+
+        // Používáme překlady pro JS přes atributy data- nebo pevně, zatím ponecháme univerzálně
+        // Ideálně by text 'Zobrazeno' měl také pocházet z překladů
         document.getElementById('countBadge').textContent = '{{ 'dashboard.shown'|trans }}: ' + visibleCount;
     }
 
-
     function toggleGroup(link) {
-        // Находим родительский блок группы
+        // Najdeme nadřazený blok skupiny
         const groupDiv = link.closest('.contact-group');
         const checkboxes = groupDiv.querySelectorAll('.contact-item[style="display: block;"] input[type="checkbox"], .contact-item:not([style*="display"]) input[type="checkbox"]');
-        
-        // Проверяем, все ли видимые выбраны
+
+        // Zkontrolujeme, zda jsou všechny viditelné zaškrtnuté
         const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-        
+
         checkboxes.forEach(cb => {
             cb.checked = !allChecked;
         });
     }
 
-    // Инициализация счетчика при загрузке
+    // Inicializace počítadla při načtení
     document.addEventListener('DOMContentLoaded', filterContacts);
 </script>
 {% endblock %}

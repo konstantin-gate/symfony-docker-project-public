@@ -31,12 +31,12 @@ class StatusListCommand extends Command
 
         foreach (($this->statusEnumClass)::cases() as $status) {
             $rows[] = [
-                $status->name,                     // Имя кейса (например, Active)
-                $status->value,                    // Значение в БД (active)
-                $status->getTranslationKey(),      // Ключ перевода
-                $status->getColor(),               // Цвет UI
-                $status->isVisible() ? '+' : '-',  // Видимость
-                $status->isEditable() ? '+' : '-', // Редактируемость
+                $status->name,                     // Název případu (například Active)
+                $status->value,                    // Hodnota v DB (active)
+                $status->getTranslationKey(),      // Klíč překladu
+                $status->getColor(),               // Barva UI
+                $status->isVisible() ? '+' : '-',  // Viditelnost
+                $status->isEditable() ? '+' : '-', // Editovatelnost
             ];
         }
 

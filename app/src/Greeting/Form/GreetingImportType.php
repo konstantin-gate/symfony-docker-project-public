@@ -12,8 +12,13 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
+/**
+ * @extends AbstractType<mixed>
+ */
 class GreetingImportType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -27,6 +32,17 @@ class GreetingImportType extends AbstractType
                 ],
                 'constraints' => [
                     new NotBlank(),
+                    new Callback(function (string $payload, ExecutionContextInterface $context): void {
+                        $emails = (array) preg_split('/[\s,;]+/', $payload, -1, \PREG_SPLIT_NO_EMPTY);
+
+                        foreach ($emails as $email) {
+                            if (!filter_var($email, \FILTER_VALIDATE_EMAIL)) {
+                                $context->buildViolation('import.invalid_email')
+                                    ->setParameter('{{ email }}', (string) $email)
+                                    ->addViolation();
+                            }
+                        }
+                    }),
                 ],
             ])
             ->add('registrationDate', DateType::class, [

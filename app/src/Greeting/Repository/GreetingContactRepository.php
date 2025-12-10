@@ -23,28 +23,24 @@ class GreetingContactRepository extends ServiceEntityRepository
         parent::__construct($registry, GreetingContact::class);
     }
 
-    //    /**
-    //     * @return GreetingContact[] Returns an array of GreetingContact objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('g.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Vrátí seznam e-mailů z vstupního pole, které NEEXISTUJÍ v databázi.
+     *
+     * @param array<string> $emails
+     *
+     * @return array<string>
+     */
+    public function findNonExistingEmails(array $emails): array
+    {
+        // Získáme všechny existující e-maily z databáze, které jsou ve vstupním poli
+        $existingEmails = $this->createQueryBuilder('c')
+            ->select('c.email')
+            ->where('c.email IN (:emails)')
+            ->setParameter('emails', $emails)
+            ->getQuery()
+            ->getSingleColumnResult();
 
-    //    public function findOneBySomeField($value): ?GreetingContact
-    //    {
-    //        return $this->createQueryBuilder('g')
-    //            ->andWhere('g.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        // Vrátíme e-maily, které jsou ve vstupním poli, ale nejsou v databázi
+        return array_diff($emails, $existingEmails);
+    }
 }
