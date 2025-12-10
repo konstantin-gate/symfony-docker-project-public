@@ -5,6 +5,19 @@
 {% block body %}
 {% trans_default_domain 'greeting' %}
 <div class="container py-4">
+    <div class="d-flex justify-content-end mb-3">
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ app.request.locale|upper }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1" style="min-width: auto;">
+                <li><a class="dropdown-item small" href="{{ path('greeting_dashboard', {'_locale': 'cs'}) }}">čeština</a></li>
+                <li><a class="dropdown-item small" href="{{ path('greeting_dashboard', {'_locale': 'en'}) }}">english</a></li>
+                <li><a class="dropdown-item small" href="{{ path('greeting_dashboard', {'_locale': 'ru'}) }}">русский</a></li>
+            </ul>
+        </div>
+    </div>
+
     <h1 class="mb-4 text-center">{{ 'dashboard.title'|trans }}</h1>
 
     {# Zprávy flash #}

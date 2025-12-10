@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/greeting')]
 class GreetingUiController extends AbstractController
 {
     public function __construct(
@@ -25,7 +24,8 @@ class GreetingUiController extends AbstractController
     ) {
     }
 
-    #[Route('/dashboard', name: 'greeting_dashboard')]
+    #[Route('/greeting/dashboard', name: 'greeting_dashboard_default')]
+    #[Route('/{_locale}/greeting/dashboard', name: 'greeting_dashboard', requirements: ['_locale' => 'cs|en|ru'])]
     public function dashboard(Request $request): Response
     {
         // --- Část 1: Zpracování importu ---
@@ -37,7 +37,7 @@ class GreetingUiController extends AbstractController
             $countNewEmails = $this->handleImport($data);
             $this->addFlash('success', 'Kontakty úspěšně importovány: ' . $countNewEmails);
 
-            return $this->redirectToRoute('greeting_dashboard');
+            return $this->redirectToRoute('greeting_dashboard', ['_locale' => $request->getLocale()]);
         }
 
         // --- Část 2: Zpracování odeslání (zjednodušené) ---
@@ -53,7 +53,7 @@ class GreetingUiController extends AbstractController
                 $count = \count($selectedIds);
                 $this->addFlash('success', "Simulace odeslání {$count} e-mailů s předmětem '{$subject}'.");
 
-                return $this->redirectToRoute('greeting_dashboard');
+                return $this->redirectToRoute('greeting_dashboard', ['_locale' => $request->getLocale()]);
             }
         }
 
@@ -77,25 +77,17 @@ class GreetingUiController extends AbstractController
 
     /**
      * @param array{emails: string, registrationDate: \DateTime, language: GreetingLanguage} $data
-     *
-     * @return int
      */
     private function handleImport(array $data): int
     {
         $language = $data['language'];
-        /** @var \DateTime $registrationDate */
-        $registrationDate = $data['registrationDate'];
+        $registrationDate = \DateTimeImmutable::createFromMutable($data['registrationDate']);
         $emails = $this->listEmailsIntoArray($data['emails']);
         $newEmails = $this->greetingContactRepository->findNonExistingEmails($emails);
 
         if (!empty($newEmails)) {
             foreach ($newEmails as $email) {
-                $contact = $this->greetingContactFactory->create(
-                    $email,
-                    $language,
-                    \DateTimeImmutable::createFromMutable($registrationDate)
-                );
-
+                $contact = $this->greetingContactFactory->create($email, $language, $registrationDate);
                 $this->entityManager->persist($contact);
             }
 

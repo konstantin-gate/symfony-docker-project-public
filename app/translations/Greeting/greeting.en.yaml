@@ -1,0 +1,31 @@
+import:
+    emails_label: 'Emails (separated by comma, space, or newline)'
+    emails_placeholder: |
+        user@example.com, another@test.com
+        third@domain.org
+    date_label: 'Registration Date'
+    language_label: 'Language'
+    submit: 'Import Contacts'
+    invalid_email: 'Invalid email: {{ email }}'
+
+language:
+    Czech: 'Czech'
+    English: 'English'
+    Russian: 'Russian'
+
+dashboard:
+    title: 'Greeting Dashboard'
+    import_title: '1. Import Emails'
+    import_help: 'Enter a list of email addresses.'
+    send_title: '2. Send Greetings'
+    filter_date: 'Filter by Registration Date'
+    filter_help: 'Show those younger than this date'
+    total: 'Total'
+    shown: 'Shown'
+    no_contacts: 'No active contacts.'
+    select_all: 'select all'
+    subject: 'Subject'
+    subject_placeholder: 'Happy New Year!'
+    body: 'HTML Content'
+    body_placeholder: '<h1>Congratulations!</h1>...'
+    send_btn: 'Send Greetings'

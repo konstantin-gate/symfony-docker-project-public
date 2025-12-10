@@ -6,6 +6,7 @@ import:
     date_label: 'Дата регистрации'
     language_label: 'Язык'
     submit: 'Импортировать контакты'
+    invalid_email: 'Некорректный email: {{ email }}'
 
 language:
     Czech: 'Чешский'

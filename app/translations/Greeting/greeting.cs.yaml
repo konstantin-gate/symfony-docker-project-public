@@ -1,0 +1,31 @@
+import:
+    emails_label: 'E-maily (oddělené čárkou, mezerou nebo novým řádkem)'
+    emails_placeholder: |
+        uzivatel@example.com, dalsi@test.com
+        treti@domena.org
+    date_label: 'Datum registrace'
+    language_label: 'Jazyk'
+    submit: 'Importovat kontakty'
+    invalid_email: 'Neplatný e-mail: {{ email }}'
+
+language:
+    Czech: 'Čeština'
+    English: 'Angličtina'
+    Russian: 'Ruština'
+
+dashboard:
+    title: 'Panel pro správu pozdravů'
+    import_title: '1. Import E-mailů'
+    import_help: 'Zadejte seznam e-mailových adres.'
+    send_title: '2. Odeslání pozdravů'
+    filter_date: 'Filtr podle data registrace'
+    filter_help: 'Zobrazit ty, kteří jsou mladší než toto datum'
+    total: 'Celkem'
+    shown: 'Zobrazeno'
+    no_contacts: 'Žádné aktivní kontakty.'
+    select_all: 'vybrat vše'
+    subject: 'Předmět e-mailu'
+    subject_placeholder: 'Šťastný Nový Rok!'
+    body: 'HTML Obsah'
+    body_placeholder: '<h1>Gratulujeme!</h1>...'
+    send_btn: 'Odeslat pozdravy'
