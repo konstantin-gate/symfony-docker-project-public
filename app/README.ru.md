@@ -1,0 +1,101 @@
+# Symfony Greeting App
+
+Это приложение на базе Symfony 8.0, предназначенное для управления списком контактов и рассылки поздравительных сообщений (например, с Рождеством и Новым годом). Проект полностью докеризирован и включает в себя инструменты для разработки, тестирования и сборки фронтенда.
+
+## Возможности
+
+*   **Управление контактами:** Импорт списка email-адресов через веб-интерфейс.
+*   **Дашборд:** Панель управления (`/greeting/dashboard`) для просмотра контактов, фильтрации по дате регистрации и языку.
+*   **Многоязычность:** Поддержка чешского, английского и русского языков.
+*   **Рассылка:** Симуляция отправки писем выбранным группам контактов.
+*   **Технологический стек:**
+    *   **Backend:** Symfony 8.0, PHP 8.4, Doctrine ORM.
+    *   **Database:** PostgreSQL 16.
+    *   **Frontend:** Webpack Encore, Bootstrap 5, Bootstrap Icons.
+    *   **Infrastructure:** Docker (Nginx, PHP-FPM, Postgres, Node.js helper).
+
+## Требования
+
+*   Docker
+*   Docker Compose
+
+## Установка и первый запуск
+
+Выполните следующие шаги для инициализации проекта с нуля:
+
+### 1. Запуск контейнеров
+Соберите и запустите Docker-контейнеры:
+
+```bash
+docker compose up --build -d
+```
+
+### 2. Установка зависимостей PHP
+Установите необходимые пакеты через Composer (выполняется внутри контейнера `php`):
+
+```bash
+docker compose exec php composer install
+```
+
+### 3. Подготовка базы данных
+Примените миграции, чтобы создать необходимые таблицы (`greeting_contact`, `greeting_log` и др.):
+
+```bash
+docker compose exec php bin/console doctrine:migrations:migrate
+```
+
+### 4. Сборка фронтенда
+Проект использует Webpack Encore. Для установки зависимостей и сборки ассетов используется отдельный контейнер `node`.
+
+Установка NPM-пакетов:
+```bash
+docker compose run --rm node npm install
+```
+
+Сборка ассетов для разработки (включает source maps):
+```bash
+docker compose run --rm node npm run dev
+```
+
+*(Для продакшен-сборки используйте `npm run build`)*
+
+---
+
+## Использование
+
+После успешной установки приложение будет доступно по адресу:
+**[http://localhost](http://localhost)**
+
+### Основные URL
+*   **Главная:** `http://localhost/`
+*   **Панель управления (Dashboard):** `http://localhost/greeting/dashboard` (с перенаправлением на локаль, например `/ru/greeting/dashboard`).
+
+### Консольные команды
+В проекте есть кастомная команда для просмотра списка статусов:
+
+```bash
+docker compose exec php bin/console app:status:list
+```
+
+## Разработка и Тестирование
+
+### Запуск тестов
+Для запуска unit и integration тестов (PHPUnit):
+
+```bash
+docker compose exec php bin/phpunit
+```
+
+### Проверка качества кода
+В `composer.json` настроены скрипты для проверки стиля кода (PHP CS Fixer) и статического анализа (PHPStan):
+
+```bash
+# Запустить всё сразу
+docker compose exec php composer qa
+
+# Только исправление стиля кода
+docker compose exec php composer cs-fix
+
+# Только статический анализ
+docker compose exec php composer phpstan
+```
