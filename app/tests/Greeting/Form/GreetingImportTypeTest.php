@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Greeting\Form;
 
+use App\Greeting\Enum\GreetingLanguage;
 use App\Greeting\Form\GreetingImportType;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
@@ -28,7 +29,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => '',
             'registrationDate' => '2024-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         // Typ GreetingImportType má chybu, kdy omezení Callback očekává řetězec, ale dostane hodnotu null
@@ -42,7 +43,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => "test1@example.com\ninvalid_email",
             'registrationDate' => '2024-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         // Create a form with the data
@@ -59,7 +60,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => 'test1@example.com test2@example.com',
             'registrationDate' => '2025-12-99',  // Invalid date
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -78,7 +79,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => 'test1@example.com test2@example.com',
             'registrationDate' => '2024-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         // Create a form with the data
@@ -97,7 +98,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => 'test1@example.com test2@example.com',
             'registrationDate' => '',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -135,7 +136,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => 'test1@example.com, test2@example.com; test3@example.com test4@example.com',
             'registrationDate' => '2024-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -153,7 +154,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => "test1@example.com \r\n test2@example.com \r\n test3@example.com",
             'registrationDate' => '2024-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -179,7 +180,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => $emailString,
             'registrationDate' => '2025-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -205,7 +206,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => "invalid1\ninvalid2@\n@invalid3\ninvalid4@domain",
             'registrationDate' => '2024-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -227,7 +228,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => 'test+tag@example.com test.user@sub.domain.co.uk test@xn--80akhbyknj4f.com',
             'registrationDate' => '2025-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -248,7 +249,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => $emails,
             'registrationDate' => '2024-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -266,7 +267,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => 'test@example.com',
             'registrationDate' => (new \DateTimeImmutable('+1 year'))->format('Y-m-d'),
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -300,7 +301,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             // 'emails' záměrně chybí
             'registrationDate' => '2024-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $this->expectException(\TypeError::class);
@@ -315,7 +316,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => 'test@example.com',
             'registrationDate' => (new \DateTimeImmutable('-1 year'))->format('Y-m-d'),
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -333,7 +334,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => 'test@example.com',
             'registrationDate' => (new \DateTimeImmutable('today'))->format('Y-m-d'),
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -352,7 +353,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => 'valid@example.com, invalid@, valid2@example.org, bad@@example.com',
             'registrationDate' => '2024-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -374,7 +375,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => 'test@example.com, TEST@example.com, test@example.com',
             'registrationDate' => '2024-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -395,7 +396,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => $longEmail,
             'registrationDate' => '2024-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
@@ -417,7 +418,7 @@ class GreetingImportTypeTest extends TypeTestCase
         $formData = [
             'emails' => $longEmail,
             'registrationDate' => '2025-12-12',
-            'language' => 'cs',
+            'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
