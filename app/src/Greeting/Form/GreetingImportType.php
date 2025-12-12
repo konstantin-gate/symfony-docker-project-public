@@ -38,6 +38,7 @@ class GreetingImportType extends AbstractType
                         foreach ($emails as $email) {
                             if (!filter_var($email, \FILTER_VALIDATE_EMAIL)) {
                                 $context->buildViolation('import.invalid_email')
+                                    ->setTranslationDomain('greeting')
                                     ->setParameter('{{ email }}', (string) $email)
                                     ->addViolation();
                             }

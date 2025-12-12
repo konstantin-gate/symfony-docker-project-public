@@ -24,8 +24,7 @@
     {% for label, messages in app.flashes %}
         {% for message in messages %}
             <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
-                {# Zprávy flash často pocházejí z kontrolerů, které nemusí být přeloženy, nebo používají doménu 'messages' #}
-                {{ message|trans({}, 'messages') }}
+                {{ message|trans({}, 'greeting') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
@@ -43,7 +42,18 @@
                         <div class="mb-3">
                             {{ form_label(import_form.emails) }}
                             {{ form_widget(import_form.emails, {'attr': {'class': 'form-control', 'rows': 6}}) }}
-                            {{ form_errors(import_form.emails) }}
+                            {% if import_form.emails.vars.errors|length > 0 %}
+                                <div class="invalid-feedback d-block">
+                                    <ul class="list-unstyled mb-0">
+                                        {% for error in import_form.emails.vars.errors %}
+                                            <li>
+                                                <i class="bi bi-exclamation-circle-fill invalid-email-icon"></i>
+                                                {{ error.message }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
                             <small class="text-muted">{{ 'dashboard.import_help'|trans }}</small>
                         </div>
 

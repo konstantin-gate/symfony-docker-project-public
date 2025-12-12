@@ -1,6 +1,20 @@
-@import "~bootstrap-icons/font/bootstrap-icons.css";
 @import "~bootstrap/dist/css/bootstrap.min.css";
+@import "~bootstrap-icons/font/bootstrap-icons.css";
 
-/*body {
-    background-color: lightgray;
-}*/
+/* Resetting default list style for validation errors */
+.invalid-feedback ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.invalid-feedback li {
+    color: #dc3545; /* Bootstrap's danger red */
+    display: flex;
+    align-items: center;
+}
+
+.invalid-email-icon {
+    margin-right: 5px; /* Spacing between icon and text */
+    color: #dc3545; /* Ensure icon is also red */
+}
