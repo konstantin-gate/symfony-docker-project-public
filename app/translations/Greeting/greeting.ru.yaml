@@ -1,5 +1,5 @@
 import:
-    emails_label: 'Emails (разделенные запятой, пробелом или с новой строки)'
+    emails_label: 'Emails <span class="small-text">(разделенные запятой, пробелом или с новой строки)</span>'
     emails_placeholder: |
         user@example.com, another@test.com
         third@domain.org

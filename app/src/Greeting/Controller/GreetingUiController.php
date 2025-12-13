@@ -51,7 +51,7 @@ class GreetingUiController extends AbstractController
             } else {
                 // Zde by byla logika odesílání
                 $count = \count($selectedIds);
-                $this->addFlash('success', "Simulace odeslání {$count} e-mailů s předmětem '{$subject}'.");
+                $this->addFlash('success', "Simulace odeslání $count e-mailů s předmětem '$subject'.");
 
                 return $this->redirectToRoute('greeting_dashboard', ['_locale' => $request->getLocale()]);
             }

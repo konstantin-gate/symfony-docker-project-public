@@ -1,5 +1,5 @@
 import:
-    emails_label: 'E-maily (oddělené čárkou, mezerou nebo novým řádkem)'
+    emails_label: 'E-maily <span class="small-text">(oddělené čárkou, mezerou nebo novým řádkem)</span>'
     emails_placeholder: |
         uzivatel@example.com, dalsi@test.com
         treti@domena.org

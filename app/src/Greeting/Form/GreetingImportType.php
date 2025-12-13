@@ -26,6 +26,7 @@ class GreetingImportType extends AbstractType
         $builder
             ->add('emails', TextareaType::class, [
                 'label' => 'import.emails_label',
+                'label_html' => true,
                 'attr' => [
                     'rows' => 6,
                     'placeholder' => 'import.emails_placeholder',

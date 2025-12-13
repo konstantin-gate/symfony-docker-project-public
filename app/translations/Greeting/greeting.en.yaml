@@ -1,5 +1,5 @@
 import:
-    emails_label: 'Emails (separated by comma, space, or newline)'
+    emails_label: 'Emails <span class="small-text">(separated by comma, space, or newline)</span>'
     emails_placeholder: |
         user@example.com, another@test.com
         third@domain.org

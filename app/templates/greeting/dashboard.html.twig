@@ -42,7 +42,7 @@
                 <div class="card-body">
                     {{ form_start(import_form) }}
                         <div class="mb-3">
-                            {{ form_label(import_form.emails, import_form.emails.vars.label) }}
+                            {{ form_label(import_form.emails) }}
                             {{ form_widget(import_form.emails, {'attr': {'class': 'form-control', 'rows': 6}}) }}
                             {% if import_form.emails.vars.errors|length > 0 %}
                                 <div class="invalid-feedback d-block">
