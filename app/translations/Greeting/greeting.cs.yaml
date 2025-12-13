@@ -15,6 +15,7 @@ language:
 
 dashboard:
     title: 'Panel pro správu pozdravů'
+    back_to_home: 'Na hlavní stránku'
     import_title: '1. Import E-mailů'
     import_help: 'Zadejte seznam e-mailových adres.'
     send_title: '2. Odeslání pozdravů'

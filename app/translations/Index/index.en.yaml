@@ -1,0 +1,7 @@
+index:
+    title: Homepage
+    connected_modules: "Connected Modules"
+    greeting_module:
+        title: "Greeting Module"
+        description: "Manage greeting contacts and send personalized greetings."
+        dashboard_button: "Go to Dashboard"

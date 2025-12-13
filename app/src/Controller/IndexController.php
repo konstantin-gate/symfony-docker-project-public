@@ -10,7 +10,13 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class IndexController extends AbstractController
 {
-    #[Route('/', name: 'app_index')]
+    #[Route('/', name: 'app_root')]
+    public function root(): Response
+    {
+        return $this->redirectToRoute('index_default', ['_locale' => 'cs']);
+    }
+
+    #[Route('/{_locale}', name: 'index_default', requirements: ['_locale' => 'en|cs|ru'])]
     public function index(): Response
     {
         return $this->render('index/index.html.twig', [

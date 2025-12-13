@@ -15,6 +15,7 @@ language:
 
 dashboard:
     title: 'Greeting Dashboard'
+    back_to_home: 'Back to Home'
     import_title: '1. Import Emails'
     import_help: 'Enter a list of email addresses.'
     send_title: '2. Send Greetings'

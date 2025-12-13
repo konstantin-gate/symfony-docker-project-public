@@ -15,6 +15,7 @@ language:
 
 dashboard:
     title: 'Панель управления поздравлениями'
+    back_to_home: 'На главную страницу'
     import_title: '1. Импорт Email'
     import_help: 'Введите список email адресов.'
     send_title: '2. Рассылка поздравлений'

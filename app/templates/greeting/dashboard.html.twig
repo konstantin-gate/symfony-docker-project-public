@@ -1,11 +1,13 @@
 {% extends 'base.html.twig' %}
+{% trans_default_domain 'greeting' %}
 
-{% block title %}Greeting Dashboard{% endblock %}
+{% block title %}{{ 'dashboard.title'|trans }}{% endblock %}
 
 {% block body %}
-{% trans_default_domain 'greeting' %}
 <div class="container py-4">
-    <div class="d-flex justify-content-end mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="{{ path('index_default', {'_locale': app.request.locale}) }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-house"></i> {{ 'dashboard.back_to_home'|trans }}</a>
+        <h1>{{ 'dashboard.title'|trans }}</h1>
         <div class="dropdown">
             <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                 {{ app.request.locale|upper }}
@@ -18,7 +20,7 @@
         </div>
     </div>
 
-    <h1 class="mb-4 text-center">{{ 'dashboard.title'|trans }}</h1>
+    <h1 class="mb-4 text-center visually-hidden">{{ 'dashboard.title'|trans }}</h1>
 
     {# Zprávy flash #}
     {% for label, messages in app.flashes %}
@@ -40,7 +42,7 @@
                 <div class="card-body">
                     {{ form_start(import_form) }}
                         <div class="mb-3">
-                            {{ form_label(import_form.emails) }}
+                            {{ form_label(import_form.emails, import_form.emails.vars.label) }}
                             {{ form_widget(import_form.emails, {'attr': {'class': 'form-control', 'rows': 6}}) }}
                             {% if import_form.emails.vars.errors|length > 0 %}
                                 <div class="invalid-feedback d-block">

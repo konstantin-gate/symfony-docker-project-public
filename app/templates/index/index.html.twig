@@ -1,20 +1,30 @@
 {% extends 'base.html.twig' %}
+{% trans_default_domain 'index' %}
 
-{% block title %}Hello IndexController!{% endblock %}
+{% block title %}{{ 'index.title'|trans }}{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! <a href="{{ path('greeting_dashboard_default') }}" style="text-decoration: none;" title="Greeting dashboard">✅</a></h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/var/www/html/app/src/Controller/IndexController.php</code></li>
-        <li>Your template at <code>/var/www/html/app/templates/index/index.html.twig</code></li>
-    </ul>
+<div class="example-wrapper mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>{{'index.connected_modules'|trans}}</h2>
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ app.request.locale|upper }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1" style="min-width: auto;">
+                <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'cs'}) }}">čeština</a></li>
+                <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'en'}) }}">english</a></li>
+                <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'ru'}) }}">русский</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card mt-3">
+        <div class="card-body">
+            <h5 class="card-title">{{'index.greeting_module.title'|trans}}</h5>
+            <p class="card-text text-secondary small-text">{{'index.greeting_module.description'|trans}}</p>
+            <a href="{{ path('greeting_dashboard', {'_locale': app.request.locale}) }}" class="btn btn-primary">{{'index.greeting_module.dashboard_button'|trans}}</a>
+        </div>
+    </div>
 </div>
 {% endblock %}
