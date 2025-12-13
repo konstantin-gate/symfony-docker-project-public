@@ -35,7 +35,7 @@ class GreetingUiController extends AbstractController
         if ($importForm->isSubmitted() && $importForm->isValid()) {
             $data = $importForm->getData();
             $countNewEmails = $this->handleImport($data);
-            $this->addFlash('success', 'Kontakty úspěšně importovány: ' . $countNewEmails);
+            $this->addFlash('success', 'import.success');
 
             return $this->redirectToRoute('greeting_dashboard', ['_locale' => $request->getLocale()]);
         }

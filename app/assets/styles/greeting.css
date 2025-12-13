@@ -1,0 +1,7 @@
+/* Zmenšujeme velikost a umístění tlačítka pro zavření */
+.alert-wrapper .btn-close {
+    padding: 1.2rem 1rem;
+    font-size: 0.8rem;
+    margin-top: -0.35rem;
+    opacity: 0.5;
+}

@@ -7,6 +7,8 @@ import:
     language_label: 'Язык'
     submit: 'Импортировать контакты'
     invalid_email: 'Некорректный email: {{ email }}'
+    success: 'Контакты успешно импортированы'
+    import_xml_button: 'Импортировать контакты из XML'
 
 language:
     Czech: 'Чешский'
