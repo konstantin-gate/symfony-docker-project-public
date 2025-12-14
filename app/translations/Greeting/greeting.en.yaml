@@ -7,13 +7,17 @@ import:
     language_label: 'Language'
     submit: 'Import Contacts'
     invalid_email: 'Invalid email: {{ email }}'
-    success: 'Contacts imported successfully'
+    success: 'Contacts imported successfully, %d pcs'
+    success_zero: 'All entered contacts are already in the database'
     import_xml_button: 'Import Contacts from XML'
 
 language:
     Czech: 'Czech'
     English: 'English'
     Russian: 'Russian'
+    czech_speaking: 'Czech-speaking'
+    english_speaking: 'English-speaking'
+    russian_speaking: 'Russian-speaking'
 
 dashboard:
     title: 'Greeting Dashboard'

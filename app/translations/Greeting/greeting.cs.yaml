@@ -7,13 +7,17 @@ import:
     language_label: 'Jazyk'
     submit: 'Importovat kontakty'
     invalid_email: 'Neplatný e-mail: {{ email }}'
-    success: 'Kontakty úspěšně importovány'
+    success: 'Kontakty úspěšně importovány, %d ks'
+    success_zero: 'Všechny zadané kontakty jsou již v databázi'
     import_xml_button: 'Importovat kontakty z XML'
 
 language:
     Czech: 'Čeština'
     English: 'Angličtina'
     Russian: 'Ruština'
+    czech_speaking: 'Česky mluvící'
+    english_speaking: 'Anglicky mluvící'
+    russian_speaking: 'Rusky mluvící'
 
 dashboard:
     title: 'Panel pro správu pozdravů'

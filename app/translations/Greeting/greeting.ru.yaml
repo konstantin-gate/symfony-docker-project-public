@@ -7,13 +7,17 @@ import:
     language_label: 'Язык'
     submit: 'Импортировать контакты'
     invalid_email: 'Некорректный email: {{ email }}'
-    success: 'Контакты успешно импортированы'
+    success: 'Контакты успешно импортированы, %d шт.'
+    success_zero: 'Все введенные контакты уже есть в базе данных'
     import_xml_button: 'Импортировать контакты из XML'
 
 language:
     Czech: 'Чешский'
     English: 'Английский'
     Russian: 'Русский'
+    czech_speaking: 'Чешскоговорящие'
+    english_speaking: 'Англоговорящие'
+    russian_speaking: 'Русскоговорящие'
 
 dashboard:
     title: 'Панель управления поздравлениями'

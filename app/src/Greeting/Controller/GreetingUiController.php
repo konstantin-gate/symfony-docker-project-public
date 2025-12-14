@@ -9,11 +9,13 @@ use App\Greeting\Enum\GreetingLanguage;
 use App\Greeting\Factory\GreetingContactFactory;
 use App\Greeting\Form\GreetingImportType;
 use App\Greeting\Repository\GreetingContactRepository;
+use App\Greeting\Service\GreetingEmailParser;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class GreetingUiController extends AbstractController
 {
@@ -21,6 +23,8 @@ class GreetingUiController extends AbstractController
         private readonly GreetingContactRepository $greetingContactRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly GreetingContactFactory $greetingContactFactory,
+        private readonly TranslatorInterface $translator,
+        private readonly GreetingEmailParser $greetingEmailParser,
     ) {
     }
 
@@ -35,7 +39,10 @@ class GreetingUiController extends AbstractController
         if ($importForm->isSubmitted() && $importForm->isValid()) {
             $data = $importForm->getData();
             $countNewEmails = $this->handleImport($data);
-            $this->addFlash('success', 'import.success');
+            $message = $countNewEmails > 0
+                ? \sprintf($this->translator->trans('import.success', [], 'greeting'), $countNewEmails)
+                : $this->translator->trans('import.success_zero', [], 'greeting');
+            $this->addFlash('success', $message);
 
             return $this->redirectToRoute('greeting_dashboard', ['_locale' => $request->getLocale()]);
         }
@@ -69,7 +76,7 @@ class GreetingUiController extends AbstractController
             $groupedContacts[$lang][] = $contact;
         }
 
-        return $this->render('greeting/dashboard.html.twig', [
+        return $this->render('@Greeting/dashboard.html.twig', [
             'import_form' => $importForm->createView(),
             'grouped_contacts' => $groupedContacts,
         ]);
@@ -82,7 +89,7 @@ class GreetingUiController extends AbstractController
     {
         $language = $data['language'];
         $registrationDate = \DateTimeImmutable::createFromMutable($data['registrationDate']);
-        $emails = $this->listEmailsIntoArray($data['emails']);
+        $emails = $this->greetingEmailParser->parse($data['emails']);
         $newEmails = $this->greetingContactRepository->findNonExistingEmails($emails);
 
         if (!empty($newEmails)) {
@@ -95,24 +102,5 @@ class GreetingUiController extends AbstractController
         }
 
         return \count($newEmails);
-    }
-
-    /**
-     * Seznam e-mailů do pole.
-     *
-     * @return array<string>
-     */
-    private function listEmailsIntoArray(string $rawEmails): array
-    {
-        // Oddělovače: čárka, mezera, nový řádek, středník
-        $emails = (array) preg_split('/[\s,;]+/', $rawEmails, -1, \PREG_SPLIT_NO_EMPTY);
-        $uniqueEmails = array_unique($emails);
-        /** @var array<string> $uniqueEmails */
-        $filteredEmails = array_filter(
-            $uniqueEmails,
-            static fn (string $email): bool => filter_var($email, \FILTER_VALIDATE_EMAIL) !== false
-        );
-
-        return array_values($filteredEmails);
     }
 }

@@ -13,6 +13,8 @@ final class IndexControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request('GET', '/');
 
+        self::assertResponseRedirects('/cs');
+        $client->followRedirect();
         self::assertResponseIsSuccessful();
     }
 }
