@@ -13,8 +13,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class StatusTest extends TestCase
 {
     /**
-     * Тестирует getTranslationKey, getColor, isVisible, isEditable и isRecoverable
-     * для каждого варианта Enum.
+     * Testuje getTranslationKey, getColor, isVisible, isEditable a isRecoverable
+     * pro každou variantu Enum.
      */
     #[DataProvider('provideEnumCases')]
     public function testEnumAttributes(
@@ -82,7 +82,7 @@ class StatusTest extends TestCase
     }
 
     /**
-     * Проверяет, что Enum реализует нужный интерфейс и имеет корректные значения (backing values).
+     * Ověřuje, že Enum implementuje požadované rozhraní a má správné hodnoty (backing values).
      */
     public function testEnumBasics(): void
     {
@@ -108,7 +108,7 @@ class StatusTest extends TestCase
     }
 
     /**
-     * Тестирует, что метод from() выбрасывает исключение ValueError для недопустимого значения.
+     * Testuje, že metoda from() vyvolá výjimku ValueError pro nepřípustnou hodnotu.
      */
     public function testFromThrowsExceptionForInvalidValue(): void
     {
@@ -119,7 +119,7 @@ class StatusTest extends TestCase
     }
 
     /**
-     * Тестирует, что метод tryFrom() возвращает null для недопустимого значения.
+     * Testuje, zda metoda tryFrom() vrací hodnotu null pro nepřípustnou hodnotu.
      */
     public function testTryFromReturnsNullForInvalidValue(): void
     {
@@ -128,7 +128,7 @@ class StatusTest extends TestCase
     }
 
     /**
-     * Тестирует интеграцию с TranslatableInterface (с явной локалью).
+     * Testuje integraci s TranslatableInterface (s explicitní lokalizací).
      */
     public function testTrans(): void
     {
@@ -145,7 +145,7 @@ class StatusTest extends TestCase
     }
 
     /**
-     * Тестирует интеграцию с TranslatableInterface (без указания локали - дефолтное поведение).
+     * Testuje integraci s TranslatableInterface (bez zadání lokalizace – výchozí chování).
      */
     public function testTransWithDefaultLocale(): void
     {
@@ -163,7 +163,7 @@ class StatusTest extends TestCase
     }
 
     /**
-     * Тестирует статический метод getChoices (полная проверка).
+     * Testuje statickou metodu getChoices (úplná kontrola).
      */
     public function testGetChoices(): void
     {
@@ -174,16 +174,16 @@ class StatusTest extends TestCase
         foreach (Status::cases() as $case) {
             $key = $case->getTranslationKey();
 
-            // Проверяем, что ключ существует
+            // Ověřujeme, že klíč existuje
             $this->assertArrayHasKey($key, $choices, "Choice array missing key: $key");
 
-            // Проверяем, что значение соответствует ключу
+            // Ověřujeme, zda hodnota odpovídá klíči
             $this->assertSame($case, $choices[$key], "Value mismatch for key: $key");
         }
     }
 
     /**
-     * Тестирует ситуацию, когда переводчик возвращает пустую строку.
+     * Testuje situaci, kdy překladatel vrátí prázdný řádek.
      */
     public function testTransReturnsEmptyString(): void
     {
@@ -196,7 +196,7 @@ class StatusTest extends TestCase
     }
 
     /**
-     * Тестирует, что исключения, выброшенные переводчиком, корректно пробрасываются.
+     * Testuje, zda jsou výjimky vyhozené překladačem správně předávány.
      */
     public function testTransPropagatesException(): void
     {

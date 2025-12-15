@@ -9,7 +9,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 enum Status: string implements TranslatableInterface
 {
-    // Определение констант (значения, которые попадут в БД)
+    // Definice konstant (hodnoty, které se uloží do DB)
     case Concept = 'concept';
     case Active = 'active';
     case Inactive = 'inactive';
@@ -17,8 +17,8 @@ enum Status: string implements TranslatableInterface
     case Deleted = 'deleted';
 
     /**
-     * Возвращает ключ перевода (например, 'status.active').
-     * Сам текст перевода будет лежать в базе или yaml файлах.
+     * Vrací klíč pro překlad (například 'status.active').
+     * Samotný text překladu bude uložen v databázi nebo YAML souborech.
      */
     public function getTranslationKey(): string
     {
@@ -26,32 +26,32 @@ enum Status: string implements TranslatableInterface
     }
 
     /**
-     * Реализация TranslatableInterface.
-     * Позволяет использовать объект статуса напрямую в фильтре trans в Twig:
+     * Implementace TranslatableInterface.
+     * Umožňuje používat objekt stavu přímo v filtru trans v Twig:
      * {{article.status|trans}}.
      */
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
-        // Переводим ключ, используя домен 'messages' или специальный 'statuses'
+        // Překládáme klíč pomocí domény 'statuses'
         return $translator->trans($this->getTranslationKey(), [], 'statuses', $locale);
     }
 
     /**
-     * Цвет/контекст для UI (например, для CSS классов Bootstrap/Tailwind).
+     * Barva/kontext pro UI (například pro CSS třídy Bootstrap/Tailwind).
      */
     public function getColor(): string
     {
         return match ($this) {
-            self::Active => 'success',   // Зеленый
-            self::Concept => 'warning',  // Желтый
-            self::Inactive => 'secondary', // Серый
-            self::Archived => 'info',    // Голубой
-            self::Deleted => 'danger',   // Красный
+            self::Active => 'success',   // Zelený
+            self::Concept => 'warning',  // Žlutý
+            self::Inactive => 'secondary', // Svržená
+            self::Archived => 'info',    // Modrá
+            self::Deleted => 'danger',   // Červená
         };
     }
 
     /**
-     * Доступна ли сущность для публичного просмотра (Nginx/App).
+     * Je entita dostupná pro veřejné zobrazení (Nginx/App)?
      */
     public function isVisible(): bool
     {
@@ -62,8 +62,8 @@ enum Status: string implements TranslatableInterface
     }
 
     /**
-     * Можно ли редактировать сущность в этом статусе.
-     * Например, 'Deleted' и 'Archived' блокируют форму (Read-only).
+     * Lze entitu v tomto stavu upravovat?
+     * Například, stavy 'Deleted' a 'Archived' blokují formulář (jen pro čtení).
      */
     public function isEditable(): bool
     {
@@ -74,7 +74,7 @@ enum Status: string implements TranslatableInterface
     }
 
     /**
-     * Можно ли восстановить сущность из этого статуса.
+     * Lze entitu z tohoto stavu obnovit?
      */
     public function isRecoverable(): bool
     {
@@ -85,8 +85,8 @@ enum Status: string implements TranslatableInterface
     }
 
     /**
-     * Хелпер для Symfony Forms (ChoiceType).
-     * Генерирует массив ['status.concept' => Status::Concept, ...].
+     * Pomocná funkce pro Symfony Forms (ChoiceType).
+     * Generuje pole ['status.concept' => Status::Concept, ...].
      *
      * @return array<string, self>
      */
@@ -95,7 +95,7 @@ enum Status: string implements TranslatableInterface
         $choices = [];
 
         foreach (self::cases() as $case) {
-            // Ключ массива — это ключ перевода, значение — сам Enum
+            // Klíč pole je klíč pro překlad, hodnota je samotný Enum
             $choices[$case->getTranslationKey()] = $case;
         }
 

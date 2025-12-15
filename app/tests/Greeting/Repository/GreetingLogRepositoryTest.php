@@ -10,6 +10,8 @@ use App\Greeting\Entity\GreetingLog;
 use App\Greeting\Enum\GreetingLanguage;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -31,6 +33,7 @@ class GreetingLogRepositoryTest extends KernelTestCase
 
     /**
      * @throws RandomException
+     * @throws ORMException
      */
     public function testSaveAndFindGreetingLog(): void
     {
@@ -83,6 +86,7 @@ class GreetingLogRepositoryTest extends KernelTestCase
 
     /**
      * @throws RandomException
+     * @throws ORMException
      */
     public function testCascadeDelete(): void
     {
@@ -110,6 +114,10 @@ class GreetingLogRepositoryTest extends KernelTestCase
         $this->assertNull($retrievedLog, 'Log should be deleted via CASCADE');
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function testContactNotNullableViolation(): void
     {
         // Temp contact for constructor

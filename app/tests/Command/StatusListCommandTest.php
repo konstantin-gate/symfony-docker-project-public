@@ -26,7 +26,7 @@ class StatusListCommandTest extends KernelTestCase
     }
 
     /**
-     * Базовый smoke-тест: команда просто работает и возвращает 0.
+     * Základní smoke-test: příkaz jednoduše funguje a vrací 0.
      */
     public function testExecute(): void
     {
@@ -36,14 +36,14 @@ class StatusListCommandTest extends KernelTestCase
         $commandTester->execute([]);
         $commandTester->assertCommandIsSuccessful();
 
-        // Базовая проверка заголовка
+        // Základní kontrola hlavičky
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString('Status Reference Guide (Enum Status)', $output);
     }
 
     /**
-     * Детальный тест: проверяем, что каждая строка таблицы содержит
-     * верные данные из Enum (цвет, переводы, флаги).
+     * Detailní test: ověřujeme, že každý řádek tabulky obsahuje
+     * správná data z Enumu (barva, překlady, příznaky).
      */
     public function testExecuteShowsCompleteTable(): void
     {
@@ -52,15 +52,15 @@ class StatusListCommandTest extends KernelTestCase
 
         $commandTester->execute([]);
 
-        // Получаем весь вывод команды
+        // Získáme celý výstup příkazu
         $output = $commandTester->getDisplay();
 
-        // Разбиваем вывод на строки, чтобы проверять данные в контексте одной строки
+        // Rozdělíme výstup na řádky, abychom mohli kontrolovat data v kontextu jednoho řádku.
         $lines = explode("\n", $output);
 
         foreach (Status::cases() as $status) {
-            // 1. Ищем строку в таблице, которая относится к текущему статусу.
-            // Строка должна содержать имя (Active) и значение (active).
+            // 1. Hledáme řádek v tabulce, který se týká aktuálního stavu.
+            // Řádek by měl obsahovat název (Active) a hodnotu (active).
             $statusLine = null;
 
             foreach ($lines as $line) {
@@ -72,45 +72,45 @@ class StatusListCommandTest extends KernelTestCase
 
             $this->assertNotNull(
                 $statusLine,
-                \sprintf('Строка для статуса "%s" не найдена в выводе команды.', $status->name)
+                \sprintf('Řádek pro stav "%s" nebyl nalezen v výstupu příkazu.', $status->name)
             );
 
-            // 2. Проверяем Translation Key
+            // 2. Ověřujeme klíč pro překlad
             $this->assertStringContainsString(
                 $status->getTranslationKey(),
                 $statusLine,
-                \sprintf('В строке статуса "%s" нет ключа перевода.', $status->name)
+                \sprintf('V řádku stavu "%s" není klíč pro překlad.', $status->name)
             );
 
-            // 3. Проверяем Color (Colleague's request)
+            // 3. Ověřujeme barvu (požadavek kolegy)
             $this->assertStringContainsString(
                 $status->getColor(),
                 $statusLine,
-                \sprintf('В строке статуса "%s" неверный цвет (ожидался %s).', $status->name, $status->getColor())
+                \sprintf('V řádku stavu "%s" je nesprávná barva (očekával se %s).', $status->name, $status->getColor())
             );
 
-            // 4. Проверяем Visible (Colleague's request)
+            // 4. Ověřujeme viditelnost (požadavek kolegy)
             $expectedVisible = $status->isVisible() ? '+' : '-';
             $this->assertStringContainsString(
                 $expectedVisible,
                 $statusLine,
-                \sprintf('Неверный флаг Visible для статуса "%s".', $status->name)
+                \sprintf('Nesprávný příznak Visible pro stav "%s".', $status->name)
             );
 
-            // 5. Проверяем Editable (Colleague's request)
+            // 5. Ověřujeme upravitelnost (požadavek kolegy)
             $expectedEditable = $status->isEditable() ? '+' : '-';
             $this->assertStringContainsString(
                 $expectedEditable,
                 $statusLine,
-                \sprintf('Неверный флаг Editable для статуса "%s".', $status->name)
+                \sprintf('Nesprávný příznak Editable pro stav "%s".', $status->name)
             );
         }
     }
 
     /**
-     * Проверка порядка (Pořadí) и полноты (Úplnost) данных в таблице.
-     * Мы убеждаемся, что строки идут ровно в том порядке, как в Enum,
-     * и их количество совпадает.
+     * Kontrola pořadí a úplnosti dat v tabulce.
+     * Ověřujeme, že řádky jdou přesně ve stejném pořadí jako v Enumu,
+     * a jejich počet se shoduje.
      */
     public function testTableOrderAndCompleteness(): void
     {
@@ -120,51 +120,51 @@ class StatusListCommandTest extends KernelTestCase
         $commandTester->execute([]);
         $output = $commandTester->getDisplay();
 
-        // 1. Получаем эталонный список имен из Enum в правильном порядке
-        // Например: ['Concept', 'Active', 'Inactive', 'Archived', 'Deleted']
+        // 1. Získáme referenční seznam názvů z Enumu v správném pořadí
+        // Například: ['Concept', 'Active', 'Inactive', 'Archived', 'Deleted']
         $expectedOrder = array_map(static fn ($s) => $s->name, Status::cases());
 
-        // 2. Парсим вывод команды, чтобы найти, какие статусы реально были выведены
+        // 2. Parsovéme výstup příkazu, abychom našli, které stavy byly skutečně vygenerovány
         $foundOrder = [];
         $lines = explode("\n", $output);
 
         foreach ($lines as $line) {
             $trimmedLine = trim($line);
 
-            // Пробегаемся по ожидаемым статусам и смотрим, начинается ли текущая строка с имени статуса.
-            // Добавляем пробел к имени, чтобы избежать частичных совпадений
-            // (например, чтобы 'Active' не совпал с 'ActiveDeleted', если такой будет).
+            // Procházíme očekávané stavy a sledujeme, zda aktuální řádek začíná názvem stavu.
+            // Přidáváme mezeru k názvu, abychom předešli částečným shodám
+            // (například aby ‚Active‘ nebyl shodován s ‚ActiveDeleted‘, pokud existuje).
             foreach ($expectedOrder as $name) {
                 if (str_starts_with($trimmedLine, $name . ' ')) {
                     $foundOrder[] = $name;
-                    break; // Переходим к следующей строке вывода
+                    break;
                 }
             }
         }
 
-        // 3. Проверяем количество (Úplnost)
-        // Если в Enum 5 статусов, в таблице должно быть найдено ровно 5 строк.
+        // 3. Ověřujeme počet (Úplnost)
+        // Pokud v Enumu je 5 stavů, v tabulce by mělo být nalezeno přesně 5 řádků.
         $this->assertCount(
             \count($expectedOrder),
             $foundOrder,
             \sprintf(
-                'Количество найденных строк (%d) не совпадает с количеством статусов в Enum (%d).',
+                'Počet nalezených řádků (%d) neodpovídá počtu stavů v Enumu (%d).',
                 \count($foundOrder),
                 \count($expectedOrder)
             )
         );
 
-        // 4. Проверяем порядок (Pořadí)
-        // Массивы должны быть идентичны: одинаковые значения на одинаковых индексах.
+        // 4. Ověřujeme pořadí
+        // Pole by měla být identická: stejné hodnoty na stejných indexech.
         $this->assertSame(
             $expectedOrder,
             $foundOrder,
-            'Порядок вывода статусов в таблице отличается от порядка в Enum Status.'
+            'Pořadí zobrazení stavů v tabulce se liší od pořadí v Enum Status.'
         );
     }
 
     /**
-     * Test pro prázdný enum - příkaz by měl zobrazit pouze hlavičku tabulky, bez řádků a bez chyby.
+     * Test pro prázdný Enum - příkaz by měl zobrazit pouze hlavičku tabulky, bez řádků a bez chyby.
      */
     public function testExecuteWithEmptyEnum(): void
     {
@@ -195,7 +195,7 @@ class StatusListCommandTest extends KernelTestCase
     }
 
     /**
-     * Test pro enum, který vyhazuje výjimku v metodě getColor()
+     * Test pro Enum, který vyhazuje výjimku v metodě getColor()
      * Očekáváme, že příkaz selže s výjimkou.
      */
     public function testExecuteWithFailingEnum(): void
@@ -215,12 +215,12 @@ class StatusListCommandTest extends KernelTestCase
     }
 
     /**
-     * Test pro validní enum s vlastní třídou
-     * (alternativa k původnímu testu, ale s explicitním předáním enumu).
+     * Test pro validní Enum s vlastní třídou
+     * (alternativa k původnímu testu, ale s explicitním předáním Enumu).
      */
     public function testExecuteWithCustomValidEnum(): void
     {
-        // 1. Vytvoříme jednoduchý testovací enum přímo v testu
+        // 1. Vytvoříme jednoduchý testovací Enum přímo v testu
         $testEnumClass = new class {
             public const string TEST = 'TEST';
 
@@ -258,7 +258,7 @@ class StatusListCommandTest extends KernelTestCase
             }
         };
 
-        // 2. Vytvoříme příkaz s tímto enumem
+        // 2. Vytvoříme příkaz s tímto Enumem
         $command = new StatusListCommand($testEnumClass::class);
         $commandTester = new CommandTester($command);
 

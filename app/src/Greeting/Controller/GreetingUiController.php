@@ -71,8 +71,12 @@ class GreetingUiController extends AbstractController
         // Seskupíme podle jazyka
         $groupedContacts = [];
 
+        foreach (GreetingLanguage::cases() as $langEnum) {
+            $groupedContacts[$langEnum->value] = [];
+        }
+
         foreach ($contacts as $contact) {
-            $lang = $contact->getLanguage()->name;
+            $lang = $contact->getLanguage()->value;
             $groupedContacts[$lang][] = $contact;
         }
 

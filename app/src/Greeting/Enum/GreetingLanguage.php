@@ -11,8 +11,8 @@ enum GreetingLanguage: string
     case Russian = 'ru';
 
     /**
-     * Возвращает тему письма для конкретного языка.
-     * Это очень удобно использовать в Mailer'е.
+     * Vrací předmět e-mailu pro konkrétní jazyk.
+     * To je velmi užitečné pro použití v Maileru.
      */
     public function getSubject(): string
     {
@@ -24,8 +24,8 @@ enum GreetingLanguage: string
     }
 
     /**
-     * Возвращает путь к Twig-шаблону.
-     * Например: 'emails/greeting/cs.html.twig'.
+     * Vrací cestu k Twig šabloně.
+     * Například: 'emails/greeting/cs.html.twig'.
      */
     public function getTemplatePath(): string
     {

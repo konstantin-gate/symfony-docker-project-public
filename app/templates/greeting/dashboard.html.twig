@@ -111,48 +111,83 @@
                             </button>
                         </li>
                     </ul>
-                    <div class="tab-content mt-3" id="myTabContent">
-                        <div class="tab-pane fade show active" id="cs-tab-pane" role="tabpanel" aria-labelledby="cs-tab" tabindex="0">
-                            <!-- Temporary text for čeština -->
-                            <p>Tento je záložní text pro český jazyk.</p>
-                        </div>
-                        <div class="tab-pane fade" id="en-tab-pane" role="tabpanel" aria-labelledby="en-tab" tabindex="0">
-                            <!-- Temporary text for english -->
-                            <p>This is the placeholder text for English.</p>
-                        </div>
-                        <div class="tab-pane fade" id="ru-tab-pane" role="tabpanel" aria-labelledby="ru-tab" tabindex="0">
-                            <!-- Temporary text for русский -->
-                            <p>Это текст-заполнитель для русского языка.</p>
-                        </div>
-                    </div>
                     <form method="post">
-                        {# Seznam kontaktů #}
-                        <div class="border rounded p-2 mb-3 bg-light" style="max-height: 400px; overflow-y: auto;">
-                            {% if grouped_contacts is empty %}
-                                <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
-                            {% else %}
-                                {% for language, contacts in grouped_contacts %}
-                                    <div class="mb-2 contact-group">
+                        <div class="tab-content mt-3" id="myTabContent">
+                            <div class="tab-pane fade show active" id="cs-tab-pane" role="tabpanel" aria-labelledby="cs-tab" tabindex="0">
+                                <div class="border rounded p-2 mb-3 bg-light" style="max-height: 400px; overflow-y: auto;">
+                                    {% if grouped_contacts.cs is empty %}
+                                        <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
+                                    {% else %}
                                         <h6 class="border-bottom pb-1 text-primary sticky-top bg-light pt-2">
-                                            {{ ('language.' ~ language)|trans }}
+                                            {{ 'language.czech_speaking'|trans }}
                                             <small class="text-muted fw-normal" style="font-size: 0.8rem">
-                                                (<a href="#" class="text-decoration-none">{{ 'dashboard.select_all'|trans }}</a>)
+                                                (<a href="#" class="text-decoration-none select-all-contacts" data-lang="cs">{{ 'dashboard.select_all'|trans }}</a>)
                                             </small>
                                         </h6>
                                         <div class="ps-2">
-                                            {% for contact in contacts %}
+                                            {% for contact in grouped_contacts.cs %}
                                                 <div class="form-check contact-item">
-                                                    <input class="form-check-input" type="checkbox" name="contacts[]" value="{{ contact.id }}" id="contact_{{ contact.id }}">
-                                                    <label class="form-check-label" for="contact_{{ contact.id }}">
+                                                    <input class="form-check-input" type="checkbox" name="contacts[]" value="{{ contact.id }}" id="contact_cs_{{ contact.id }}">
+                                                    <label class="form-check-label" for="contact_cs_{{ contact.id }}">
                                                         {{ contact.email }}
                                                         <small class="text-muted">- {{ contact.createdAt|date('d.m.Y') }}</small>
                                                     </label>
                                                 </div>
                                             {% endfor %}
                                         </div>
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="en-tab-pane" role="tabpanel" aria-labelledby="en-tab" tabindex="0">
+                                <div class="border rounded p-2 mb-3 bg-light" style="max-height: 400px; overflow-y: auto;">
+                                    {% if grouped_contacts.en is empty %}
+                                        <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
+                                    {% else %}
+                                        <h6 class="border-bottom pb-1 text-primary sticky-top bg-light pt-2">
+                                            {{ 'language.english_speaking'|trans }}
+                                            <small class="text-muted fw-normal" style="font-size: 0.8rem">
+                                                (<a href="#" class="text-decoration-none select-all-contacts" data-lang="en">{{ 'dashboard.select_all'|trans }}</a>)
+                                            </small>
+                                        </h6>
+                                        <div class="ps-2">
+                                            {% for contact in grouped_contacts.en %}
+                                                <div class="form-check contact-item">
+                                                    <input class="form-check-input" type="checkbox" name="contacts[]" value="{{ contact.id }}" id="contact_en_{{ contact.id }}">
+                                                    <label class="form-check-label" for="contact_en_{{ contact.id }}">
+                                                        {{ contact.email }}
+                                                        <small class="text-muted">- {{ contact.createdAt|date('d.m.Y') }}</small>
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="ru-tab-pane" role="tabpanel" aria-labelledby="ru-tab" tabindex="0">
+                                <div class="border rounded p-2 mb-3 bg-light" style="max-height: 400px; overflow-y: auto;">
+                                    {% if grouped_contacts.ru is empty %}
+                                        <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
+                                    {% else %}
+                                        <h6 class="border-bottom pb-1 text-primary sticky-top bg-light pt-2">
+                                            {{ 'language.russian_speaking'|trans }}
+                                            <small class="text-muted fw-normal" style="font-size: 0.8rem">
+                                                (<a href="#" class="text-decoration-none select-all-contacts" data-lang="ru">{{ 'dashboard.select_all'|trans }}</a>)
+                                            </small>
+                                        </h6>
+                                        <div class="ps-2">
+                                            {% for contact in grouped_contacts.ru %}
+                                                <div class="form-check contact-item">
+                                                    <input class="form-check-input" type="checkbox" name="contacts[]" value="{{ contact.id }}" id="contact_ru_{{ contact.id }}">
+                                                    <label class="form-check-label" for="contact_ru_{{ contact.id }}">
+                                                        {{ contact.email }}
+                                                        <small class="text-muted">- {{ contact.createdAt|date('d.m.Y') }}</small>
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
 
                         {# Pole e-mailu #}
@@ -175,4 +210,35 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.select-all-contacts').forEach(function(link) {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const lang = this.dataset.lang;
+                    const tabPane = document.getElementById(`${lang}-tab-pane`);
+
+                    if (tabPane) {
+                        const checkboxes = tabPane.querySelectorAll('input[type="checkbox"][name="contacts[]"]');
+                        let allChecked = true;
+
+                        checkboxes.forEach(function(checkbox) {
+                            if (!checkbox.checked) {
+                                allChecked = false;
+                            }
+                        });
+
+                        checkboxes.forEach(function(checkbox) {
+                            checkbox.checked = !allChecked;
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

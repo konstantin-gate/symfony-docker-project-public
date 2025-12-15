@@ -11,6 +11,7 @@ use App\Greeting\Repository\GreetingContactRepository;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -40,6 +41,7 @@ class GreetingContactRepositoryTest extends KernelTestCase
     /**
      * @throws RandomException
      * @throws Exception
+     * @throws ORMException
      */
     public function testSaveAndFind(): void
     {
@@ -81,6 +83,7 @@ class GreetingContactRepositoryTest extends KernelTestCase
 
     /**
      * @throws RandomException
+     * @throws ORMException
      */
     public function testEmailUniqueConstraint(): void
     {
