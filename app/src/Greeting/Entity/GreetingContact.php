@@ -45,7 +45,7 @@ class GreetingContact
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
-        // Генерируем токен сразу при создании
+        // Generujeme token ihned při vytvoření
         $this->unsubscribeToken = bin2hex(random_bytes(32));
     }
 
