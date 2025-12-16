@@ -15,9 +15,9 @@ language:
     Czech: 'Чешский'
     English: 'Английский'
     Russian: 'Русский'
-    czech_speaking: 'Чешскоговорящие'
-    english_speaking: 'Англоговорящие'
-    russian_speaking: 'Русскоговорящие'
+    cs_speaking: 'Чешскоговорящие'
+    en_speaking: 'Англоговорящие'
+    ru_speaking: 'Русскоговорящие'
 
 dashboard:
     title: 'Панель управления поздравлениями'

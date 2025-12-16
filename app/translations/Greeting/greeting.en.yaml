@@ -15,9 +15,9 @@ language:
     Czech: 'Czech'
     English: 'English'
     Russian: 'Russian'
-    czech_speaking: 'Czech-speaking'
-    english_speaking: 'English-speaking'
-    russian_speaking: 'Russian-speaking'
+    cs_speaking: 'Czech-speaking'
+    en_speaking: 'English-speaking'
+    ru_speaking: 'Russian-speaking'
 
 dashboard:
     title: 'Greeting Dashboard'

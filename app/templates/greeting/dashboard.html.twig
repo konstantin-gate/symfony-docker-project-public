@@ -91,103 +91,44 @@
                 <div class="card-body">
                     <!-- Bootstrap Tabs -->
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="cs-tab" data-bs-toggle="tab"
-                                    data-bs-target="#cs-tab-pane" type="button" role="tab"
-                                    aria-controls="cs-tab-pane" aria-selected="true">
-                                {{ 'language.czech_speaking'|trans }}
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="en-tab" data-bs-toggle="tab" data-bs-target="#en-tab-pane"
-                                    type="button" role="tab" aria-controls="en-tab-pane" aria-selected="false">
-                                {{ 'language.english_speaking'|trans }}
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="ru-tab" data-bs-toggle="tab" data-bs-target="#ru-tab-pane"
-                                    type="button" role="tab" aria-controls="ru-tab-pane" aria-selected="false">
-                                {{ 'language.russian_speaking'|trans }}
-                            </button>
-                        </li>
-                    </ul>
+                        {% for lang, contacts in grouped_contacts %}
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {{ loop.first ? 'active' : '' }}" id="{{ lang }}-tab" data-bs-toggle="tab"
+                                        data-bs-target="#{{ lang }}-tab-pane" type="button" role="tab"
+                                        aria-controls="{{ lang }}-tab-pane" aria-selected="{{ loop.first ? 'true' : 'false' }}">
+                                    {{ ('language.' ~ lang ~ '_speaking')|trans }}
+                                </button>
+                            </li>
+                        {% endfor %}
                     <form method="post">
                         <div class="tab-content mt-3" id="myTabContent">
-                            <div class="tab-pane fade show active" id="cs-tab-pane" role="tabpanel" aria-labelledby="cs-tab" tabindex="0">
-                                <div class="border rounded p-2 mb-3 bg-light" style="max-height: 400px; overflow-y: auto;">
-                                    {% if grouped_contacts.cs is empty %}
-                                        <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
-                                    {% else %}
-                                        <h6 class="border-bottom pb-1 text-primary sticky-top bg-light pt-2">
-                                            {{ 'language.czech_speaking'|trans }}
-                                            <small class="text-muted fw-normal" style="font-size: 0.8rem">
-                                                (<a href="#" class="text-decoration-none select-all-contacts" data-lang="cs">{{ 'dashboard.select_all'|trans }}</a>)
-                                            </small>
-                                        </h6>
-                                        <div class="ps-2">
-                                            {% for contact in grouped_contacts.cs %}
-                                                <div class="form-check contact-item">
-                                                    <input class="form-check-input" type="checkbox" name="contacts[]" value="{{ contact.id }}" id="contact_cs_{{ contact.id }}">
-                                                    <label class="form-check-label" for="contact_cs_{{ contact.id }}">
-                                                        {{ contact.email }}
-                                                        <small class="text-muted">- {{ contact.createdAt|date('d.m.Y') }}</small>
-                                                    </label>
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
+                            {% for lang, contacts in grouped_contacts %}
+                                <div class="tab-pane fade {{ loop.first ? 'show active' : '' }}" id="{{ lang }}-tab-pane" role="tabpanel" aria-labelledby="{{ lang }}-tab" tabindex="0">
+                                    <div class="border rounded p-2 mb-3 bg-light" style="max-height: 400px; overflow-y: auto;">
+                                        {% if contacts is empty %}
+                                            <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
+                                        {% else %}
+                                            <h6 class="border-bottom pb-1 text-primary sticky-top bg-light pt-2">
+                                                {{ ('language.' ~ lang ~ '_speaking')|trans }}
+                                                <small class="text-muted fw-normal" style="font-size: 0.8rem">
+                                                    (<a href="#" class="text-decoration-none select-all-contacts" data-lang="{{ lang }}">{{ 'dashboard.select_all'|trans }}</a>)
+                                                </small>
+                                            </h6>
+                                            <div class="ps-2">
+                                                {% for contact in contacts %}
+                                                    <div class="form-check contact-item">
+                                                        <input class="form-check-input" type="checkbox" name="contacts[]" value="{{ contact.id }}" id="contact_{{ lang }}_{{ contact.id }}">
+                                                        <label class="form-check-label" for="contact_{{ lang }}_{{ contact.id }}">
+                                                            {{ contact.email }}
+                                                            <small class="text-muted">- {{ contact.createdAt|date('d.m.Y') }}</small>
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="tab-pane fade" id="en-tab-pane" role="tabpanel" aria-labelledby="en-tab" tabindex="0">
-                                <div class="border rounded p-2 mb-3 bg-light" style="max-height: 400px; overflow-y: auto;">
-                                    {% if grouped_contacts.en is empty %}
-                                        <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
-                                    {% else %}
-                                        <h6 class="border-bottom pb-1 text-primary sticky-top bg-light pt-2">
-                                            {{ 'language.english_speaking'|trans }}
-                                            <small class="text-muted fw-normal" style="font-size: 0.8rem">
-                                                (<a href="#" class="text-decoration-none select-all-contacts" data-lang="en">{{ 'dashboard.select_all'|trans }}</a>)
-                                            </small>
-                                        </h6>
-                                        <div class="ps-2">
-                                            {% for contact in grouped_contacts.en %}
-                                                <div class="form-check contact-item">
-                                                    <input class="form-check-input" type="checkbox" name="contacts[]" value="{{ contact.id }}" id="contact_en_{{ contact.id }}">
-                                                    <label class="form-check-label" for="contact_en_{{ contact.id }}">
-                                                        {{ contact.email }}
-                                                        <small class="text-muted">- {{ contact.createdAt|date('d.m.Y') }}</small>
-                                                    </label>
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="ru-tab-pane" role="tabpanel" aria-labelledby="ru-tab" tabindex="0">
-                                <div class="border rounded p-2 mb-3 bg-light" style="max-height: 400px; overflow-y: auto;">
-                                    {% if grouped_contacts.ru is empty %}
-                                        <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
-                                    {% else %}
-                                        <h6 class="border-bottom pb-1 text-primary sticky-top bg-light pt-2">
-                                            {{ 'language.russian_speaking'|trans }}
-                                            <small class="text-muted fw-normal" style="font-size: 0.8rem">
-                                                (<a href="#" class="text-decoration-none select-all-contacts" data-lang="ru">{{ 'dashboard.select_all'|trans }}</a>)
-                                            </small>
-                                        </h6>
-                                        <div class="ps-2">
-                                            {% for contact in grouped_contacts.ru %}
-                                                <div class="form-check contact-item">
-                                                    <input class="form-check-input" type="checkbox" name="contacts[]" value="{{ contact.id }}" id="contact_ru_{{ contact.id }}">
-                                                    <label class="form-check-label" for="contact_ru_{{ contact.id }}">
-                                                        {{ contact.email }}
-                                                        <small class="text-muted">- {{ contact.createdAt|date('d.m.Y') }}</small>
-                                                    </label>
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
+                            {% endfor %}
                         </div>
 
                         {# Pole e-mailu #}

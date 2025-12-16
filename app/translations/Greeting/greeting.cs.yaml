@@ -15,9 +15,9 @@ language:
     Czech: 'Čeština'
     English: 'Angličtina'
     Russian: 'Ruština'
-    czech_speaking: 'Česky mluvící'
-    english_speaking: 'Anglicky mluvící'
-    russian_speaking: 'Rusky mluvící'
+    cs_speaking: 'Česky mluvící'
+    en_speaking: 'Anglicky mluvící'
+    ru_speaking: 'Rusky mluvící'
 
 dashboard:
     title: 'Panel pro správu pozdravů'
