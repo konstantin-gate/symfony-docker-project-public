@@ -100,6 +100,7 @@
                                 </button>
                             </li>
                         {% endfor %}
+                    </ul>
                     <form method="post">
                         <div class="tab-content mt-3" id="myTabContent">
                             {% for lang, contacts in grouped_contacts %}
@@ -108,19 +109,12 @@
                                         {% if contacts is empty %}
                                             <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
                                         {% else %}
-                                            <h6 class="border-bottom pb-1 text-primary sticky-top bg-light pt-2">
-                                                {{ ('language.' ~ lang ~ '_speaking')|trans }}
-                                                <small class="text-muted fw-normal" style="font-size: 0.8rem">
-                                                    (<a href="#" class="text-decoration-none select-all-contacts" data-lang="{{ lang }}">{{ 'dashboard.select_all'|trans }}</a>)
-                                                </small>
-                                            </h6>
                                             <div class="ps-2">
                                                 {% for contact in contacts %}
                                                     <div class="form-check contact-item">
                                                         <input class="form-check-input" type="checkbox" name="contacts[]" value="{{ contact.id }}" id="contact_{{ lang }}_{{ contact.id }}">
                                                         <label class="form-check-label" for="contact_{{ lang }}_{{ contact.id }}">
                                                             {{ contact.email }}
-                                                            <small class="text-muted">- {{ contact.createdAt|date('d.m.Y') }}</small>
                                                         </label>
                                                     </div>
                                                 {% endfor %}
