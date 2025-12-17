@@ -1,5 +1,8 @@
 @import "~bootstrap/dist/css/bootstrap.min.css";
 @import "~bootstrap-icons/font/bootstrap-icons.css";
+@import "~datatables.net-bs5/css/dataTables.bootstrap5.min.css";
+@import "~datatables.net-select-bs5/css/select.bootstrap5.min.css";
+
 
 /* Resetting default list style for validation errors */
 .invalid-feedback ul {
