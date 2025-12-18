@@ -19,6 +19,10 @@
     cursor: pointer;
 }
 
+.greeting-table td:not(.empty-cell):not(.selected):hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
 /* Ensure empty cells don't look broken */
 .greeting-table td.empty-cell {
     pointer-events: none;
@@ -30,6 +34,30 @@
     padding: 0.25rem 0.5rem !important;
     font-size: 0.875rem !important;
     line-height: 1.5 !important;
+}
+
+.card-body .pagination .page-item.active .page-link {
+    background-color: #ABBCCC !important;
+    border-color: #ABBCCC !important;
+    color: white !important;
+}
+
+.card-body .pagination .page-link:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.dt-length-placeholder select:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+[id^="DataTables_Table_"]:focus,
+[id^="DataTables_Table_"]:focus-visible,
+#myTabContent:focus,
+.tab-pane:focus {
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 /* Override DataTables Select Blue Color */

@@ -41,11 +41,17 @@ $(function() {
                 selector: 'td:not(.empty-cell)' // Prevent selecting empty placeholder cells if any
             },
             // Layout: Length (l) - we will move it, Table (t), Paging (p)
-            dom: 'lt<"d-flex justify-content-end mt-3"p>',
+            dom: 'lt<"d-flex justify-content-end mt-3 js-pagination-wrapper"p>',
             language: {
                 lengthMenu: "_MENU_", // Show just the dropdown
+                paginate: {
+                    first: '«',
+                    last: '»',
+                    next: '›',
+                    previous: '‹'
+                }
             },
-            pagingType: "simple_numbers",
+            pagingType: "full_numbers",
             initComplete: function() {
                 const api = this.api();
                 const container = $(api.table().container());
@@ -53,13 +59,32 @@ $(function() {
                 // Force small pagination
                 container.find('.pagination').addClass('pagination-sm');
                 
-                // Move Length Menu to custom placeholder
-                const lengthMenu = container.find('.dataTables_length, .dt-length');
+                // Move Length Menu to custom placeholder (Select element only)
+                const lengthWrapper = container.find('.dataTables_length, .dt-length');
+                const select = lengthWrapper.find('select');
                 const placeholder = $(this).closest('.tab-pane').find('.dt-length-placeholder');
-                lengthMenu.detach().appendTo(placeholder);
+                
+                if (select.length && placeholder.length) {
+                    select.addClass('form-select-sm').css({
+                        'width': 'auto',
+                        'display': 'inline-block'
+                    });
+                    placeholder.empty().append(select);
+                    lengthWrapper.remove(); // Completely remove the empty wrapper/label container
+                }
             },
             drawCallback: function() {
-                $(this.api().table().container()).find('.pagination').addClass('pagination-sm');
+                const api = this.api();
+                const container = $(api.table().container());
+                const pageInfo = api.page.info();
+                const paginationWrapper = container.find('.js-pagination-wrapper');
+                
+                if (pageInfo.pages <= 1) {
+                    paginationWrapper.attr('style', 'display: none !important');
+                } else {
+                    paginationWrapper.attr('style', 'display: flex !important');
+                    container.find('.pagination').addClass('pagination-sm');
+                }
             }
         });
 
