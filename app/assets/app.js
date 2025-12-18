@@ -18,6 +18,14 @@ import 'bootstrap/dist/js/bootstrap.bundle';
 import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
 import 'datatables.net-select-bs5/css/select.bootstrap5.min.css';
 
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+});
+
 // 3. Import DataTables and its Select extension
 import 'datatables.net-bs5';
 import 'datatables.net-select-bs5';

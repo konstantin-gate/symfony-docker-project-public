@@ -10,6 +10,8 @@ import:
     success: 'Contacts imported successfully, %d pcs'
     success_zero: 'All entered contacts are already in the database'
     import_xml_button: 'Import Contacts from XML'
+    generate_test_emails: 'Generate test emails'
+    generate_test_emails_tooltip: 'Generate and add 10 test emails to the text field'
 
 language:
     Czech: 'Czech'

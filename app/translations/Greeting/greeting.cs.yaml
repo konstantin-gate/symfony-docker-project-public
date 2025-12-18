@@ -10,6 +10,8 @@ import:
     success: 'Kontakty úspěšně importovány, %d ks'
     success_zero: 'Všechny zadané kontakty jsou již v databázi'
     import_xml_button: 'Importovat kontakty z XML'
+    generate_test_emails: 'Generovat testovací e-maily'
+    generate_test_emails_tooltip: 'Vygenerovat a přidat 10 testovacích e-mailů do textového pole'
 
 language:
     Czech: 'Čeština'

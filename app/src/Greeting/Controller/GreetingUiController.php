@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Greeting\Controller;
 
-use App\Enum\Status;
 use App\Greeting\Enum\GreetingLanguage;
 use App\Greeting\Factory\GreetingContactFactory;
 use App\Greeting\Form\GreetingImportType;
 use App\Greeting\Repository\GreetingContactRepository;
 use App\Greeting\Service\GreetingEmailParser;
+use App\Greeting\Service\GreetingService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +25,7 @@ class GreetingUiController extends AbstractController
         private readonly GreetingContactFactory $greetingContactFactory,
         private readonly TranslatorInterface $translator,
         private readonly GreetingEmailParser $greetingEmailParser,
+        private readonly GreetingService $greetingService,
     ) {
     }
 
@@ -65,20 +66,7 @@ class GreetingUiController extends AbstractController
         }
 
         // --- Příprava dat pro seznam. ---
-        // Získáme všechny aktivní kontakty
-        $contacts = $this->greetingContactRepository->findBy(['status' => Status::Active], ['email' => 'ASC']);
-
-        // Seskupíme podle jazyka
-        $groupedContacts = [];
-
-        foreach (GreetingLanguage::cases() as $langEnum) {
-            $groupedContacts[$langEnum->value] = [];
-        }
-
-        foreach ($contacts as $contact) {
-            $lang = $contact->getLanguage()->value;
-            $groupedContacts[$lang][] = $contact;
-        }
+        $groupedContacts = $this->greetingService->getContactsGroupedByLanguage();
 
         return $this->render('@Greeting/dashboard.html.twig', [
             'import_form' => $importForm->createView(),
