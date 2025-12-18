@@ -12,7 +12,7 @@
 *   **Технологический стек:**
     *   **Backend:** Symfony 8.0, PHP 8.4, Doctrine ORM.
     *   **Database:** PostgreSQL 16.
-    *   **Frontend:** Webpack Encore, Bootstrap 5, Bootstrap Icons.
+    *   **Frontend:** Webpack Encore, Bootstrap 5, Bootstrap Icons, DataTables (+ Select extension).
     *   **Infrastructure:** Docker (Nginx, PHP-FPM, Postgres, Node.js helper).
 
 ## Требования

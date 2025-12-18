@@ -12,7 +12,7 @@ Tato aplikace je založena na Symfony 8.0 a je určena pro správu seznamu konta
 *   **Technologický stack:**
     *   **Backend:** Symfony 8.0, PHP 8.4, Doctrine ORM.
     *   **Databáze:** PostgreSQL 16.
-    *   **Frontend:** Webpack Encore, Bootstrap 5, Bootstrap Icons.
+    *   **Frontend:** Webpack Encore, Bootstrap 5, Bootstrap Icons, DataTables (+ Select extension).
     *   **Infrastruktura:** Docker (Nginx, PHP-FPM, Postgres, Node.js helper).
 
 ## Požadavky
