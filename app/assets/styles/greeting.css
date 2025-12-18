@@ -5,3 +5,24 @@
     margin-top: -0.35rem;
     opacity: 0.5;
 }
+
+/* Greeting Dashboard Table Styles */
+.greeting-table td input[type="checkbox"] {
+    pointer-events: none; /* Let the cell click handle selection */
+}
+
+.greeting-table td {
+    cursor: pointer;
+}
+
+/* Ensure empty cells don't look broken */
+.greeting-table td.empty-cell {
+    pointer-events: none;
+    background-color: transparent !important;
+}
+
+/* DataTables pagination custom styling if needed */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 0;
+    margin-left: 0.25rem;
+}

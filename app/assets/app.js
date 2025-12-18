@@ -14,10 +14,13 @@ import './styles/index.css';
 import './styles/greeting.css';
 
 // 2. Import Bootstrap JS (now it sees global jQuery)
-import 'bootstrap';
+import 'bootstrap/dist/js/bootstrap.bundle';
+import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
+import 'datatables.net-select-bs5/css/select.bootstrap5.min.css';
 
 // 3. Import DataTables and its Select extension
 import 'datatables.net-bs5';
 import 'datatables.net-select-bs5';
+import './dashboard';
 
 

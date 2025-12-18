@@ -36,3 +36,4 @@ dashboard:
     body: 'HTML Content'
     body_placeholder: '<h1>Congratulations!</h1>...'
     send_btn: 'Send Greetings'
+    deselect_all: 'Deselect All'

@@ -105,28 +105,61 @@
                         <div class="tab-content mt-3" id="myTabContent">
                             {% for lang, contacts in grouped_contacts %}
                                 <div class="tab-pane fade {{ loop.first ? 'show active' : '' }}" id="{{ lang }}-tab-pane" role="tabpanel" aria-labelledby="{{ lang }}-tab" tabindex="0">
-                                    <div class="border rounded p-2 mb-3 bg-light" style="max-height: 400px; overflow-y: auto;">
-                                        {% if contacts is empty %}
-                                            <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
-                                        {% else %}
-                                            <div class="ps-2">
-                                                {% for contact in contacts %}
-                                                    <div class="form-check contact-item">
-                                                        <input class="form-check-input" type="checkbox" name="contacts[]" value="{{ contact.id }}" id="contact_{{ lang }}_{{ contact.id }}">
-                                                        <label class="form-check-label" for="contact_{{ lang }}_{{ contact.id }}">
-                                                            {{ contact.email }}
-                                                        </label>
-                                                    </div>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
+
+                                    <div class="d-flex justify-content-end mb-2">
+                                        <button type="button" class="btn btn-sm btn-outline-primary me-2 btn-select-all">
+                                            <i class="bi bi-check-all"></i> {{ 'dashboard.select_all'|trans }}
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary btn-deselect-all">
+                                            <i class="bi bi-x-square"></i> {{ 'dashboard.deselect_all'|trans }}
+                                        </button>
                                     </div>
+
+                                    {% if contacts is empty %}
+                                        <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
+                                    {% else %}
+                                        {% set total = contacts|length %}
+                                        {% set per_col = (total / 3)|round(0, 'ceil') %}
+                                        {% if per_col < 5 %}
+                                            {% set per_col = 5 %}
+                                        {% endif %}
+
+                                        <table class="table table-bordered table-hover greeting-table w-100">
+                                            <thead class="d-none">
+                                                <tr>
+                                                    <th>Col 1</th>
+                                                    <th>Col 2</th>
+                                                    <th>Col 3</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for i in 0..(per_col - 1) %}
+                                                    <tr>
+                                                        {% for col in 0..2 %}
+                                                            {% set index = i + (col * per_col) %}
+                                                            {% set contact = contacts[index] ?? null %}
+                                                            <td class="{{ contact ? '' : 'empty-cell' }}">
+                                                                {% if contact %}
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" name="contacts[]" value="{{ contact.id }}" id="contact_{{ lang }}_{{ contact.id }}">
+                                                                        <label class="form-check-label" for="contact_{{ lang }}_{{ contact.id }}">
+                                                                            {{ contact.email }}
+                                                                        </label>
+                                                                    </div>
+                                                                {% endif %}
+                                                            </td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    {% endif %}
                                 </div>
                             {% endfor %}
                         </div>
 
                         {# Pole e-mailu #}
-                        <div class="mb-3">
+                        <div class="mb-3 mt-4">
                             <label for="subject" class="form-label">{{ 'dashboard.subject'|trans }}</label>
                             <input type="text" name="subject" id="subject" class="form-control" required placeholder="{{ 'dashboard.subject_placeholder'|trans }}">
                         </div>
@@ -145,8 +178,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
 {% endblock %}

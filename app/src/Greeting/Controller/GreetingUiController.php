@@ -66,7 +66,7 @@ class GreetingUiController extends AbstractController
 
         // --- Příprava dat pro seznam. ---
         // Získáme všechny aktivní kontakty
-        $contacts = $this->greetingContactRepository->findBy(['status' => Status::Active], ['createdAt' => 'DESC']);
+        $contacts = $this->greetingContactRepository->findBy(['status' => Status::Active], ['email' => 'ASC']);
 
         // Seskupíme podle jazyka
         $groupedContacts = [];

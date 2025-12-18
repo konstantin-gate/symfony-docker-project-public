@@ -36,3 +36,4 @@ dashboard:
     body: 'HTML Obsah'
     body_placeholder: '<h1>Gratulujeme!</h1>...'
     send_btn: 'Odeslat pozdravy'
+    deselect_all: 'Zrušit výběr'
