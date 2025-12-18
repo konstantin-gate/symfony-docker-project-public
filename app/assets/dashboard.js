@@ -29,6 +29,9 @@ $(function() {
             searching: false,
             info: false, // "Showing x of y" info
             autoWidth: false, // Sometimes helps with Bootstrap responsiveness
+            columnDefs: [
+                { width: "33.33%", targets: "_all" }
+            ],
             select: {
                 style: 'os',
                 items: 'cell',

@@ -7,6 +7,10 @@
 }
 
 /* Greeting Dashboard Table Styles */
+.greeting-table {
+    table-layout: fixed;
+}
+
 .greeting-table td input[type="checkbox"] {
     pointer-events: none; /* Let the cell click handle selection */
 }
@@ -25,4 +29,10 @@
 .dataTables_wrapper .dataTables_paginate .paginate_button {
     padding: 0;
     margin-left: 0.25rem;
+}
+
+/* Override DataTables Select Blue Color */
+#myTabContent .greeting-table tbody > tr > td.selected {
+    background-color: #ABBCCC !important; /* Dark Gray */
+    color: white !important;
 }
