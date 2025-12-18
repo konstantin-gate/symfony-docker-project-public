@@ -10,6 +10,7 @@ use App\Greeting\Form\GreetingImportType;
 use App\Greeting\Repository\GreetingContactRepository;
 use App\Greeting\Service\GreetingEmailParser;
 use App\Greeting\Service\GreetingService;
+use App\Greeting\Service\EmailGeneratorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +27,7 @@ class GreetingUiController extends AbstractController
         private readonly TranslatorInterface $translator,
         private readonly GreetingEmailParser $greetingEmailParser,
         private readonly GreetingService $greetingService,
+        private readonly EmailGeneratorService $emailGeneratorService,
     ) {
     }
 
@@ -72,6 +74,18 @@ class GreetingUiController extends AbstractController
             'import_form' => $importForm->createView(),
             'grouped_contacts' => $groupedContacts,
         ]);
+    }
+
+    #[Route('/greeting/generate-test-emails', name: 'greeting_generate_test_emails', methods: ['GET'])]
+    public function generateTestEmails(): Response
+    {
+        if ($this->getParameter('kernel.environment') === 'prod') {
+            throw $this->createNotFoundException();
+        }
+
+        $emails = $this->emailGeneratorService->generateEmails(10);
+
+        return new Response(implode(' ', $emails));
     }
 
     /**
