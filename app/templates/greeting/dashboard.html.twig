@@ -106,13 +106,16 @@
                             {% for lang, contacts in grouped_contacts %}
                                 <div class="tab-pane fade {{ loop.first ? 'show active' : '' }}" id="{{ lang }}-tab-pane" role="tabpanel" aria-labelledby="{{ lang }}-tab" tabindex="0">
 
-                                    <div class="d-flex justify-content-end mb-2">
-                                        <button type="button" class="btn btn-sm btn-outline-primary me-2 btn-select-all">
-                                            <i class="bi bi-check-all"></i> {{ 'dashboard.select_all'|trans }}
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary btn-deselect-all">
-                                            <i class="bi bi-x-square"></i> {{ 'dashboard.deselect_all'|trans }}
-                                        </button>
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="dt-length-placeholder"></div>
+                                        <div>
+                                            <button type="button" class="btn btn-sm btn-outline-primary me-2 btn-select-all">
+                                                <i class="bi bi-check-all"></i> {{ 'dashboard.select_all'|trans }}
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary btn-deselect-all">
+                                                <i class="bi bi-x-square"></i> {{ 'dashboard.deselect_all'|trans }}
+                                            </button>
+                                        </div>
                                     </div>
 
                                     {% if contacts is empty %}
@@ -159,7 +162,7 @@
                         </div>
 
                         {# Pole e-mailu #}
-                        <div class="mb-3 mt-4">
+                        <div class="mb-3">
                             <label for="subject" class="form-label">{{ 'dashboard.subject'|trans }}</label>
                             <input type="text" name="subject" id="subject" class="form-control" required placeholder="{{ 'dashboard.subject_placeholder'|trans }}">
                         </div>

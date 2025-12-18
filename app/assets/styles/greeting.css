@@ -25,10 +25,11 @@
     background-color: transparent !important;
 }
 
-/* DataTables pagination custom styling if needed */
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-    padding: 0;
-    margin-left: 0.25rem;
+/* Force DataTables pagination to look like .pagination-sm always */
+.card-body .pagination .page-link {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
 }
 
 /* Override DataTables Select Blue Color */

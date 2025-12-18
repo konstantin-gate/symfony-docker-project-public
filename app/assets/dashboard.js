@@ -23,8 +23,11 @@ $(function() {
 
         const dt = table.DataTable({
             paging: true,
-            lengthMenu: [30, 60, 120, 240, 500],
-            pageLength: 30,
+            lengthMenu: [
+                [5, 10, 20, 40, 80, 167],
+                [15, 30, 60, 120, 240, 500]
+            ],
+            pageLength: 5,
             ordering: false,
             searching: false,
             info: false, // "Showing x of y" info
@@ -37,10 +40,26 @@ $(function() {
                 items: 'cell',
                 selector: 'td:not(.empty-cell)' // Prevent selecting empty placeholder cells if any
             },
-            // Layout: Table (t), then Row with Length (Left) and Paging (Right)
-            dom: 't<"d-flex justify-content-between align-items-center mt-3"lp>',
+            // Layout: Length (l) - we will move it, Table (t), Paging (p)
+            dom: 'lt<"d-flex justify-content-end mt-3"p>',
             language: {
                 lengthMenu: "_MENU_", // Show just the dropdown
+            },
+            pagingType: "simple_numbers",
+            initComplete: function() {
+                const api = this.api();
+                const container = $(api.table().container());
+                
+                // Force small pagination
+                container.find('.pagination').addClass('pagination-sm');
+                
+                // Move Length Menu to custom placeholder
+                const lengthMenu = container.find('.dataTables_length, .dt-length');
+                const placeholder = $(this).closest('.tab-pane').find('.dt-length-placeholder');
+                lengthMenu.detach().appendTo(placeholder);
+            },
+            drawCallback: function() {
+                $(this.api().table().container()).find('.pagination').addClass('pagination-sm');
             }
         });
 
