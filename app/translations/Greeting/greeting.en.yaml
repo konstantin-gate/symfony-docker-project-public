@@ -39,3 +39,5 @@ dashboard:
     body_placeholder: '<h1>Congratulations!</h1>...'
     send_btn: 'Send Greetings'
     deselect_all: 'Deselect All'
+    send_error_no_selection: 'No contact was selected.'
+    send_success_simulation: 'Simulated sending %count% emails with subject "%subject%".'

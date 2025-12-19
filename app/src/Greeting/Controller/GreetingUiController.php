@@ -35,7 +35,6 @@ class GreetingUiController extends AbstractController
     #[Route('/{_locale}/greeting/dashboard', name: 'greeting_dashboard', requirements: ['_locale' => 'cs|en|ru'])]
     public function dashboard(Request $request): Response
     {
-        // --- Část 1: Zpracování importu ---
         $importForm = $this->createForm(GreetingImportType::class);
         $importForm->handleRequest($request);
 
@@ -50,24 +49,26 @@ class GreetingUiController extends AbstractController
             return $this->redirectToRoute('greeting_dashboard', ['_locale' => $request->getLocale()]);
         }
 
-        // --- Část 2: Zpracování odeslání (zjednodušené) ---
         if ($request->isMethod('POST') && $request->request->has('send_greeting')) {
             $selectedIds = $request->request->all('contacts');
             $subject = $request->request->get('subject');
             $body = $request->request->get('body');
 
             if (empty($selectedIds)) {
-                $this->addFlash('error', 'Nebyl vybrán žádný kontakt.');
+                $this->addFlash('error', $this->translator->trans('dashboard.send_error_no_selection', [], 'greeting'));
             } else {
-                // Zde by byla logika odesílání
+                // TODO: Zde bude logika odesílání
+
                 $count = \count($selectedIds);
-                $this->addFlash('success', "Simulace odeslání $count e-mailů s předmětem '$subject'.");
+                $this->addFlash('success', $this->translator->trans('dashboard.send_success_simulation', [
+                    '%count%' => $count,
+                    '%subject%' => $subject,
+                ], 'greeting'));
 
                 return $this->redirectToRoute('greeting_dashboard', ['_locale' => $request->getLocale()]);
             }
         }
 
-        // --- Příprava dat pro seznam. ---
         $groupedContacts = $this->greetingService->getContactsGroupedByLanguage();
 
         return $this->render('@Greeting/dashboard.html.twig', [

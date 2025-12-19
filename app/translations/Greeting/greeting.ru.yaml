@@ -39,3 +39,5 @@ dashboard:
     body_placeholder: '<h1>Поздравляем!</h1>...'
     send_btn: 'Отправить поздравления'
     deselect_all: 'Сбросить выбор'
+    send_error_no_selection: 'Контакт не был выбран.'
+    send_success_simulation: 'Имитация отправки %count% писем с темой "%subject%".'

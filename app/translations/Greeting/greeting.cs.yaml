@@ -39,3 +39,5 @@ dashboard:
     body_placeholder: '<h1>Gratulujeme!</h1>...'
     send_btn: 'Odeslat pozdravy'
     deselect_all: 'Zrušit výběr'
+    send_error_no_selection: 'Nebyl vybrán žádný kontakt.'
+    send_success_simulation: 'Simulace odeslání %count% e-mailů s předmětem "%subject%".'
