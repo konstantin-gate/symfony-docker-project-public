@@ -7,7 +7,7 @@ import:
     language_label: 'Jazyk'
     submit: 'Importovat kontakty'
     invalid_email: 'Neplatný e-mail: {{ email }}'
-    success: 'Kontakty úspěšně importovány, %d ks'
+    success: 'Kontakty úspěšně importovány, %count% ks'
     success_zero: 'Všechny zadané kontakty jsou již v databázi'
     import_xml_button: 'Importovat kontakty z XML'
     generate_test_emails: 'Generovat testovací e-maily'

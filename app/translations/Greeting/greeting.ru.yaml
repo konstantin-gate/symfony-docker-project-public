@@ -7,7 +7,7 @@ import:
     language_label: 'Язык'
     submit: 'Импортировать контакты'
     invalid_email: 'Некорректный email: {{ email }}'
-    success: 'Контакты успешно импортированы, %d шт.'
+    success: 'Контакты успешно импортированы, %count% шт.'
     success_zero: 'Все введенные контакты уже есть в базе данных'
     import_xml_button: 'Импортировать контакты из XML'
     generate_test_emails: 'Сгенерировать тестовые email''ы'

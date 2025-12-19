@@ -8,13 +8,15 @@ use App\Greeting\Enum\GreetingLanguage;
 use App\Greeting\Factory\GreetingContactFactory;
 use App\Greeting\Form\GreetingImportType;
 use App\Greeting\Repository\GreetingContactRepository;
+use App\Greeting\Service\EmailGeneratorService;
 use App\Greeting\Service\GreetingEmailParser;
 use App\Greeting\Service\GreetingService;
-use App\Greeting\Service\EmailGeneratorService;
+use App\Service\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -28,9 +30,13 @@ class GreetingUiController extends AbstractController
         private readonly GreetingEmailParser $greetingEmailParser,
         private readonly GreetingService $greetingService,
         private readonly EmailGeneratorService $emailGeneratorService,
+        private readonly EmailService $emailService,
     ) {
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     #[Route('/greeting/dashboard', name: 'greeting_dashboard_default')]
     #[Route('/{_locale}/greeting/dashboard', name: 'greeting_dashboard', requirements: ['_locale' => 'cs|en|ru'])]
     public function dashboard(Request $request): Response
@@ -42,7 +48,7 @@ class GreetingUiController extends AbstractController
             $data = $importForm->getData();
             $countNewEmails = $this->handleImport($data);
             $message = $countNewEmails > 0
-                ? \sprintf($this->translator->trans('import.success', [], 'greeting'), $countNewEmails)
+                ? $this->translator->trans('import.success', ['%count%' => $countNewEmails], 'greeting')
                 : $this->translator->trans('import.success_zero', [], 'greeting');
             $this->addFlash('success', $message);
 
@@ -51,13 +57,29 @@ class GreetingUiController extends AbstractController
 
         if ($request->isMethod('POST') && $request->request->has('send_greeting')) {
             $selectedIds = $request->request->all('contacts');
+            /** @var string $subject */
             $subject = $request->request->get('subject');
             $body = $request->request->get('body');
 
             if (empty($selectedIds)) {
                 $this->addFlash('error', $this->translator->trans('dashboard.send_error_no_selection', [], 'greeting'));
             } else {
-                // TODO: Zde bude logika odesílání
+                $selectedContacts = $this->greetingContactRepository->findBy(['id' => $selectedIds]);
+
+                foreach ($selectedContacts as $contact) {
+                    /** @var string $email */
+                    $email = $contact->getEmail();
+                    $this->emailService->send(
+                        to: $email,
+                        subject: $subject,
+                        template: 'email/greeting.html.twig',
+                        context: [
+                            'subject' => $subject,
+                            'body' => $body,
+                            'contact' => $contact,
+                        ]
+                    );
+                }
 
                 $count = \count($selectedIds);
                 $this->addFlash('success', $this->translator->trans('dashboard.send_success_simulation', [

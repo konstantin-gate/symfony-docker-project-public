@@ -7,7 +7,7 @@ import:
     language_label: 'Language'
     submit: 'Import Contacts'
     invalid_email: 'Invalid email: {{ email }}'
-    success: 'Contacts imported successfully, %d pcs'
+    success: 'Contacts imported successfully, %count% pcs'
     success_zero: 'All entered contacts are already in the database'
     import_xml_button: 'Import Contacts from XML'
     generate_test_emails: 'Generate test emails'
