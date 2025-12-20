@@ -1,5 +1,5 @@
 // CSS specific to Greeting module
-import './styles/greeting.css';
+import './greeting/styles/greeting.css';
 
 // DataTables Styles
 import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';

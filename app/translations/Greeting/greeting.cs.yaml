@@ -40,5 +40,12 @@ dashboard:
     send_btn: 'Odeslat pozdravy'
     deselect_all: 'Zrušit výběr'
     send_error_no_selection: 'Nebyl vybrán žádný kontakt.'
-    send_success_simulation: 'Simulace odeslání %count% e-mailů s předmětem "%subject%".'
-    selection_hint: 'pro výběr <i class="bi bi-arrow-down"></i> použijte klávesy Shift a Ctrl'
+    send_success_simulation: 'Simulace odeslání %count% emailů s předmětem "%subject%".'
+    selection_hint: 'použijte klávesy Shift a Ctrl pro výběr <i class="bi bi-arrow-down"></i>'
+
+modal:
+    delete_title: 'Smazat kontakt'
+    delete_confirm: 'Opravdu chcete smazat email %email%?'
+    delete_btn: 'Smazat'
+    cancel_btn: 'Zrušit'
+

@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import 'datatables.net-bs5';
 import 'datatables.net-select-bs5';
+import { initDeleteContact } from './delete-contact';
 
 $(function () {
     // Fix for DataTables inside Bootstrap Tabs: Recalculate columns when tab is shown
@@ -123,12 +124,8 @@ $(function () {
             });
         }
 
-        // Prevent checkbox toggle when clicking the delete icon
-        table.on('click', '.delete-contact-icon', function (e) {
-            e.stopPropagation();
-            // Here you will later add the logic to delete the contact
-            console.log('Delete icon clicked for contact:', $(this).siblings('.form-check').find('input').val());
-        });
+        // Initialize Delete Contact functionality
+        initDeleteContact(table);
     });
 
     // Handle "Generate test emails" button click

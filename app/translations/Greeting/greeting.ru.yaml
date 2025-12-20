@@ -40,5 +40,12 @@ dashboard:
     send_btn: 'Отправить поздравления'
     deselect_all: 'Сбросить выбор'
     send_error_no_selection: 'Контакт не был выбран.'
-    send_success_simulation: 'Имитация отправки %count% писем с темой "%subject%".'
-    selection_hint: 'для выбора <i class="bi bi-arrow-down"></i> используйте клавиши Shift и Ctrl'
+    send_success_simulation: 'Симуляция отправки %count% писем с темой "%subject%".'
+    selection_hint: 'используйте клавиши Shift и Ctrl для выбора <i class="bi bi-arrow-down"></i>'
+
+modal:
+    delete_title: 'Удалить контакт'
+    delete_confirm: 'Вы уверены, что хотите удалить email %email%?'
+    delete_btn: 'Удалить'
+    cancel_btn: 'Отменить'
+
