@@ -57,6 +57,9 @@ $(function () {
                 const api = this.api();
                 const container = $(api.table().container());
 
+                // Remove loading class to show the table
+                $(this).removeClass('table-loading');
+
                 // Force small pagination
                 container.find('.pagination').addClass('pagination-sm');
 

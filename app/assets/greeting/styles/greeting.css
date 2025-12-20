@@ -11,6 +11,11 @@
     table-layout: fixed;
 }
 
+/* Prevent FOUC (Flash of Unstyled Content) */
+.greeting-table.table-loading {
+    visibility: hidden;
+}
+
 .greeting-table td input[type="checkbox"] {
     pointer-events: none; /* Let the cell click handle selection */
 }
@@ -86,4 +91,30 @@
 }
 #myTabContent .greeting-table tbody > tr > td.selected .delete-contact-icon:hover {
     color: #ffcccc; /* Light red hover when selected */
+}
+
+/* Light Tooltip Styling */
+.light-tooltip {
+    --bs-tooltip-bg: #f8f9fa;
+    --bs-tooltip-color: #212529;
+    --bs-tooltip-opacity: 1;
+}
+
+.light-tooltip .tooltip-inner {
+    border: 1px solid #000000;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Outline for the arrow triangle */
+.light-tooltip .tooltip-arrow {
+    /* Default full outline for other directions */
+    filter: drop-shadow(1px 0 0 #000) drop-shadow(-1px 0 0 #000) drop-shadow(0 1px 0 #000) drop-shadow(0 -1px 0 #000);
+}
+
+/* Specific fix for Bottom Placement (Arrow points UP) */
+/* Remove the base shadow (bottom) and overlap the border */
+.bs-tooltip-bottom.light-tooltip .tooltip-arrow {
+    filter: drop-shadow(1px 0 0 #000) drop-shadow(-1px 0 0 #000) drop-shadow(0 -1px 0 #000); /* Removed 0 1px 0 */
+    margin-top: 1px;
+    z-index: 2; /* Ensure it sits on top of the .tooltip-inner border */
 }

@@ -91,7 +91,8 @@
                 <button type="button" class="btn btn-outline-secondary w-100 mt-3">{{ 'import.import_xml_button'|trans }}</button>
                 {% if app.environment != 'prod' %}
                     <button type="button" id="btn-generate-test-emails" class="btn btn-outline-secondary w-100 mt-2"
-                            data-bs-toggle="tooltip" data-bs-placement="top"
+                            data-bs-toggle="tooltip" data-bs-placement="bottom"
+                            data-bs-custom-class="light-tooltip"
                             title="{{ 'import.generate_test_emails_tooltip'|trans }}"
                             data-url="{{ path('greeting_generate_test_emails') }}">
                         {{ 'import.generate_test_emails'|trans }}
@@ -153,7 +154,7 @@
                                             {% set per_col = 5 %}
                                         {% endif %}
 
-                                        <table class="table table-bordered greeting-table w-100">
+                                        <table class="table table-bordered greeting-table table-loading w-100">
                                             <thead class="d-none">
                                                 <tr>
                                                     <th>Col 1</th>
