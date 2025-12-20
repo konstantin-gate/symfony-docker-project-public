@@ -60,13 +60,10 @@ class TestEmailCommand extends Command
             $output->writeln('Email sent successfully.');
 
             return Command::SUCCESS;
-        } catch (\Exception $e) {
+        } catch (\Exception|TransportExceptionInterface $e) {
             $output->writeln('Error: ' . $e->getMessage());
 
             return Command::FAILURE;
-        } catch (TransportExceptionInterface $e) {
         }
-
-        return Command::SUCCESS;
     }
 }

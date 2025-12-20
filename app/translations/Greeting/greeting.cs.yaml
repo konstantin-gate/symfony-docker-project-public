@@ -41,6 +41,7 @@ dashboard:
     deselect_all: 'Zrušit výběr'
     send_error_no_selection: 'Nebyl vybrán žádný kontakt.'
     send_success_simulation: 'Simulace odeslání %count% emailů s předmětem "%subject%".'
+    send_success_queued: 'Do fronty bylo přidáno %count% e-mailů k odeslání.'
     selection_hint: 'použijte klávesy Shift a Ctrl pro výběr <i class="bi bi-arrow-down"></i>'
     delete_success: 'Kontakt <strong>%email%</strong> byl úspěšně odstraněn.'
     delete_error_already_deleted: 'Tento kontakt již byl odstraněn.'

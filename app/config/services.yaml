@@ -25,5 +25,9 @@ services:
             $senderEmail: '%env(MAILER_SENDER_EMAIL)%'
             $senderName: '%env(MAILER_SENDER_NAME)%'
 
+    App\Service\EmailSequenceService:
+        arguments:
+            $emailDelay: '%env(int:EMAIL_SEQUENCE_DELAY)%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

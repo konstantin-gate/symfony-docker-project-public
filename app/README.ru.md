@@ -7,10 +7,10 @@
 *   **Управление контактами:** Импорт списка email-адресов через веб-интерфейс.
 *   **Дашборд:** Панель управления (`/greeting/dashboard`) для просмотра контактов, фильтрации по дате регистрации и языку.
 *   **Многоязычность:** Поддержка чешского, английского и русского языков.
-*   **Рассылка:** Симуляция отправки писем выбранным группам контактов.
+*   **Рассылка:** Асинхронная очередь отправки писем с поддержкой задержки (Delay) для защиты репутации отправителя.
 *   **Парсинг Email:** Выделенный сервис `GreetingEmailParser` для надежной обработки списков адресов (с поддержкой разных разделителей).
 *   **Технологический стек:**
-    *   **Backend:** Symfony 8.0, PHP 8.4, Doctrine ORM.
+    *   **Backend:** Symfony 8.0, PHP 8.4, Doctrine ORM, Symfony Messenger.
     *   **Database:** PostgreSQL 16.
     *   **Frontend:** Webpack Encore, Bootstrap 5, Bootstrap Icons, DataTables (+ Select extension).
     *   **Infrastructure:** Docker (Nginx, PHP-FPM, Postgres, Node.js helper).
@@ -39,7 +39,7 @@ docker compose exec php composer install
 ```
 
 ### 3. Подготовка базы данных
-Примените миграции, чтобы создать необходимые таблицы (`greeting_contact`, `greeting_log` и др.):
+Примените миграции, чтобы создать необходимые таблицы (`greeting_contact`, `greeting_log`, `messenger_messages`):
 
 ```bash
 docker compose exec php bin/console doctrine:migrations:migrate
@@ -70,6 +70,40 @@ docker compose run --rm node npm run dev
 ### Основные URL
 *   **Главная:** `http://localhost/`
 *   **Панель управления (Dashboard):** `http://localhost/greeting/dashboard` (с перенаправлением на локаль, например `/ru/greeting/dashboard`).
+
+## Настройка очереди отправки (Messenger)
+
+Отправка писем работает через асинхронную очередь **Symfony Messenger** с поддержкой задержки между письмами. Это позволяет отправлять большие объемы писем, не блокируя интерфейс и не перегружая SMTP-сервер.
+
+### 1. Запуск воркера (Worker)
+Для того чтобы письма, добавленные в очередь, начали отправляться, необходимо запустить фоновый процесс-обработчик (воркер).
+
+**В консоли (для разработки):**
+```bash
+docker compose exec php bin/console messenger:consume async -v
+```
+Добавьте флаг `--limit=10` для обработки только 10 сообщений или `--time-limit=3600` для работы в течение часа.
+
+**В продакшене:**
+Рекомендуется использовать Supervisor или Systemd для постоянного поддержания работы команды `messenger:consume async`.
+
+### 2. Настройка задержки (Delay)
+Вы можете настроить интервал задержки между отправкой писем (в секундах). Это полезно для соблюдения лимитов провайдера (Rate Limiting).
+
+Создайте или отредактируйте файл `app/.env.local` и добавьте переменную:
+
+```dotenv
+# Задержка в секундах между письмами (по умолчанию 1 секунда)
+EMAIL_SEQUENCE_DELAY=5
+```
+
+### 3. Настройка отправителя
+Данные отправителя также настраиваются через переменные окружения в `app/.env.local`:
+
+```dotenv
+MAILER_SENDER_EMAIL=hello@mycompany.com
+MAILER_SENDER_NAME="My Company Greeting"
+```
 
 ### Консольные команды
 В проекте есть кастомная команда для просмотра списка статусов:

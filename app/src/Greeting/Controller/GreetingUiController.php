@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Greeting\Controller;
 
+use App\DTO\EmailRequest;
 use App\Enum\Status;
 use App\Greeting\Enum\GreetingLanguage;
 use App\Greeting\Factory\GreetingContactFactory;
@@ -12,13 +13,14 @@ use App\Greeting\Repository\GreetingContactRepository;
 use App\Greeting\Service\EmailGeneratorService;
 use App\Greeting\Service\GreetingEmailParser;
 use App\Greeting\Service\GreetingService;
-use App\Service\EmailService;
+use App\Service\EmailSequenceService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -32,13 +34,13 @@ class GreetingUiController extends AbstractController
         private readonly GreetingEmailParser $greetingEmailParser,
         private readonly GreetingService $greetingService,
         private readonly EmailGeneratorService $emailGeneratorService,
-        private readonly EmailService $emailService,
+        private readonly EmailSequenceService $emailSequenceService,
         private readonly LoggerInterface $logger,
     ) {
     }
 
     /**
-     * @throws TransportExceptionInterface
+     * @throws ExceptionInterface
      */
     #[Route('/greeting/dashboard', name: 'greeting_dashboard_default')]
     #[Route('/{_locale}/greeting/dashboard', name: 'greeting_dashboard', requirements: ['_locale' => '%app.supported_locales%'])]
@@ -65,29 +67,30 @@ class GreetingUiController extends AbstractController
             $body = $request->request->get('body');
 
             if (empty($selectedIds)) {
-                $this->addFlash('error', $this->translator->trans('dashboard.send_error_no_selection', [], 'greeting'));
+                $this->addFlash('error', $this->translator->trans(
+                    'dashboard.send_error_no_selection',
+                    [],
+                    'greeting'
+                ));
             } else {
                 $selectedContacts = $this->greetingContactRepository->findBy(['id' => $selectedIds]);
+                $emailRequests = [];
 
                 foreach ($selectedContacts as $contact) {
                     /** @var string $email */
                     $email = $contact->getEmail();
-                    $this->emailService->send(
+                    $emailRequests[] = new EmailRequest(
                         to: $email,
                         subject: $subject,
                         template: 'email/greeting.html.twig',
-                        context: [
-                            'subject' => $subject,
-                            'body' => $body,
-                            'contact' => $contact,
-                        ]
+                        context: ['subject' => $subject, 'body' => $body]
                     );
                 }
 
+                $this->emailSequenceService->sendSequence($emailRequests);
                 $count = \count($selectedIds);
-                $this->addFlash('success', $this->translator->trans('dashboard.send_success_simulation', [
+                $this->addFlash('success', $this->translator->trans('dashboard.send_success_queued', [
                     '%count%' => $count,
-                    '%subject%' => $subject,
                 ], 'greeting'));
 
                 return $this->redirectToRoute('greeting_dashboard', ['_locale' => $request->getLocale()]);
