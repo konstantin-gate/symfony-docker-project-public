@@ -13,8 +13,8 @@ readonly class EmailService
 {
     public function __construct(
         private MailerInterface $mailer,
-        private string $senderEmail = 'no-reply@localhost',
-        private string $senderName = 'Symfony Docker Project',
+        private string $senderEmail,
+        private string $senderName,
     ) {
     }
 
@@ -30,7 +30,7 @@ readonly class EmailService
             ->to($to)
             ->subject($subject)
             ->htmlTemplate($template)
-            ->textTemplate(str_replace('.html.twig', '.txt.twig', $template))
+//            ->textTemplate(str_replace('.html.twig', '.txt.twig', $template))
             ->context($context);
 
         $this->mailer->send($email);

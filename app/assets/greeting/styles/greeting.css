@@ -76,7 +76,7 @@
     color: #adb5bd; /* Gray-500 */
     cursor: pointer;
     transition: color 0.2s ease-in-out;
-    font-size: 0.75rem; /* Specific size requested */
+    font-size: 0.6rem; /* Specific size requested */
     opacity: 0.7;
 }
 

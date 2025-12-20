@@ -20,5 +20,10 @@ services:
     App\:
         resource: '../src/'
 
+    App\Service\EmailService:
+        arguments:
+            $senderEmail: '%env(MAILER_SENDER_EMAIL)%'
+            $senderName: '%env(MAILER_SENDER_NAME)%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

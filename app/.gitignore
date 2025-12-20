@@ -47,3 +47,5 @@ Thumbs.db
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
+
+/templates/email/content.html
