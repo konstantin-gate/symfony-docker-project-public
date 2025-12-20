@@ -65,3 +65,25 @@
     background-color: #ABBCCC !important; /* Dark Gray */
     color: white !important;
 }
+
+/* Delete contact icon styles */
+.delete-contact-icon {
+    color: #adb5bd; /* Gray-500 */
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+    font-size: 0.75rem; /* Specific size requested */
+    opacity: 0.7;
+}
+
+.delete-contact-icon:hover {
+    color: #dc3545; /* Bootstrap danger red */
+    opacity: 1;
+}
+
+/* Ensure selected row icon color visibility */
+#myTabContent .greeting-table tbody > tr > td.selected .delete-contact-icon {
+    color: #e9ecef; /* Lighter gray when selected */
+}
+#myTabContent .greeting-table tbody > tr > td.selected .delete-contact-icon:hover {
+    color: #ffcccc; /* Light red hover when selected */
+}

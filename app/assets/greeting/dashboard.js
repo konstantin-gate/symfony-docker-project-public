@@ -122,6 +122,13 @@ $(function () {
                 dt.cells().deselect();
             });
         }
+
+        // Prevent checkbox toggle when clicking the delete icon
+        table.on('click', '.delete-contact-icon', function (e) {
+            e.stopPropagation();
+            // Here you will later add the logic to delete the contact
+            console.log('Delete icon clicked for contact:', $(this).siblings('.form-check').find('input').val());
+        });
     });
 
     // Handle "Generate test emails" button click
