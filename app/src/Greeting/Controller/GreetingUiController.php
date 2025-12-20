@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Greeting\Controller;
 
+use App\Enum\Status;
 use App\Greeting\Enum\GreetingLanguage;
 use App\Greeting\Factory\GreetingContactFactory;
 use App\Greeting\Form\GreetingImportType;
@@ -38,7 +39,7 @@ class GreetingUiController extends AbstractController
      * @throws TransportExceptionInterface
      */
     #[Route('/greeting/dashboard', name: 'greeting_dashboard_default')]
-    #[Route('/{_locale}/greeting/dashboard', name: 'greeting_dashboard', requirements: ['_locale' => 'cs|en|ru'])]
+    #[Route('/{_locale}/greeting/dashboard', name: 'greeting_dashboard', requirements: ['_locale' => '%app.supported_locales%'])]
     public function dashboard(Request $request): Response
     {
         $importForm = $this->createForm(GreetingImportType::class);
@@ -97,6 +98,32 @@ class GreetingUiController extends AbstractController
             'import_form' => $importForm->createView(),
             'grouped_contacts' => $groupedContacts,
         ]);
+    }
+
+    #[Route('/{_locale}/greeting/delete/{id}', name: 'greeting_delete_contact', requirements: ['_locale' => '%app.supported_locales%'], methods: ['DELETE'])]
+    public function delete(string $id): Response
+    {
+        $contact = $this->greetingContactRepository->find($id);
+
+        if (!$contact) {
+            $this->addFlash('error', $this->translator->trans('dashboard.delete_error_not_found', [], 'greeting'));
+
+            return $this->json(['success' => false], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($contact->getStatus() === Status::Deleted) {
+            $this->addFlash('warning', $this->translator->trans('dashboard.delete_error_already_deleted', [], 'greeting'));
+
+            // Return success=true to trigger reload and show the warning
+            return $this->json(['success' => true]);
+        }
+
+        $contact->setStatus(Status::Deleted);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', $this->translator->trans('dashboard.delete_success', ['%email%' => $contact->getEmail()], 'greeting'));
+
+        return $this->json(['success' => true]);
     }
 
     #[Route('/greeting/generate-test-emails', name: 'greeting_generate_test_emails', methods: ['GET'])]

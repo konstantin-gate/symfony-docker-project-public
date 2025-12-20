@@ -42,10 +42,12 @@ dashboard:
     send_error_no_selection: 'Контакт не был выбран.'
     send_success_simulation: 'Симуляция отправки %count% писем с темой "%subject%".'
     selection_hint: 'используйте клавиши Shift и Ctrl для выбора <i class="bi bi-arrow-down"></i>'
+    delete_success: 'Контакт <strong>%email%</strong> был успешно удален.'
+    delete_error_already_deleted: 'Этот контакт уже был удален.'
+    delete_error_not_found: 'Контакт не найден.'
 
 modal:
     delete_title: 'Удалить контакт'
     delete_confirm: 'Вы уверены, что хотите удалить email %email%?'
     delete_btn: 'Удалить'
     cancel_btn: 'Отменить'
-

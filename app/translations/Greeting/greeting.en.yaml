@@ -42,6 +42,9 @@ dashboard:
     send_error_no_selection: 'No contact was selected.'
     send_success_simulation: 'Simulated sending %count% emails with subject "%subject%".'
     selection_hint: 'use Shift and Ctrl keys for selection <i class="bi bi-arrow-down"></i>'
+    delete_success: 'Contact <strong>%email%</strong> was successfully deleted.'
+    delete_error_already_deleted: 'This contact has already been deleted.'
+    delete_error_not_found: 'Contact not found.'
 
 modal:
     delete_title: 'Delete Contact'

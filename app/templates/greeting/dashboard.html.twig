@@ -37,7 +37,7 @@
         {% for message in messages %}
             <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show py-2 px-3" role="alert">
                 <div class="alert-wrapper">
-                    {{ message }}
+                    {{ message|raw }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </div>
@@ -177,7 +177,7 @@
                                                                                 {{ contact.email }}
                                                                             </label>
                                                                         </div>
-                                                                        <i class="bi bi-trash delete-contact-icon ms-2" role="button"></i>
+                                                                        <i class="bi bi-trash delete-contact-icon ms-2" role="button" data-url="{{ path('greeting_delete_contact', {'id': contact.id, '_locale': app.request.locale}) }}"></i>
                                                                     </div>
                                                                 {% endif %}
                                                             </td>
