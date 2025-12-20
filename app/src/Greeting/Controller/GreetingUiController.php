@@ -14,6 +14,7 @@ use App\Greeting\Service\GreetingEmailParser;
 use App\Greeting\Service\GreetingService;
 use App\Service\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,6 +33,7 @@ class GreetingUiController extends AbstractController
         private readonly GreetingService $greetingService,
         private readonly EmailGeneratorService $emailGeneratorService,
         private readonly EmailService $emailService,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -112,7 +114,11 @@ class GreetingUiController extends AbstractController
         }
 
         if ($contact->getStatus() === Status::Deleted) {
-            $this->addFlash('warning', $this->translator->trans('dashboard.delete_error_already_deleted', [], 'greeting'));
+            $this->addFlash('warning', $this->translator->trans(
+                'dashboard.delete_error_already_deleted',
+                [],
+                'greeting'
+            ));
 
             // Return success=true to trigger reload and show the warning
             return $this->json(['success' => true]);
@@ -121,7 +127,12 @@ class GreetingUiController extends AbstractController
         $contact->setStatus(Status::Deleted);
         $this->entityManager->flush();
 
-        $this->addFlash('success', $this->translator->trans('dashboard.delete_success', ['%email%' => $contact->getEmail()], 'greeting'));
+        $this->logger->info('Greeting contact deleted: {email}', ['email' => $contact->getEmail()]);
+        $this->addFlash('success', $this->translator->trans(
+            'dashboard.delete_success',
+            ['%email%' => $contact->getEmail()],
+            'greeting'
+        ));
 
         return $this->json(['success' => true]);
     }
