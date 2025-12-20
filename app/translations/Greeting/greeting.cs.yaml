@@ -41,3 +41,4 @@ dashboard:
     deselect_all: 'Zrušit výběr'
     send_error_no_selection: 'Nebyl vybrán žádný kontakt.'
     send_success_simulation: 'Simulace odeslání %count% e-mailů s předmětem "%subject%".'
+    selection_hint: 'pro výběr <i class="bi bi-arrow-down"></i> použijte klávesy Shift a Ctrl'

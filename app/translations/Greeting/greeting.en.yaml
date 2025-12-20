@@ -41,3 +41,4 @@ dashboard:
     deselect_all: 'Deselect All'
     send_error_no_selection: 'No contact was selected.'
     send_success_simulation: 'Simulated sending %count% emails with subject "%subject%".'
+    selection_hint: 'use Shift and Ctrl keys for selection <i class="bi bi-arrow-down"></i>'

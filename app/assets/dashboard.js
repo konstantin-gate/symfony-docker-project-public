@@ -41,7 +41,7 @@ $(function () {
                 selector: 'td:not(.empty-cell)' // Prevent selecting empty placeholder cells if any
             },
             // Layout: Length (l) - we will move it, Table (t), Paging (p)
-            dom: 'lt<"d-flex justify-content-end mt-3 js-pagination-wrapper"p>',
+            dom: 'lt<"d-flex justify-content-end align-items-center mt-3 js-pagination-wrapper" <"dt-total-info me-3"> p>',
             language: {
                 lengthMenu: "_MENU_", // Show just the dropdown
                 paginate: {
@@ -72,17 +72,25 @@ $(function () {
                     placeholder.empty().append(select);
                     lengthWrapper.remove(); // Completely remove the empty wrapper/label container
                 }
+
+                // Show Selection Hint in the top bar
+                $(this).closest('.tab-pane').find('.selection-hint').removeClass('d-none');
+
+                // Move Total Count to pagination area
+                const totalLabel = $(this).closest('.tab-pane').find('.total-count-label').removeClass('d-none');
+                container.find('.dt-total-info').append(totalLabel);
             },
             drawCallback: function () {
                 const api = this.api();
                 const container = $(api.table().container());
                 const pageInfo = api.page.info();
                 const paginationWrapper = container.find('.js-pagination-wrapper');
+                const paginationButtons = container.find('.dataTables_paginate, .paging_full_numbers, .dt-paging');
 
                 if (pageInfo.pages <= 1) {
-                    paginationWrapper.attr('style', 'display: none !important');
+                    paginationButtons.attr('style', 'display: none !important');
                 } else {
-                    paginationWrapper.attr('style', 'display: flex !important');
+                    paginationButtons.attr('style', 'display: block !important');
                     container.find('.pagination').addClass('pagination-sm');
                 }
             }

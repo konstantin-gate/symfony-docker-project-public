@@ -80,8 +80,8 @@
             <div class="mb-4">
                 <button type="button" class="btn btn-outline-secondary w-100 mt-3">{{ 'import.import_xml_button'|trans }}</button>
                 {% if app.environment != 'prod' %}
-                    <button type="button" id="btn-generate-test-emails" class="btn btn-outline-secondary w-100 mt-2" 
-                            data-bs-toggle="tooltip" data-bs-placement="top" 
+                    <button type="button" id="btn-generate-test-emails" class="btn btn-outline-secondary w-100 mt-2"
+                            data-bs-toggle="tooltip" data-bs-placement="top"
                             title="{{ 'import.generate_test_emails_tooltip'|trans }}"
                             data-url="{{ path('greeting_generate_test_emails') }}">
                         {{ 'import.generate_test_emails'|trans }}
@@ -114,8 +114,13 @@
                             {% for lang, contacts in grouped_contacts %}
                                 <div class="tab-pane fade {{ loop.first ? 'show active' : '' }}" id="{{ lang }}-tab-pane" role="tabpanel" aria-labelledby="{{ lang }}-tab" tabindex="0">
 
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div class="dt-length-placeholder"></div>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="dt-length-placeholder"></div>
+                                            <div class="selection-hint d-none ms-3 text-muted small">
+                                                {{ 'dashboard.selection_hint'|trans|raw }}
+                                            </div>
+                                        </div>
                                         <div>
                                             <button type="button" class="btn btn-sm btn-outline-primary me-2 btn-select-all">
                                                 <i class="bi bi-check-all"></i> {{ 'dashboard.select_all'|trans }}
@@ -130,6 +135,9 @@
                                         <div class="text-center text-muted py-3">{{ 'dashboard.no_contacts'|trans }}</div>
                                     {% else %}
                                         {% set total = contacts|length %}
+                                        <div class="total-count-label d-none">
+                                            <small class="text-muted">{{ 'dashboard.total'|trans }}: {{ total }}</small>
+                                        </div>
                                         {% set per_col = (total / 3)|round(0, 'ceil') %}
                                         {% if per_col < 5 %}
                                             {% set per_col = 5 %}

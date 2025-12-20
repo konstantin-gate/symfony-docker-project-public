@@ -41,3 +41,4 @@ dashboard:
     deselect_all: 'Сбросить выбор'
     send_error_no_selection: 'Контакт не был выбран.'
     send_success_simulation: 'Имитация отправки %count% писем с темой "%subject%".'
+    selection_hint: 'для выбора <i class="bi bi-arrow-down"></i> используйте клавиши Shift и Ctrl'
