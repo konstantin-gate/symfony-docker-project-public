@@ -4,11 +4,11 @@ Tato aplikace je založena na Symfony 8.0 a je určena pro správu seznamu konta
 
 ## Funkce
 
-*   **Správa kontaktů:** Import seznamu e-mailových adres prostřednictvím webového rozhraní.
-*   **Dashboard:** Ovládací panel (`/greeting/dashboard`) pro prohlížení kontaktů, filtrování podle data registrace a jazyka.
-*   **Vícejazyčnost:** Podpora češtiny, angličtiny a ruštiny.
+*   **Správa kontaktů:** Import seznamu e-mailových adres prostřednictvím textového pole nebo **nahráním souboru XML**.
+*   **Dashboard:** Ovládací panel (`/greeting/dashboard`) pro prohlížení kontaktů, filtrování podle stavu (nové, odeslané) a jazyka.
+*   **Vícejazyčnost:** Plná lokalizace rozhraní (čeština, angličtina, ruština).
 *   **Rozesílání:** Asynchronní fronta pro odesílání e-mailů s podporou prodlevy (Delay) pro ochranu reputace odesílatele.
-*   **Parsování e-mailů:** Vyhrazená služba `GreetingEmailParser` pro spolehlivé zpracování seznamů adres (s podporou různých oddělovačů).
+*   **Parsování e-mailů:** Vyhrazené služby `GreetingEmailParser` a `GreetingXmlParser` pro spolehlivé zpracování seznamů adres.
 *   **Technologický stack:**
     *   **Backend:** Symfony 8.0, PHP 8.4, Doctrine ORM, Symfony Messenger.
     *   **Databáze:** PostgreSQL 16.
@@ -70,6 +70,17 @@ Po úspěšné instalaci bude aplikace dostupná na adrese:
 ### Hlavní URL
 *   **Domovská stránka:** `http://localhost/`
 *   **Ovládací panel (Dashboard):** `http://localhost/greeting/dashboard` (s přesměrováním na lokalizaci, např. `/cs/greeting/dashboard`).
+
+### Import kontaktů
+Kontakty můžete importovat dvěma způsoby:
+1.  **Textové pole:** Zadejte e-mailové adresy oddělené čárkou, mezerou nebo novým řádkem.
+2.  **XML soubor:** Nahrajte soubor s příponou `.xml`. Struktura souboru musí být následující:
+    ```xml
+    <contacts>
+        <email>user1@example.com</email>
+        <email>user2@example.com</email>
+    </contacts>
+    ```
 
 ## Konfigurace fronty pro odesílání (Messenger)
 

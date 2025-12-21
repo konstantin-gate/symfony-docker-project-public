@@ -4,11 +4,11 @@ This is a Symfony 8.0 application designed to manage a contact list and send gre
 
 ## Features
 
-*   **Contact Management:** Import a list of email addresses via a web interface.
-*   **Dashboard:** A control panel (`/greeting/dashboard`) for viewing contacts, filtering by registration date and language.
-*   **Multilingual Support:** Supports Czech, English, and Russian languages.
+*   **Contact Management:** Import a list of email addresses via a text field or **by uploading an XML file**.
+*   **Dashboard:** A control panel (`/greeting/dashboard`) for viewing contacts, filtering by status (new, sent) and language.
+*   **Multilingual Support:** Full localization of the interface (Czech, English, and Russian languages).
 *   **Mailing:** Asynchronous email sending queue with delay support to protect sender reputation.
-*   **Email Parsing:** A dedicated `GreetingEmailParser` service for reliable processing of address lists (with support for various delimiters).
+*   **Email Parsing:** Dedicated `GreetingEmailParser` and `GreetingXmlParser` services for reliable processing of address lists.
 *   **Technology Stack:**
     *   **Backend:** Symfony 8.0, PHP 8.4, Doctrine ORM, Symfony Messenger.
     *   **Database:** PostgreSQL 16.
@@ -70,6 +70,17 @@ After successful installation, the application will be available at:
 ### Main URLs
 *   **Homepage:** `http://localhost/`
 *   **Dashboard:** `http://localhost/greeting/dashboard` (with redirection to locale, e.g., `/en/greeting/dashboard`).
+
+### Contact Import
+You can import contacts in two ways:
+1.  **Text field:** Enter email addresses separated by comma, space, or newline.
+2.  **XML file:** Upload a file with the `.xml` extension. The file structure must be as follows:
+    ```xml
+    <contacts>
+        <email>user1@example.com</email>
+        <email>user2@example.com</email>
+    </contacts>
+    ```
 
 ## Sending Queue Configuration (Messenger)
 
