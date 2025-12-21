@@ -10,6 +10,7 @@ use App\Greeting\Enum\GreetingLanguage;
 use App\Greeting\Factory\GreetingContactFactory;
 use App\Greeting\Form\GreetingImportType;
 use App\Greeting\Repository\GreetingContactRepository;
+use App\Greeting\Repository\GreetingLogRepository;
 use App\Greeting\Service\EmailGeneratorService;
 use App\Greeting\Service\GreetingEmailParser;
 use App\Greeting\Service\GreetingService;
@@ -19,7 +20,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -28,6 +28,7 @@ class GreetingUiController extends AbstractController
 {
     public function __construct(
         private readonly GreetingContactRepository $greetingContactRepository,
+        private readonly GreetingLogRepository $greetingLogRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly GreetingContactFactory $greetingContactFactory,
         private readonly TranslatorInterface $translator,
@@ -40,7 +41,7 @@ class GreetingUiController extends AbstractController
     }
 
     /**
-     * @throws ExceptionInterface
+     * @throws ExceptionInterface|\DateMalformedStringException
      */
     #[Route('/greeting/dashboard', name: 'greeting_dashboard_default')]
     #[Route('/{_locale}/greeting/dashboard', name: 'greeting_dashboard', requirements: ['_locale' => '%app.supported_locales%'])]
@@ -99,9 +100,15 @@ class GreetingUiController extends AbstractController
 
         $groupedContacts = $this->greetingService->getContactsGroupedByLanguage();
 
+        // Získáme seznam ID kontaktů, kterým byl odeslán e-mail za posledních 7 dní
+        $greetedContactIds = $this->greetingLogRepository->findGreetedContactIdsSince(
+            (new \DateTimeImmutable())->modify('-7 days')
+        );
+
         return $this->render('@Greeting/dashboard.html.twig', [
             'import_form' => $importForm->createView(),
             'grouped_contacts' => $groupedContacts,
+            'greeted_contact_ids' => $greetedContactIds,
         ]);
     }
 

@@ -48,15 +48,10 @@ export function initDeleteContact(table) {
         e.stopPropagation();
         const $icon = $(this);
         const url = $icon.data('url');
-        const wrapper = $icon.siblings('.form-check');
-        const checkbox = wrapper.find('input[type="checkbox"]');
-        const email = wrapper.find('label').text().trim();
-        const id = checkbox.val();
+        const email = $icon.data('email');
 
         $('#deleteContactEmail').text(email);
-        $('#btn-confirm-delete')
-            .data('id', id)
-            .data('url', url); // Store the URL for the confirm handler
+        $('#btn-confirm-delete').data('url', url);
         const modalEl = document.getElementById('deleteContactModal');
 
         if (modalEl) {
