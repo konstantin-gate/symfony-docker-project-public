@@ -46,6 +46,7 @@ dashboard:
     delete_success: 'Contact <strong>%email%</strong> was successfully deleted.'
     delete_error_already_deleted: 'This contact has already been deleted.'
     delete_error_not_found: 'Contact not found.'
+    status_sent: 'Greeting already sent'
 
 modal:
     delete_title: 'Delete Contact'

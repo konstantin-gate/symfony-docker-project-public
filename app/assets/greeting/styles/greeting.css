@@ -71,6 +71,13 @@
     color: white !important;
 }
 
+/* Status sent dot styles */
+.status-sent-dot {
+    color: #146c43; /* Dark green */
+    font-size: 0.45rem;
+    vertical-align: middle;
+}
+
 /* Delete contact icon styles */
 .delete-contact-icon {
     color: #adb5bd; /* Gray-500 */
