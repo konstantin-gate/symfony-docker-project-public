@@ -52,7 +52,7 @@
                     <h5 class="mb-0">{{ 'dashboard.import_title'|trans }}</h5>
                 </div>
                 <div class="card-body">
-                    {{ form_start(import_form) }}
+                    {{ form_start(import_form, {'action': path('greeting_import', {'_locale': app.request.locale})}) }}
                         <div class="mb-3">
                             {{ form_label(import_form.emails) }}
                             {{ form_widget(import_form.emails, {'attr': {'class': 'form-control', 'rows': 6}}) }}
@@ -136,7 +136,7 @@
                             </li>
                         {% endfor %}
                     </ul>
-                    <form method="post">
+                    <form method="post" action="{{ path('greeting_send', {'_locale': app.request.locale}) }}">
                         <div class="tab-content mt-3" id="myTabContent">
                             {% for lang, contacts in grouped_contacts %}
                                 <div class="tab-pane fade {{ loop.first ? 'show active' : '' }}" id="{{ lang }}-tab-pane" role="tabpanel" aria-labelledby="{{ lang }}-tab" tabindex="0">
