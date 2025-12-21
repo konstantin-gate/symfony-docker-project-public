@@ -34,11 +34,16 @@ class GreetingXmlParser
                 throw new \RuntimeException('Invalid XML: ' . ($lastError->message ?? 'unknown error'));
             }
 
-            foreach ($xml->email as $emailElement) {
-                $email = trim((string) $emailElement);
+            // Use XPath to consistently find all <email> tags
+            $emailElements = $xml->xpath('//email');
 
-                if (filter_var($email, \FILTER_VALIDATE_EMAIL)) {
-                    $emails[] = $email;
+            if (\is_array($emailElements)) {
+                foreach ($emailElements as $element) {
+                    $email = trim((string) $element);
+
+                    if ($email !== '' && filter_var($email, \FILTER_VALIDATE_EMAIL)) {
+                        $emails[] = $email;
+                    }
                 }
             }
         } catch (\Exception $e) {
