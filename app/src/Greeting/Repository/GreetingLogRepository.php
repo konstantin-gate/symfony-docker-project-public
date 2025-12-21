@@ -24,20 +24,27 @@ class GreetingLogRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return string[]
+     * @return array<string, string>
      */
     public function findGreetedContactIdsSince(\DateTimeImmutable $since): array
     {
-        $qb = $this->createQueryBuilder('gl');
-
-        $results = $qb->select('IDENTITY(gl.contact) as contactId')
+        $map = [];
+        $results = $this->createQueryBuilder('gl')
+            ->select('IDENTITY(gl.contact) as contactId', 'MAX(gl.sentAt) as lastSentAt')
             ->where('gl.sentAt >= :since')
             ->setParameter('since', $since)
-            ->distinct()
+            ->groupBy('contactId')
             ->getQuery()
-            ->getScalarResult(); // Returns array of ['contactId' => 'uuid-string']
+            ->getScalarResult();
 
-        // Flatten the array to return just UUID strings
-        return array_column($results, 'contactId');
+        foreach ($results as $row) {
+            /** @var string $id */
+            $id = $row['contactId'];
+            /** @var string $date */
+            $date = $row['lastSentAt'];
+            $map[$id] = $date;
+        }
+
+        return $map;
     }
 }

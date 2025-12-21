@@ -46,7 +46,8 @@ dashboard:
     delete_success: 'Контакт <strong>%email%</strong> был успешно удален.'
     delete_error_already_deleted: 'Этот контакт уже был удален.'
     delete_error_not_found: 'Контакт не найден.'
-    status_sent: 'Поздравление уже отправлено'
+    status_sent: 'Поздравление уже было отправлено %date%'
+    delete_tooltip: 'Удалить'
 
 modal:
     delete_title: 'Удалить контакт'

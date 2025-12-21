@@ -46,7 +46,8 @@ dashboard:
     delete_success: 'Kontakt <strong>%email%</strong> byl úspěšně odstraněn.'
     delete_error_already_deleted: 'Tento kontakt již byl odstraněn.'
     delete_error_not_found: 'Kontakt nebyl nalezen.'
-    status_sent: 'Pozdrav již byl odeslán'
+    status_sent: 'Pozdrav již byl odeslán %date%'
+    delete_tooltip: 'Smazat'
 
 modal:
     delete_title: 'Smazat kontakt'
