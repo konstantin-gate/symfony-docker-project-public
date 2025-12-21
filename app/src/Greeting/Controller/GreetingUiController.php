@@ -6,6 +6,7 @@ namespace App\Greeting\Controller;
 
 use App\DTO\EmailRequest;
 use App\Enum\Status;
+use App\Greeting\Entity\GreetingContact;
 use App\Greeting\Enum\GreetingLanguage;
 use App\Greeting\Factory\GreetingContactFactory;
 use App\Greeting\Form\GreetingImportType;
@@ -115,11 +116,7 @@ class GreetingUiController extends AbstractController
     #[Route('/{_locale}/greeting/contact/{id}/delete', name: 'greeting_delete_contact', requirements: ['_locale' => '%app.supported_locales%'], methods: ['DELETE'])]
     public function delete(string $id): Response
     {
-        $contact = $this->greetingContactRepository->find($id);
-
-        if (!$contact) {
-            $this->addFlash('error', $this->translator->trans('dashboard.delete_error_not_found', [], 'greeting'));
-
+        if (!$contact = $this->findContact($id)) {
             return $this->json(['success' => false], Response::HTTP_NOT_FOUND);
         }
 
@@ -150,11 +147,7 @@ class GreetingUiController extends AbstractController
     #[Route('/{_locale}/greeting/contact/{id}/deactivate', name: 'greeting_deactivate_contact', requirements: ['_locale' => '%app.supported_locales%'], methods: ['POST'])]
     public function deactivate(string $id): Response
     {
-        $contact = $this->greetingContactRepository->find($id);
-
-        if (!$contact) {
-            $this->addFlash('error', $this->translator->trans('dashboard.delete_error_not_found', [], 'greeting'));
-
+        if (!$contact = $this->findContact($id)) {
             return $this->json(['success' => false], Response::HTTP_NOT_FOUND);
         }
 
@@ -192,6 +185,17 @@ class GreetingUiController extends AbstractController
         $emails = $this->emailGeneratorService->generateEmails(10);
 
         return new Response(implode(' ', $emails));
+    }
+
+    private function findContact(string $id): ?GreetingContact
+    {
+        $contact = $this->greetingContactRepository->find($id);
+
+        if (!$contact) {
+            $this->addFlash('error', $this->translator->trans('dashboard.delete_error_not_found', [], 'greeting'));
+        }
+
+        return $contact;
     }
 
     /**
