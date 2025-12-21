@@ -34,15 +34,33 @@ class GreetingXmlParser
                 throw new \RuntimeException('Invalid XML: ' . ($lastError->message ?? 'unknown error'));
             }
 
-            // Use XPath to consistently find all <email> tags
-            $emailElements = $xml->xpath('//email');
+            // Use XPath with local-name() to find <email> tags regardless of namespaces
+            $emailElements = $xml->xpath('//*[local-name()="email"]');
 
             if (\is_array($emailElements)) {
                 foreach ($emailElements as $element) {
-                    $email = trim((string) $element);
+                    $originalEmail = trim((string) $element);
 
-                    if ($email !== '' && filter_var($email, \FILTER_VALIDATE_EMAIL)) {
-                        $emails[] = $email;
+                    if ($originalEmail === '') {
+                        continue;
+                    }
+
+                    // Normalize for validation and duplicate check
+                    $normalizedEmail = mb_strtolower($originalEmail);
+
+                    if (str_contains($normalizedEmail, '@')) {
+                        [$local, $domain] = explode('@', $normalizedEmail, 2);
+                        $asciiDomain = idn_to_ascii($domain, \IDNA_NONTRANSITIONAL_TO_ASCII, \INTL_IDNA_VARIANT_UTS46);
+
+                        if (false !== $asciiDomain) {
+                            $normalizedEmail = $local . '@' . $asciiDomain;
+                        }
+                    }
+
+                    // Use normalized email as key to prevent duplicates, but keep original email as value
+                    if (!isset($emails[$normalizedEmail])
+                        && filter_var($normalizedEmail, \FILTER_VALIDATE_EMAIL, \FILTER_FLAG_EMAIL_UNICODE)) {
+                        $emails[$normalizedEmail] = $originalEmail;
                     }
                 }
             }
@@ -54,6 +72,6 @@ class GreetingXmlParser
             libxml_set_external_entity_loader(null);
         }
 
-        return $emails;
+        return array_values($emails);
     }
 }
