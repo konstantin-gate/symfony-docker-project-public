@@ -12,8 +12,8 @@ use Doctrine\ORM\EntityManagerInterface;
 readonly class GreetingContactService
 {
     public function __construct(
-        private GreetingContactRepository $greetingContactRepository,
-        private GreetingContactFactory $greetingContactFactory,
+        private GreetingContactRepository $repository,
+        private GreetingContactFactory $factory,
         private EntityManagerInterface $entityManager,
     ) {
     }
@@ -21,26 +21,44 @@ readonly class GreetingContactService
     /**
      * @param string[] $emails
      */
-    public function importContacts(array $emails, GreetingLanguage $language, \DateTimeImmutable $registrationDate): int
+    public function saveContacts(array $emails, GreetingLanguage $language = GreetingLanguage::Russian): int
     {
         if (empty($emails)) {
             return 0;
         }
 
-        // Filter out existing emails to avoid duplicates
-        $newEmails = $this->greetingContactRepository->findNonExistingEmails($emails);
+        // Нормализация и реализация уникальности входных данных
+        $uniqueEmails = array_unique(array_filter(array_map(
+            static fn (string $email) => mb_strtolower(trim($email)),
+            $emails
+        )));
 
-        if (empty($newEmails)) {
+        if (empty($uniqueEmails)) {
             return 0;
         }
 
-        foreach ($newEmails as $email) {
-            $contact = $this->greetingContactFactory->create($email, $language, $registrationDate);
+        // Поиск существующих в базе
+        $existingContacts = $this->repository->findBy(['email' => $uniqueEmails]);
+        $existingEmails = array_map(
+            static fn ($contact) => mb_strtolower((string) $contact->getEmail()),
+            $existingContacts
+        );
+
+        $emailsToCreate = array_diff($uniqueEmails, $existingEmails);
+
+        if (empty($emailsToCreate)) {
+            return 0;
+        }
+
+        $now = new \DateTimeImmutable();
+
+        foreach ($emailsToCreate as $email) {
+            $contact = $this->factory->create($email, $language, $now);
             $this->entityManager->persist($contact);
         }
 
         $this->entityManager->flush();
 
-        return \count($newEmails);
+        return \count($emailsToCreate);
     }
 }
