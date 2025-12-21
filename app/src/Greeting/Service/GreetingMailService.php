@@ -9,6 +9,7 @@ use App\Greeting\Repository\GreetingContactRepository;
 use App\Service\EmailSequenceService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
+use Symfony\Component\Uid\Uuid;
 
 readonly class GreetingMailService
 {
@@ -20,7 +21,7 @@ readonly class GreetingMailService
     }
 
     /**
-     * @param string[] $contactIds
+     * @param string[]|Uuid[] $contactIds
      *
      * @throws ExceptionInterface
      */
@@ -30,28 +31,48 @@ readonly class GreetingMailService
             return 0;
         }
 
-        $selectedContacts = $this->greetingContactRepository->findBy(['id' => $contactIds]);
-        $emailRequests = [];
+        $successCount = 0;
 
-        foreach ($selectedContacts as $contact) {
-            /** @var string $email */
-            $email = $contact->getEmail();
-            $emailRequests[] = new EmailRequest(
-                to: $email,
-                subject: $subject,
-                template: 'email/greeting.html.twig',
-                context: ['subject' => $subject, 'body' => $body]
-            );
+        foreach ($contactIds as $id) {
+            $contact = $this->greetingContactRepository->find($id);
+
+            if (!$contact) {
+                $this->logger->error('Contact with ID {id} not found, skipping.', ['id' => $id]);
+                continue;
+            }
+
+            $email = (string) $contact->getEmail();
+
+            if ($email === '') {
+                $this->logger->error('Contact with ID {id} has no email address, skipping.', ['id' => $id]);
+                continue;
+            }
+
+            try {
+                $emailRequest = new EmailRequest(
+                    to: $email,
+                    subject: $subject,
+                    template: 'email/greeting.html.twig',
+                    context: ['subject' => $subject, 'body' => $body]
+                );
+
+                $this->emailSequenceService->sendSequence([$emailRequest]);
+                ++$successCount;
+            } catch (\Exception $e) {
+                $this->logger->error('Failed to queue greeting for contact {id}: {error}', [
+                    'id' => $id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
-        $this->emailSequenceService->sendSequence($emailRequests);
-        $count = \count($selectedContacts);
+        if ($successCount > 0) {
+            $this->logger->info('Queued {count} greeting emails with subject "{subject}"', [
+                'count' => $successCount,
+                'subject' => $subject,
+            ]);
+        }
 
-        $this->logger->info('Queued {count} greeting emails with subject "{subject}"', [
-            'count' => $count,
-            'subject' => $subject,
-        ]);
-
-        return $count;
+        return $successCount;
     }
 }
