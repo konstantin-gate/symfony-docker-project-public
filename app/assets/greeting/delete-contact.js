@@ -36,6 +36,39 @@ $(function() {
             }
         });
     });
+
+    // Handle Deactivate Confirmation Button Click
+    $('#btn-confirm-deactivate').on('click', function() {
+        const $btn = $(this);
+        // Get the delete URL from the delete button (stored there when opening modal)
+        const deleteUrl = $('#btn-confirm-delete').data('url');
+
+        if (!deleteUrl) return;
+
+        // Transform URL: /.../contact/{id}/delete -> /.../contact/{id}/deactivate
+        // Both URLs now share the same structure, just swapping the action at the end.
+        const deactivateUrl = deleteUrl.replace(/\/delete$/, '/deactivate');
+
+        // Disable button
+        $btn.prop('disabled', true);
+
+        $.ajax({
+            url: deactivateUrl,
+            method: 'POST',
+            success: function() {
+                window.location.reload();
+            },
+            error: function() {
+                window.location.reload();
+            },
+            complete: function() {
+                $btn.prop('disabled', false);
+                if (deleteModal) {
+                    deleteModal.hide();
+                }
+            }
+        });
+    });
 });
 
 /**

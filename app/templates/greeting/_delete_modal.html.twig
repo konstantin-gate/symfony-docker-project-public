@@ -1,19 +1,20 @@
 {% trans_default_domain 'greeting' %}
 
-{# Modal for delete confirmation #}
+{# Modal for manage contact (deactivate/delete) #}
 <div class="modal fade" id="deleteContactModal" tabindex="-1" aria-labelledby="deleteContactModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteContactModalLabel">{{ 'modal.delete_title'|trans }}</h5>
+                <h5 class="modal-title" id="deleteContactModalLabel">{{ 'dashboard.modal_title_manage'|trans }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                {{ 'modal.delete_confirm'|trans({'%email%': '<span class="fw-bold" id="deleteContactEmail"></span>'})|raw }}
+                {{ 'dashboard.modal_body_action'|trans({'%email%': '<span class="fw-bold" id="deleteContactEmail"></span>'})|raw }}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'modal.cancel_btn'|trans }}</button>
-                <button type="button" class="btn btn-danger" id="btn-confirm-delete">{{ 'modal.delete_btn'|trans }}</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'dashboard.btn_cancel'|trans }}</button>
+                <button type="button" class="btn btn-warning" id="btn-confirm-deactivate">{{ 'dashboard.btn_deactivate'|trans }}</button>
+                <button type="button" class="btn btn-danger" id="btn-confirm-delete">{{ 'dashboard.btn_delete'|trans }}</button>
             </div>
         </div>
     </div>

@@ -126,6 +126,57 @@ $(function () {
             pane.find('.btn-deselect-all').on('click', function () {
                 dt.cells().deselect();
             });
+
+            // Handle Filter/Sort Radio Buttons
+            pane.find('.btn-filter').on('change', function() {
+                const filterType = $(this).val(); // 'all', 'new', 'sent'
+                
+                // 1. Deselect everything to avoid confusion
+                dt.cells().deselect();
+
+                // 2. Collect all contact wrappers from the table
+                // We use standard DOM manipulation because DataTables doesn't support cell shuffling easily
+                const cells = table.find('tbody td');
+                const wrappers = [];
+                
+                cells.each(function() {
+                    const wrapper = $(this).find('.contact-item-wrapper');
+                    if (wrapper.length) {
+                        wrappers.push(wrapper.detach());
+                    }
+                    $(this).empty().addClass('empty-cell'); // Clear and mark as empty initially
+                });
+
+                // 3. Sort the wrappers
+                wrappers.sort(function(a, b) {
+                    const aSent = a.find('.status-sent-dot').length > 0;
+                    const bSent = b.find('.status-sent-dot').length > 0;
+                    const aIndex = parseInt(a.data('original-index'));
+                    const bIndex = parseInt(b.data('original-index'));
+
+                    if (filterType === 'new') {
+                        // Not sent first
+                        if (aSent !== bSent) {
+                            return aSent ? 1 : -1; // If a is sent, it goes after
+                        }
+                    } else if (filterType === 'sent') {
+                        // Sent first
+                        if (aSent !== bSent) {
+                            return aSent ? -1 : 1; // If a is sent, it goes first
+                        }
+                    }
+                    
+                    // Secondary sort (or primary for 'all'): Original Index
+                    return aIndex - bIndex;
+                });
+
+                // 4. Put them back
+                cells.each(function(index) {
+                    if (index < wrappers.length) {
+                        $(this).append(wrappers[index]).removeClass('empty-cell');
+                    }
+                });
+            });
         }
 
         // Initialize Delete Contact functionality

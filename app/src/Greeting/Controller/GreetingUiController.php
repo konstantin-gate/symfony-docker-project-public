@@ -112,7 +112,7 @@ class GreetingUiController extends AbstractController
         ]);
     }
 
-    #[Route('/{_locale}/greeting/delete/{id}', name: 'greeting_delete_contact', requirements: ['_locale' => '%app.supported_locales%'], methods: ['DELETE'])]
+    #[Route('/{_locale}/greeting/contact/{id}/delete', name: 'greeting_delete_contact', requirements: ['_locale' => '%app.supported_locales%'], methods: ['DELETE'])]
     public function delete(string $id): Response
     {
         $contact = $this->greetingContactRepository->find($id);
@@ -140,6 +140,41 @@ class GreetingUiController extends AbstractController
         $this->logger->info('Greeting contact deleted: {email}', ['email' => $contact->getEmail()]);
         $this->addFlash('success', $this->translator->trans(
             'dashboard.delete_success',
+            ['%email%' => $contact->getEmail()],
+            'greeting'
+        ));
+
+        return $this->json(['success' => true]);
+    }
+
+    #[Route('/{_locale}/greeting/contact/{id}/deactivate', name: 'greeting_deactivate_contact', requirements: ['_locale' => '%app.supported_locales%'], methods: ['POST'])]
+    public function deactivate(string $id): Response
+    {
+        $contact = $this->greetingContactRepository->find($id);
+
+        if (!$contact) {
+            $this->addFlash('error', $this->translator->trans('dashboard.delete_error_not_found', [], 'greeting'));
+
+            return $this->json(['success' => false], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($contact->getStatus() === Status::Inactive || $contact->getStatus() === Status::Deleted) {
+            $this->addFlash('warning', $this->translator->trans(
+                'dashboard.deactivate_error_already_inactive',
+                [],
+                'greeting'
+            ));
+
+            // Return success=true to trigger reload and show the warning
+            return $this->json(['success' => true]);
+        }
+
+        $contact->setStatus(Status::Inactive);
+        $this->entityManager->flush();
+
+        $this->logger->info('Greeting contact deactivated: {email}', ['email' => $contact->getEmail()]);
+        $this->addFlash('success', $this->translator->trans(
+            'dashboard.deactivate_success',
             ['%email%' => $contact->getEmail()],
             'greeting'
         ));
