@@ -6,15 +6,14 @@ namespace App\Greeting\Controller;
 
 use App\Enum\Status;
 use App\Greeting\Entity\GreetingContact;
+use App\Greeting\Enum\GreetingLanguage;
 use App\Greeting\Form\GreetingImportType;
 use App\Greeting\Repository\GreetingContactRepository;
 use App\Greeting\Repository\GreetingLogRepository;
 use App\Greeting\Service\EmailGeneratorService;
-use App\Greeting\Service\GreetingContactService;
-use App\Greeting\Service\GreetingEmailParser;
+use App\Greeting\Service\GreetingImportHandler;
 use App\Greeting\Service\GreetingMailService;
 use App\Greeting\Service\GreetingService;
-use App\Greeting\Service\GreetingXmlParser;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,11 +30,9 @@ class GreetingUiController extends AbstractController
         private readonly GreetingContactRepository $greetingContactRepository,
         private readonly GreetingLogRepository $greetingLogRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly GreetingContactService $greetingContactService,
+        private readonly GreetingImportHandler $greetingImportHandler,
         private readonly GreetingMailService $greetingMailService,
         private readonly TranslatorInterface $translator,
-        private readonly GreetingEmailParser $greetingEmailParser,
-        private readonly GreetingXmlParser $greetingXmlParser,
         private readonly GreetingService $greetingService,
         private readonly EmailGeneratorService $emailGeneratorService,
         private readonly LoggerInterface $logger,
@@ -72,42 +69,24 @@ class GreetingUiController extends AbstractController
 
         if ($importForm->isSubmitted()) {
             if ($importForm->isValid()) {
+                /** @var array{emails: ?string, language: GreetingLanguage, registrationDate: \DateTime} $data */
                 $data = $importForm->getData();
-                $emails = [];
-
-                // 1. Process Text Input
-                if (!empty($data['emails'])) {
-                    $emails = $this->greetingEmailParser->parse($data['emails']);
-                }
-
-                // 2. Process XML File
                 /** @var UploadedFile|null $xmlFile */
                 $xmlFile = $importForm->get('xmlFile')->getData();
 
-                if ($xmlFile) {
-                    try {
-                        $xmlEmails = $this->greetingXmlParser->parse($xmlFile);
-                        $emails = array_merge($emails, $xmlEmails);
-                    } catch (\Exception $e) {
-                        $this->addFlash('error', $this->translator->trans('import.error_xml_parsing', [], 'greeting'));
+                try {
+                    $countNewEmails = $this->greetingImportHandler->handleImport($data, $xmlFile);
+
+                    if ($countNewEmails === -1) {
+                        $this->addFlash('error', $this->translator->trans('import.error_no_data', [], 'greeting'));
+                    } else {
+                        $message = $countNewEmails > 0
+                            ? $this->translator->trans('import.success', ['%count%' => $countNewEmails], 'greeting')
+                            : $this->translator->trans('import.success_zero', [], 'greeting');
+                        $this->addFlash('success', $message);
                     }
-                }
-
-                $emails = array_unique($emails);
-
-                if (empty($emails)) {
-                    $this->addFlash('error', $this->translator->trans('import.error_no_data', [], 'greeting'));
-                } else {
-                    $countNewEmails = $this->greetingContactService->importContacts(
-                        $emails,
-                        $data['language'],
-                        \DateTimeImmutable::createFromMutable($data['registrationDate'])
-                    );
-
-                    $message = $countNewEmails > 0
-                        ? $this->translator->trans('import.success', ['%count%' => $countNewEmails], 'greeting')
-                        : $this->translator->trans('import.success_zero', [], 'greeting');
-                    $this->addFlash('success', $message);
+                } catch (\Exception $e) {
+                    $this->addFlash('error', $this->translator->trans('import.error_xml_parsing', [], 'greeting'));
                 }
             } else {
                 $this->addFlash('error', $this->translator->trans('import.error_validation', [], 'greeting'));
