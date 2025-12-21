@@ -1,8 +1,14 @@
 import:
-    emails_label: 'Emails <span class="small-text">(разделенные запятой, пробелом или с новой строки)</span>'
+    emails_label: 'Emails <span class="small-text">(разделенные запятой, пробелом или&nbsp;с&nbsp;новой&nbsp;строки)</span>'
     emails_placeholder: |
         user@example.com, another@test.com
         third@domain.org
+    xml_file_label: 'Или загрузите XML файл'
+    invalid_xml_mime: 'Тип файла не распознан как XML. Пожалуйста, убедитесь, что это текстовый XML-файл.'
+    invalid_xml_extension: 'Файл должен иметь расширение .xml'
+    error_xml_parsing: 'Ошибка при разборе XML файла'
+    error_no_data: 'Пожалуйста, предоставьте список email или XML файл'
+    error_validation: 'Форма содержит ошибки валидации. Пожалуйста, проверьте поля ниже.'
     date_label: 'Дата регистрации'
     language_label: 'Язык'
     submit: 'Импортировать контакты'

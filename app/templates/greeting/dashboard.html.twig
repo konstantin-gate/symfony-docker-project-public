@@ -72,6 +72,23 @@
                         </div>
 
                         <div class="mb-3">
+                            {{ form_label(import_form.xmlFile) }}
+                            {{ form_widget(import_form.xmlFile, {'attr': {'class': 'form-control'}}) }}
+                            {% if import_form.xmlFile.vars.errors|length > 0 %}
+                                <div class="invalid-feedback d-block">
+                                    <ul class="list-unstyled mb-0">
+                                        {% for error in import_form.xmlFile.vars.errors %}
+                                            <li>
+                                                <i class="bi bi-exclamation-circle-fill invalid-email-icon"></i>
+                                                {{ error.message|trans }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
                             {{ form_label(import_form.registrationDate) }}
                             {{ form_widget(import_form.registrationDate, {'attr': {'class': 'form-control'}}) }}
                             {{ form_errors(import_form.registrationDate) }}
@@ -88,9 +105,8 @@
                 </div>
             </div>
             <div class="mb-4">
-                <button type="button" class="btn btn-outline-secondary w-100 mt-3">{{ 'import.import_xml_button'|trans }}</button>
                 {% if app.environment != 'prod' %}
-                    <button type="button" id="btn-generate-test-emails" class="btn btn-outline-secondary w-100 mt-2"
+                    <button type="button" id="btn-generate-test-emails" class="btn btn-outline-secondary w-100 mt-3"
                             data-bs-toggle="tooltip" data-bs-placement="bottom"
                             data-bs-custom-class="light-tooltip"
                             title="{{ 'import.generate_test_emails_tooltip'|trans }}"

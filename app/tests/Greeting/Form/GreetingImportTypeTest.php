@@ -32,10 +32,10 @@ class GreetingImportTypeTest extends TypeTestCase
             'language' => GreetingLanguage::Czech->value,
         ];
 
-        // Typ GreetingImportType má chybu, kdy omezení Callback očekává řetězec, ale dostane hodnotu null
-        // když je formulář odeslán s prázdnými daty. Protože nemůžeme třídu upravovat, očekáváme tuto chybu.
-        $this->expectException(\TypeError::class);
         $form->submit($formData);
+        $this->assertTrue($form->isSynchronized());
+        // Form is valid because emails are optional now (can be empty string)
+        $this->assertTrue($form->isValid());
     }
 
     public function testSubmitInvalidEmails(): void
@@ -304,8 +304,10 @@ class GreetingImportTypeTest extends TypeTestCase
             'language' => GreetingLanguage::Czech->value,
         ];
 
-        $this->expectException(\TypeError::class);
         $form->submit($formData);
+        $this->assertTrue($form->isSynchronized());
+        // Form is valid because emails are optional now (can be null/missing)
+        $this->assertTrue($form->isValid());
     }
 
     /**

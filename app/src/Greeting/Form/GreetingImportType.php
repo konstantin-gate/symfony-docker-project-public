@@ -8,11 +8,14 @@ use App\Greeting\Enum\GreetingLanguage;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -27,13 +30,16 @@ class GreetingImportType extends AbstractType
             ->add('emails', TextareaType::class, [
                 'label' => 'import.emails_label',
                 'label_html' => true,
+                'required' => false,
                 'attr' => [
                     'rows' => 6,
                     'placeholder' => 'import.emails_placeholder',
                 ],
                 'constraints' => [
-                    new NotBlank(),
-                    new Callback(function (string $payload, ExecutionContextInterface $context): void {
+                    new Callback(function (?string $payload, ExecutionContextInterface $context): void {
+                        if (empty($payload)) {
+                            return;
+                        }
                         $emails = (array) preg_split('/[\s,;]+/', $payload, -1, \PREG_SPLIT_NO_EMPTY);
 
                         foreach ($emails as $email) {
@@ -43,6 +49,39 @@ class GreetingImportType extends AbstractType
                                     ->setParameter('{{ email }}', (string) $email)
                                     ->addViolation();
                             }
+                        }
+                    }),
+                ],
+            ])
+            ->add('xmlFile', FileType::class, [
+                'label' => 'import.xml_file_label',
+                'mapped' => false,
+                'required' => false,
+                'attr' => [
+                    'accept' => '.xml',
+                ],
+                'constraints' => [
+                    new File(
+                        maxSize: '2048k',
+                        mimeTypes: [
+                            'text/xml',
+                            'application/xml',
+                            'text/plain',
+                            'application/octet-stream',
+                        ],
+                        mimeTypesMessage: 'import.invalid_xml_mime',
+                    ),
+                    new Callback(function (?UploadedFile $file, ExecutionContextInterface $context): void {
+                        if (!$file) {
+                            return;
+                        }
+
+                        $extension = strtolower($file->getClientOriginalExtension());
+
+                        if ($extension !== 'xml') {
+                            $context->buildViolation('import.invalid_xml_extension')
+                                ->setTranslationDomain('greeting')
+                                ->addViolation();
                         }
                     }),
                 ],

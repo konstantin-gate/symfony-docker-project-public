@@ -1,8 +1,14 @@
 import:
-    emails_label: 'Emails <span class="small-text">(separated by comma, space, or newline)</span>'
+    emails_label: 'Emails <span class="small-text">(separated by comma, space, or&nbsp;newline)</span>'
     emails_placeholder: |
         user@example.com, another@test.com
         third@domain.org
+    xml_file_label: 'Or upload XML file'
+    invalid_xml_mime: 'The file type is not recognized as XML. Please ensure it is a text-based XML file.'
+    invalid_xml_extension: 'The file must have a .xml extension'
+    error_xml_parsing: 'Error parsing XML file'
+    error_no_data: 'Please provide either a list of emails or an XML file'
+    error_validation: 'The form contains validation errors. Please check the fields below.'
     date_label: 'Registration Date'
     language_label: 'Language'
     submit: 'Import Contacts'

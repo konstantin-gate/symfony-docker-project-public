@@ -1,8 +1,14 @@
 import:
-    emails_label: 'E-maily <span class="small-text">(oddělené čárkou, mezerou nebo novým řádkem)</span>'
+    emails_label: 'E-maily<br><span class="small-text">(oddělené čárkou, mezerou nebo novým&nbsp;řádkem)</span>'
     emails_placeholder: |
         uzivatel@example.com, dalsi@test.com
         treti@domena.org
+    xml_file_label: 'Nebo nahrajte XML soubor'
+    invalid_xml_mime: 'Typ souboru nebyl rozpoznán jako XML. Ujistěte se, že jde o textový soubor XML.'
+    invalid_xml_extension: 'Soubor musí mít příponu .xml'
+    error_xml_parsing: 'Chyba při zpracování XML souboru'
+    error_no_data: 'Prosím zadejte seznam e-mailů nebo nahrajte XML soubor'
+    error_validation: 'Formulář obsahuje chyby validace. Zkontrolujte pole níže.'
     date_label: 'Datum registrace'
     language_label: 'Jazyk'
     submit: 'Importovat kontakty'
