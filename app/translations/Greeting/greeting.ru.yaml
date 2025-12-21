@@ -9,6 +9,8 @@ import:
     error_xml_parsing: 'Ошибка при разборе XML файла'
     error_no_data: 'Пожалуйста, предоставьте список email или XML файл'
     error_validation: 'Форма содержит ошибки валидации. Пожалуйста, проверьте поля ниже.'
+    file_too_large: 'Файл слишком большой (макс. %size%)'
+    importing_status: 'Импорт...'
     date_label: 'Дата регистрации'
     language_label: 'Язык'
     submit: 'Импортировать контакты'

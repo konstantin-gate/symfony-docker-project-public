@@ -2,8 +2,12 @@ import $ from 'jquery';
 import 'datatables.net-bs5';
 import 'datatables.net-select-bs5';
 import { initDeleteContact } from './delete-contact';
+import { initImportValidation } from './import-validation';
 
 $(function () {
+    // Initialize Import Form Validation
+    initImportValidation();
+
     // Fix for DataTables inside Bootstrap Tabs: Recalculate columns when tab is shown
     // Using native event listener for better reliability with Bootstrap 5
     const tabEl = document.querySelectorAll('button[data-bs-toggle="tab"]');

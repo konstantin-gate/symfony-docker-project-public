@@ -9,6 +9,8 @@ import:
     error_xml_parsing: 'Error parsing XML file'
     error_no_data: 'Please provide either a list of emails or an XML file'
     error_validation: 'The form contains validation errors. Please check the fields below.'
+    file_too_large: 'The file is too large (max %size%)'
+    importing_status: 'Importing...'
     date_label: 'Registration Date'
     language_label: 'Language'
     submit: 'Import Contacts'

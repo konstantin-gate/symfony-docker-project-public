@@ -52,7 +52,15 @@
                     <h5 class="mb-0">{{ 'dashboard.import_title'|trans }}</h5>
                 </div>
                 <div class="card-body">
-                    {{ form_start(import_form, {'action': path('greeting_import', {'_locale': app.request.locale})}) }}
+                    {{ form_start(import_form, {
+                        'action': path('greeting_import', {'_locale': app.request.locale}),
+                        'attr': {
+                            'id': 'import-form',
+                            'data-msg-invalid-ext': 'import.invalid_xml_extension'|trans,
+                            'data-msg-file-too-large': 'import.file_too_large'|trans({'%size%': '2MB'}),
+                            'data-msg-importing': 'import.importing_status'|trans
+                        }
+                    }) }}
                         <div class="mb-3">
                             {{ form_label(import_form.emails) }}
                             {{ form_widget(import_form.emails, {'attr': {'class': 'form-control', 'rows': 6}}) }}
@@ -73,7 +81,8 @@
 
                         <div class="mb-3">
                             {{ form_label(import_form.xmlFile) }}
-                            {{ form_widget(import_form.xmlFile, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_widget(import_form.xmlFile, {'attr': {'class': 'form-control', 'id': 'xml-file-input'}}) }}
+                            <div id="xml-file-error" class="invalid-feedback"></div>
                             {% if import_form.xmlFile.vars.errors|length > 0 %}
                                 <div class="invalid-feedback d-block">
                                     <ul class="list-unstyled mb-0">

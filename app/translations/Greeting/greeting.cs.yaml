@@ -9,6 +9,8 @@ import:
     error_xml_parsing: 'Chyba při zpracování XML souboru'
     error_no_data: 'Prosím zadejte seznam e-mailů nebo nahrajte XML soubor'
     error_validation: 'Formulář obsahuje chyby validace. Zkontrolujte pole níže.'
+    file_too_large: 'Soubor je příliš velký (max %size%)'
+    importing_status: 'Importuji...'
     date_label: 'Datum registrace'
     language_label: 'Jazyk'
     submit: 'Importovat kontakty'
