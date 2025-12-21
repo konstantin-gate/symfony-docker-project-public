@@ -75,9 +75,16 @@ class GreetingUiController extends AbstractController
                 $xmlFile = $importForm->get('xmlFile')->getData();
 
                 try {
-                    $countNewEmails = $this->greetingImportHandler->handleImport($data, $xmlFile);
+                    $xmlContent = $xmlFile ? file_get_contents($xmlFile->getPathname()) : null;
+                    $textContent = $data['emails'] ?? null;
 
-                    if ($countNewEmails === -1) {
+                    $countNewEmails = $this->greetingImportHandler->handleImport(
+                        $xmlContent !== false ? $xmlContent : null,
+                        $textContent,
+                        $data['language']
+                    );
+
+                    if ($countNewEmails === 0 && empty($xmlContent) && empty($textContent)) {
                         $this->addFlash('error', $this->translator->trans('import.error_no_data', [], 'greeting'));
                     } else {
                         $message = $countNewEmails > 0

@@ -7,27 +7,14 @@ namespace App\Tests\Greeting\Service;
 use App\Greeting\Service\GreetingXmlParser;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class GreetingXmlParserTest extends TestCase
 {
     private GreetingXmlParser $parser;
 
-    /** @var string[] */
-    private array $tempFiles = [];
-
     protected function setUp(): void
     {
         $this->parser = new GreetingXmlParser();
-    }
-
-    protected function tearDown(): void
-    {
-        foreach ($this->tempFiles as $file) {
-            if (file_exists($file)) {
-                @unlink($file);
-            }
-        }
     }
 
     public function testParseValidXml(): void
@@ -43,8 +30,7 @@ class GreetingXmlParserTest extends TestCase
     </group>
 </contacts>
 XML;
-        $file = $this->createMockUploadedFile($xml);
-        $result = $this->parser->parse($file);
+        $result = $this->parser->parse($xml);
 
         $this->assertCount(3, $result);
         $this->assertContains('user1@example.com', $result);
@@ -55,8 +41,7 @@ XML;
     public function testParseXmlWithNoEmails(): void
     {
         $xml = '<root><other>data</other><contact>no-email-tag</contact></root>';
-        $file = $this->createMockUploadedFile($xml);
-        $result = $this->parser->parse($file);
+        $result = $this->parser->parse($xml);
 
         $this->assertEmpty($result);
     }
@@ -64,12 +49,10 @@ XML;
     #[DataProvider('invalidXmlProvider')]
     public function testParseInvalidXml(string $invalidXml): void
     {
-        $file = $this->createMockUploadedFile($invalidXml);
-
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Invalid XML');
 
-        $this->parser->parse($file);
+        $this->parser->parse($invalidXml);
     }
 
     /**
@@ -84,11 +67,9 @@ XML;
         ];
     }
 
-    public function testParseEmptyFile(): void
+    public function testParseEmptyString(): void
     {
-        $file = $this->createMockUploadedFile('');
-        $result = $this->parser->parse($file);
-
+        $result = $this->parser->parse('');
         $this->assertEmpty($result);
     }
 
@@ -102,8 +83,7 @@ XML;
     <email></email>
 </contacts>
 XML;
-        $file = $this->createMockUploadedFile($xml);
-        $result = $this->parser->parse($file);
+        $result = $this->parser->parse($xml);
 
         $this->assertCount(2, $result);
         $this->assertEquals(['valid@example.com', 'another.valid@test.org'], array_values($result));
@@ -114,7 +94,6 @@ XML;
         // Create a "secret" file that we will try to read
         $secretFile = sys_get_temp_dir() . '/secret_test_file.txt';
         file_put_contents($secretFile, 'CONFIDENTIAL_DATA');
-        $this->tempFiles[] = $secretFile;
 
         // XML payload that attempts to include the secret file
         $xml = <<<XML
@@ -127,17 +106,19 @@ XML;
   <email>safe@example.com</email>
 </root>
 XML;
-        $file = $this->createMockUploadedFile($xml);
-        $result = $this->parser->parse($file);
+        try {
+            $result = $this->parser->parse($xml);
 
-        // Result should NOT contain the secret content
-        foreach ($result as $email) {
-            $this->assertStringNotContainsString('CONFIDENTIAL_DATA', $email);
+            // Result should NOT contain the secret content
+            foreach ($result as $email) {
+                $this->assertStringNotContainsString('CONFIDENTIAL_DATA', $email);
+            }
+
+            $this->assertContains('safe@example.com', $result);
+            $this->assertNotContains('CONFIDENTIAL_DATA', $result);
+        } finally {
+            @unlink($secretFile);
         }
-
-        // Only the safe email should be present (if the entity was ignored/empty)
-        $this->assertContains('safe@example.com', $result);
-        $this->assertNotContains('CONFIDENTIAL_DATA', $result);
     }
 
     public function testParseLargeXml(): void
@@ -150,9 +131,8 @@ XML;
         }
 
         $xml .= '</contacts>';
-        $file = $this->createMockUploadedFile($xml);
         $startTime = microtime(true);
-        $result = $this->parser->parse($file);
+        $result = $this->parser->parse($xml);
         $duration = microtime(true) - $startTime;
         $this->assertCount($count, $result);
 
@@ -168,8 +148,7 @@ XML;
     <ns2:email>prefixed_ns@example.com</ns2:email>
 </contacts>
 XML;
-        $file = $this->createMockUploadedFile($xml);
-        $result = $this->parser->parse($file);
+        $result = $this->parser->parse($xml);
 
         $this->assertCount(2, $result);
         $this->assertContains('default_ns@example.com', $result);
@@ -184,8 +163,7 @@ XML;
     <email><![CDATA[another@test.com]]></email>
 </contacts>
 XML;
-        $file = $this->createMockUploadedFile($xml);
-        $result = $this->parser->parse($file);
+        $result = $this->parser->parse($xml);
 
         $this->assertCount(2, $result);
         $this->assertContains('cdata_user@example.com', $result);
@@ -203,8 +181,7 @@ XML;
     <email>comment_test@example.com</email>
 </contacts>
 XML;
-        $file = $this->createMockUploadedFile($xml);
-        $result = $this->parser->parse($file);
+        $result = $this->parser->parse($xml);
 
         $this->assertCount(1, $result);
         $this->assertContains('comment_test@example.com', $result);
@@ -219,40 +196,11 @@ XML;
     <email>user@xn--80a1a.xn--p1ai</email>
 </contacts>
 XML;
-        $file = $this->createMockUploadedFile($xml);
-        $result = $this->parser->parse($file);
+        $result = $this->parser->parse($xml);
 
-        // user@xn--80a1a.xn--p1ai should always pass
         $this->assertContains('user@xn--80a1a.xn--p1ai', $result);
-
-        // pelé@example.com and user@пе́льмени.рф depend on filter_var flags
-        // We expect them to pass if we use FILTER_FLAG_EMAIL_UNICODE
         $this->assertContains('pelé@example.com', $result);
         $this->assertContains('user@пе́льмени.рф', $result);
-    }
-
-    public function testParseWithUnreadableFile(): void
-    {
-        $path = sys_get_temp_dir() . '/unreadable_' . uniqid('', true) . '.xml';
-        file_put_contents($path, '<root/>');
-        chmod($path, 0000); // Remove all permissions
-        $this->tempFiles[] = $path;
-
-        $file = new UploadedFile(
-            path: $path,
-            originalName: 'test.xml',
-            mimeType: 'text/xml',
-            error: null,
-            test: true
-        );
-
-        // Current implementation returns [] if file_get_contents returns false
-        $result = @$this->parser->parse($file);
-
-        $this->assertEmpty($result);
-
-        // Restore permissions so it can be deleted in tearDown
-        chmod($path, 0644);
     }
 
     public function testParseXmlWithDuplicateEmails(): void
@@ -265,10 +213,8 @@ XML;
     <email>unique@example.com</email>
 </contacts>
 XML;
-        $file = $this->createMockUploadedFile($xml);
-        $result = $this->parser->parse($file);
+        $result = $this->parser->parse($xml);
 
-        // We want uniqueness regardless of case for emails
         $this->assertCount(2, $result);
         $this->assertContains('duplicate@example.com', $result);
         $this->assertContains('unique@example.com', $result);
@@ -279,25 +225,9 @@ XML;
         $bom = "\xEF\xBB\xBF";
         $xml = '<contacts><email>bom_test@example.com</email></contacts>';
 
-        $file = $this->createMockUploadedFile($bom . $xml);
-        $result = $this->parser->parse($file);
+        $result = $this->parser->parse($bom . $xml);
 
         $this->assertCount(1, $result);
         $this->assertContains('bom_test@example.com', $result);
-    }
-
-    private function createMockUploadedFile(string $content): UploadedFile
-    {
-        $path = sys_get_temp_dir() . '/test_' . uniqid('', true) . '.xml';
-        file_put_contents($path, $content);
-        $this->tempFiles[] = $path;
-
-        return new UploadedFile(
-            path: $path,
-            originalName: 'test.xml',
-            mimeType: 'text/xml',
-            error: null,
-            test: true
-        );
     }
 }

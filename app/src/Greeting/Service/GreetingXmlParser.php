@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace App\Greeting\Service;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 class GreetingXmlParser
 {
     /**
      * @return string[]
      */
-    public function parse(UploadedFile $file): array
+    public function parse(string $content): array
     {
         $emails = [];
-        $content = file_get_contents($file->getPathname());
 
-        if (!$content) {
+        if (trim($content) === '') {
             return [];
         }
 

@@ -5,47 +5,69 @@ declare(strict_types=1);
 namespace App\Greeting\Service;
 
 use App\Greeting\Enum\GreetingLanguage;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Psr\Log\LoggerInterface;
 
 readonly class GreetingImportHandler
 {
     public function __construct(
-        private GreetingEmailParser $greetingEmailParser,
         private GreetingXmlParser $greetingXmlParser,
+        private GreetingEmailParser $greetingEmailParser,
         private GreetingContactService $greetingContactService,
+        private LoggerInterface $logger,
     ) {
     }
 
     /**
-     * @param array{emails: ?string, language: GreetingLanguage, registrationDate: \DateTime} $data
+     * @return int Number of newly imported contacts
      *
-     * @return int Number of newly imported emails
+     * @throws \Exception
      */
-    public function handleImport(array $data, ?UploadedFile $xmlFile): int
+    public function handleImport(?string $xmlContent, ?string $textContent, GreetingLanguage $language = GreetingLanguage::Russian): int
     {
         $emails = [];
 
-        // 1. Process Text Input
-        if (!empty($data['emails'])) {
-            $emails = $this->greetingEmailParser->parse($data['emails']);
+        // 1. Парсинг XML
+        if ($xmlContent !== null && trim($xmlContent) !== '') {
+            try {
+                $xmlEmails = $this->greetingXmlParser->parse($xmlContent);
+                $emails = array_merge($emails, $xmlEmails);
+            } catch (\Exception $e) {
+                $this->logger->error('XML parsing failed during import', [
+                    'error' => $e->getMessage(),
+                    'content_snippet' => mb_substr($xmlContent, 0, 100),
+                ]);
+                throw $e;
+            }
         }
 
-        // 2. Process XML File
-        if ($xmlFile) {
-            $xmlEmails = $this->greetingXmlParser->parse($xmlFile);
-            $emails = array_merge($emails, $xmlEmails);
+        // 2. Парсинг текстового поля
+        if ($textContent !== null && trim($textContent) !== '') {
+            try {
+                $textEmails = $this->greetingEmailParser->parse($textContent);
+                $emails = array_merge($emails, $textEmails);
+            } catch (\Exception $e) {
+                $this->logger->error('Text parsing failed during import', [
+                    'error' => $e->getMessage(),
+                ]);
+                throw $e;
+            }
         }
 
         $emails = array_unique($emails);
 
         if (empty($emails)) {
-            return -1; // Special value indicating no data was provided
+            return 0;
         }
 
-        return $this->greetingContactService->importContacts(
-            $emails,
-            $data['language'],
-            \DateTimeImmutable::createFromMutable($data['registrationDate'])
-        );
+        try {
+            // 3. Сохранение
+            return $this->greetingContactService->saveContacts($emails, $language);
+        } catch (\Exception $e) {
+            $this->logger->critical('Database error during contact import', [
+                'error' => $e->getMessage(),
+                'email_count' => \count($emails),
+            ]);
+            throw $e;
+        }
     }
 }
