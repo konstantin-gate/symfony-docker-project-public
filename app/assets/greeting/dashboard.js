@@ -31,6 +31,7 @@ $(function () {
             pageLength: 5,
             ordering: false,
             searching: false,
+            stateSave: true, // Enable state saving (pagination, length, etc.)
             info: false, // "Showing x of y" info
             autoWidth: false, // Sometimes helps with Bootstrap responsiveness
             columnDefs: [
@@ -160,4 +161,27 @@ $(function () {
             }
         });
     });
+
+    // --- Persistence for Subject and Body fields ---
+    const subjectInput = $('#subject');
+    const bodyInput = $('#body');
+    const storageKeySubject = 'greeting_dashboard_subject';
+    const storageKeyBody = 'greeting_dashboard_body';
+
+    // Restore values from LocalStorage
+    if (localStorage.getItem(storageKeySubject)) {
+        subjectInput.val(localStorage.getItem(storageKeySubject));
+    }
+    if (localStorage.getItem(storageKeyBody)) {
+        bodyInput.val(localStorage.getItem(storageKeyBody));
+    }
+
+    // Save values to LocalStorage on input
+    const saveState = function() {
+        localStorage.setItem(storageKeySubject, subjectInput.val());
+        localStorage.setItem(storageKeyBody, bodyInput.val());
+    };
+
+    subjectInput.on('input', saveState);
+    bodyInput.on('input', saveState);
 });
