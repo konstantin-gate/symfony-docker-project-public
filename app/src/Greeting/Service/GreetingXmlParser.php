@@ -20,21 +20,33 @@ class GreetingXmlParser
             return [];
         }
 
+        // Security: Explicitly disable external entity loading for libxml
+        $backupEntityLoader = libxml_use_internal_errors(true);
+        libxml_set_external_entity_loader(static fn () => null);
+
         try {
             $xml = simplexml_load_string($content);
 
-            if ($xml) {
-                foreach ($xml->email as $emailElement) {
-                    $email = trim((string) $emailElement);
+            if (false === $xml) {
+                $errors = libxml_get_errors();
+                libxml_clear_errors();
+                $lastError = reset($errors);
+                throw new \RuntimeException('Invalid XML: ' . ($lastError->message ?? 'unknown error'));
+            }
 
-                    if (filter_var($email, \FILTER_VALIDATE_EMAIL)) {
-                        $emails[] = $email;
-                    }
+            foreach ($xml->email as $emailElement) {
+                $email = trim((string) $emailElement);
+
+                if (filter_var($email, \FILTER_VALIDATE_EMAIL)) {
+                    $emails[] = $email;
                 }
             }
         } catch (\Exception $e) {
-            // Log error if needed or rethrow
             throw new \RuntimeException('Error parsing XML file: ' . $e->getMessage());
+        } finally {
+            // Restore libxml state
+            libxml_use_internal_errors($backupEntityLoader);
+            libxml_set_external_entity_loader(null);
         }
 
         return $emails;
