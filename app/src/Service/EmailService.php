@@ -30,7 +30,6 @@ readonly class EmailService
             ->to($to)
             ->subject($subject)
             ->htmlTemplate($template)
-//            ->textTemplate(str_replace('.html.twig', '.txt.twig', $template))
             ->context($context);
 
         $this->mailer->send($email);
