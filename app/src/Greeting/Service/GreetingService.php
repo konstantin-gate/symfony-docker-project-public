@@ -36,6 +36,11 @@ readonly class GreetingService
             $groupedContacts[$lang][] = $contact;
         }
 
+        // Ensure internal sorting for each group to be robust against repository changes
+        foreach ($groupedContacts as &$group) {
+            usort($group, static fn (GreetingContact $a, GreetingContact $b) => $a->getEmail() <=> $b->getEmail());
+        }
+
         return $groupedContacts;
     }
 }
