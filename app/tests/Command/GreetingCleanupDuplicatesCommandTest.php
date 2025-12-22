@@ -6,8 +6,6 @@ namespace App\Tests\Command;
 
 use App\Command\GreetingCleanupDuplicatesCommand;
 use App\Greeting\Entity\GreetingContact;
-use App\Greeting\Entity\GreetingLog;
-use App\Greeting\Enum\GreetingLanguage;
 use App\Greeting\Repository\GreetingContactRepository;
 use App\Greeting\Repository\GreetingLogRepository;
 use Doctrine\DBAL\Connection;
@@ -22,7 +20,6 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
     private EntityManagerInterface&MockObject $entityManager;
     private GreetingContactRepository&MockObject $contactRepository;
     private GreetingLogRepository&MockObject $logRepository;
-    private GreetingCleanupDuplicatesCommand $command;
     private CommandTester $commandTester;
 
     protected function setUp(): void
@@ -31,12 +28,12 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
         $this->contactRepository = $this->createMock(GreetingContactRepository::class);
         $this->logRepository = $this->createMock(GreetingLogRepository::class);
 
-        $this->command = new GreetingCleanupDuplicatesCommand(
+        $command = new GreetingCleanupDuplicatesCommand(
             $this->entityManager,
             $this->contactRepository,
             $this->logRepository
         );
-        $this->commandTester = new CommandTester($this->command);
+        $this->commandTester = new CommandTester($command);
     }
 
     public function testExecuteDryRunNoDuplicates(): void
@@ -60,10 +57,10 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
         // Mock finding duplicates
         $connection = $this->createMock(Connection::class);
         $this->entityManager->method('getConnection')->willReturn($connection);
-        
+
         $result = $this->createMock(Result::class);
         $result->method('fetchAllAssociative')->willReturn([
-            ['e' => 'dup@test.com', 'c' => 2]
+            ['e' => 'dup@test.com', 'c' => 2],
         ]);
         $connection->method('executeQuery')->willReturn($result);
 
@@ -77,7 +74,7 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
         $contact2->setCreatedAt(new \DateTimeImmutable('2024-01-02')); // Newer
 
         // Set IDs for output check
-        // Note: ID generation is usually handled by Doctrine, mocking/reflection might be needed if strictly required by test logic, 
+        // Note: ID generation is usually handled by Doctrine, mocking/reflection might be needed if strictly required by test logic,
         // but for this unit test, the objects are distinct enough.
 
         $this->contactRepository->expects($this->once())
@@ -105,16 +102,16 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
         // Mock finding duplicates
         $connection = $this->createMock(Connection::class);
         $this->entityManager->method('getConnection')->willReturn($connection);
-        
+
         $result = $this->createMock(Result::class);
         $result->method('fetchAllAssociative')->willReturn([
-            ['e' => 'winner@test.com', 'c' => 2]
+            ['e' => 'winner@test.com', 'c' => 2],
         ]);
         $connection->method('executeQuery')->willReturn($result);
 
         // Contacts
         $winner = new GreetingContact();
-        $winner->setEmail('winner@test.com'); 
+        $winner->setEmail('winner@test.com');
         $winner->setCreatedAt(new \DateTimeImmutable('2024-01-01')); // Older
 
         $loser = new GreetingContact();
@@ -136,7 +133,7 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
         $this->entityManager->expects($this->once())->method('beginTransaction');
         $this->entityManager->expects($this->once())->method('remove')->with($loser);
         // Winner is already lowercase, so no persist needed for normalization
-        $this->entityManager->expects($this->never())->method('persist'); 
+        $this->entityManager->expects($this->never())->method('persist');
         $this->entityManager->expects($this->once())->method('flush');
         $this->entityManager->expects($this->once())->method('commit');
 

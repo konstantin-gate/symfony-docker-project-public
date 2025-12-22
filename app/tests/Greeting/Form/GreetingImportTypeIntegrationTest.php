@@ -11,7 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class GreetingImportTypeIntegrationTest extends KernelTestCase
@@ -202,7 +201,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
         $form->submit([]);
 
         $this->assertTrue($form->isSynchronized());
-        // Form might be invalid due to other fields (registrationDate), 
+        // Form might be invalid due to other fields (registrationDate),
         // but it should not throw TypeError.
     }
 

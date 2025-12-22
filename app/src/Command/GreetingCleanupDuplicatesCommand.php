@@ -37,6 +37,9 @@ class GreetingCleanupDuplicatesCommand extends Command
         ;
     }
 
+    /**
+     * @throws Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -97,6 +100,7 @@ class GreetingCleanupDuplicatesCommand extends Command
 
     /**
      * @return string[]
+     *
      * @throws Exception
      */
     private function findDuplicateEmails(): array

@@ -104,7 +104,7 @@ class GreetingContactServiceTest extends TestCase
         // Actually our implementation keeps the first one encountered:
         // if (!isset($uniqueEmailsMap[$lower])) { $uniqueEmailsMap[$lower] = $cleaned; }
         // So 'UPPER@test.com' will be passed to repository.
-        
+
         $this->repository->expects($this->once())
             ->method('findNonExistingEmails')
             ->with(['UPPER@test.com'])
@@ -141,9 +141,9 @@ class GreetingContactServiceTest extends TestCase
 
         // Service Logic:
         // 1. Dedupes input -> ['New@test.com', 'EXISTING@test.com', 'another-new@test.com']
-        
+
         // Mock Repository:
-        // Returns only those NOT in DB. 
+        // Returns only those NOT in DB.
         // 'EXISTING@test.com' should be filtered out by repository.
         $this->repository->expects($this->once())
             ->method('findNonExistingEmails')
@@ -215,7 +215,7 @@ class GreetingContactServiceTest extends TestCase
     public function testPerformanceWithLargeBatch(): void
     {
         $batchSize = 1000;
-        $emails = array_map(static fn ($i) => "user{$i}@example.com", range(1, $batchSize));
+        $emails = array_map(static fn ($i) => "user$i@example.com", range(1, $batchSize));
 
         // Expect one call with large array
         $this->repository->expects($this->once())
@@ -267,7 +267,7 @@ class GreetingContactServiceTest extends TestCase
         // findNonExistingEmails should use LOWER() logic
         // If 'Choteticka1@seznam.cz' is in DB, querying for 'choteticka1@seznam.cz' should return it as existing.
         // Therefore, findNonExistingEmails should return empty array (no NEW emails found).
-        
+
         $this->repository->expects($this->once())
             ->method('findNonExistingEmails')
             ->with([$newEmailToImport])

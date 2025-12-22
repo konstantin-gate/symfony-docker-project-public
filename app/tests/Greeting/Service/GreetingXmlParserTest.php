@@ -106,6 +106,7 @@ XML;
   <email>safe@example.com</email>
 </root>
 XML;
+
         try {
             $result = $this->parser->parse($xml);
 
