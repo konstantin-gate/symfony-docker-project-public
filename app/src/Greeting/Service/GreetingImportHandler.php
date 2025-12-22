@@ -53,7 +53,7 @@ readonly class GreetingImportHandler
             }
         }
 
-        $emails = array_unique($emails);
+        $emails = array_values(array_unique($emails));
 
         if (empty($emails)) {
             return 0;
