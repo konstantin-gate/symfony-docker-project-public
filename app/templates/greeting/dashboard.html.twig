@@ -63,7 +63,8 @@
                     }) }}
                         <div class="mb-3">
                             {{ form_label(import_form.emails) }}
-                            {{ form_widget(import_form.emails, {'attr': {'class': 'form-control', 'rows': 6}}) }}
+                            {{ form_widget(import_form.emails, {'attr': {'class': 'form-control', 'rows': 6, 'id': 'import_emails'}}) }}
+                            <div id="email-validation-feedback" class="invalid-feedback" style="display: none;"></div>
                             {% if import_form.emails.vars.errors|length > 0 %}
                                 <div class="invalid-feedback d-block">
                                     <ul class="list-unstyled mb-0">
