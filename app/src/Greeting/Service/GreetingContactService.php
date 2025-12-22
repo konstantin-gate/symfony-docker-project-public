@@ -28,23 +28,32 @@ readonly class GreetingContactService
         }
 
         // Нормализация и реализация уникальности входных данных
-        $uniqueEmails = array_unique(array_filter(array_map(
-            static fn (string $email) => mb_strtolower(trim($email)),
-            $emails
-        )));
+        // Мы используем ключи массива для дедупликации, сохраняя оригинальное написание (хотя для сохранения все равно будет lower)
+        $uniqueEmailsMap = [];
 
-        if (empty($uniqueEmails)) {
+        foreach ($emails as $email) {
+            $cleaned = trim($email);
+
+            if ($cleaned === '') {
+                continue;
+            }
+
+            $lower = mb_strtolower($cleaned);
+
+            if (!isset($uniqueEmailsMap[$lower])) {
+                $uniqueEmailsMap[$lower] = $cleaned;
+            }
+        }
+
+        if (empty($uniqueEmailsMap)) {
             return 0;
         }
 
-        // Поиск существующих в базе
-        $existingContacts = $this->repository->findBy(['email' => $uniqueEmails]);
-        $existingEmails = array_map(
-            static fn ($contact) => mb_strtolower((string) $contact->getEmail()),
-            $existingContacts
-        );
+        $uniqueEmails = array_values($uniqueEmailsMap);
 
-        $emailsToCreate = array_diff($uniqueEmails, $existingEmails);
+        // Получаем список только тех email, которых еще нет в базе
+        // Метод репозитория теперь корректно работает с регистром
+        $emailsToCreate = $this->repository->findNonExistingEmails($uniqueEmails);
 
         if (empty($emailsToCreate)) {
             return 0;
@@ -53,6 +62,7 @@ readonly class GreetingContactService
         $now = new \DateTimeImmutable();
 
         foreach ($emailsToCreate as $email) {
+            // Factory создает сущность, и там внутри setEmail сделает strtolower
             $contact = $this->factory->create($email, $language, $now);
             $this->entityManager->persist($contact);
         }

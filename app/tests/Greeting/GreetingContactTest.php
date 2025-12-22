@@ -163,14 +163,14 @@ class GreetingContactTest extends TestCase
 
         // Test with different email formats
         $emails = [
-            'test@example.com',
-            'Test@Example.COM',
-            'test.email+tag@example.co.uk',
+            'test@example.com' => 'test@example.com',
+            'Test@Example.COM' => 'test@example.com',
+            'test.email+tag@example.co.uk' => 'test.email+tag@example.co.uk',
         ];
 
-        foreach ($emails as $email) {
-            $contact->setEmail($email);
-            $this->assertSame($email, $contact->getEmail());
+        foreach ($emails as $input => $expected) {
+            $contact->setEmail($input);
+            $this->assertSame($expected, $contact->getEmail());
         }
     }
 

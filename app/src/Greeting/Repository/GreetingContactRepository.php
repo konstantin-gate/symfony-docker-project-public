@@ -32,15 +32,60 @@ class GreetingContactRepository extends ServiceEntityRepository
      */
     public function findNonExistingEmails(array $emails): array
     {
-        // Získáme všechny existující e-maily z databáze, které jsou ve vstupním poli
+        if (empty($emails)) {
+            return [];
+        }
+
+        // Нормализуем входные данные к нижнему регистру для сравнения
+        $normalizedInputMap = [];
+
+        foreach ($emails as $email) {
+            $normalizedInputMap[mb_strtolower($email)] = $email; // map: lower -> original
+        }
+
+        $normalizedEmails = array_keys($normalizedInputMap);
+
+        // Находим те, которые УЖЕ ЕСТЬ в базе (по нижнему регистру)
         $existingEmails = $this->createQueryBuilder('c')
-            ->select('c.email')
-            ->where('c.email IN (:emails)')
-            ->setParameter('emails', $emails)
+            ->select('LOWER(c.email)')
+            ->where('LOWER(c.email) IN (:emails)')
+            ->setParameter('emails', $normalizedEmails)
             ->getQuery()
             ->getSingleColumnResult();
 
-        // Vrátíme e-maily, které jsou ve vstupním poli, ale nejsou v databázi
-        return array_diff($emails, $existingEmails);
+        // Удаляем из списка нормализованных входных те, что нашлись
+        $existingMap = array_flip($existingEmails); // для быстрого поиска
+
+        $nonExistingOriginals = [];
+
+        foreach ($normalizedInputMap as $lower => $original) {
+            if (!isset($existingMap[$lower])) {
+                $nonExistingOriginals[] = $original;
+            }
+        }
+
+        return $nonExistingOriginals;
+    }
+
+    /**
+     * @param string[] $emails
+     *
+     * @return GreetingContact[]
+     */
+    public function findByEmailsCaseInsensitive(array $emails): array
+    {
+        if (empty($emails)) {
+            return [];
+        }
+
+        // Use LOWER() for case insensitive search.
+        // Also normalize input emails to lowercase to ensure match.
+        $normalizedEmails = array_map(static fn (string $email) => mb_strtolower($email), $emails);
+
+        return $this->createQueryBuilder('c')
+            ->where('LOWER(c.email) IN (:emails)')
+            ->setParameter('emails', $normalizedEmails)
+            ->getQuery()
+            ->getResult();
     }
 }

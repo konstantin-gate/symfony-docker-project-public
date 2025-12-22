@@ -68,7 +68,7 @@ class GreetingContact
 
     public function setEmail(?string $email): self
     {
-        $this->email = $email;
+        $this->email = $email !== null ? mb_strtolower($email) : null;
 
         return $this;
     }

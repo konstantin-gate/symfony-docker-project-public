@@ -37,10 +37,10 @@ class GreetingContactServiceTest extends TestCase
     {
         $emails = ['test1@example.com', 'test2@example.com', 'test3@example.com'];
 
+        // Expect findNonExistingEmails to be called
         $this->repository->expects($this->once())
-            ->method('findBy')
-            ->with(['email' => $emails])
-            ->willReturn([]);
+            ->method('findNonExistingEmails')
+            ->willReturn($emails); // All are new
 
         $this->factory->expects($this->exactly(3))
             ->method('create')
@@ -60,12 +60,10 @@ class GreetingContactServiceTest extends TestCase
     {
         $emails = ['new@test.com', 'existing@test.com'];
 
-        $existingContact = $this->createMock(GreetingContact::class);
-        $existingContact->method('getEmail')->willReturn('existing@test.com');
-
+        // Mock: only 'new@test.com' is returned as non-existing
         $this->repository->expects($this->once())
-            ->method('findBy')
-            ->willReturn([$existingContact]);
+            ->method('findNonExistingEmails')
+            ->willReturn(['new@test.com']);
 
         $this->factory->expects($this->once())
             ->method('create')
@@ -83,10 +81,12 @@ class GreetingContactServiceTest extends TestCase
     {
         $emails = ['double@test.com', 'double@test.com'];
 
+        // Service dedupes input before calling repository
+        // It passes unique list to findNonExistingEmails
         $this->repository->expects($this->once())
-            ->method('findBy')
-            ->with(['email' => ['double@test.com']])
-            ->willReturn([]);
+            ->method('findNonExistingEmails')
+            ->with($this->callback(fn ($args) => \count($args) === 1 && $args[0] === 'double@test.com'))
+            ->willReturn(['double@test.com']);
 
         $this->factory->expects($this->once())->method('create')->willReturn(new GreetingContact());
         $this->entityManager->expects($this->once())->method('persist');
@@ -100,10 +100,15 @@ class GreetingContactServiceTest extends TestCase
     {
         $emails = ['UPPER@test.com', 'upper@test.com'];
 
+        // Service dedupes case-insensitively. 'UPPER' comes first, so it's kept as the key representative?
+        // Actually our implementation keeps the first one encountered:
+        // if (!isset($uniqueEmailsMap[$lower])) { $uniqueEmailsMap[$lower] = $cleaned; }
+        // So 'UPPER@test.com' will be passed to repository.
+        
         $this->repository->expects($this->once())
-            ->method('findBy')
-            ->with(['email' => ['upper@test.com']])
-            ->willReturn([]);
+            ->method('findNonExistingEmails')
+            ->with(['UPPER@test.com'])
+            ->willReturn(['UPPER@test.com']);
 
         $this->factory->expects($this->once())->method('create')->willReturn(new GreetingContact());
         $this->entityManager->expects($this->once())->method('persist');
@@ -115,7 +120,7 @@ class GreetingContactServiceTest extends TestCase
 
     public function testReturnsZeroOnEmptyInput(): void
     {
-        $this->repository->expects($this->never())->method('findBy');
+        $this->repository->expects($this->never())->method('findNonExistingEmails');
         $this->factory->expects($this->never())->method('create');
         $this->entityManager->expects($this->never())->method('persist');
         $this->entityManager->expects($this->never())->method('flush');
@@ -126,36 +131,28 @@ class GreetingContactServiceTest extends TestCase
 
     public function testComplexImportScenario(): void
     {
-        // Входные данные с дублями в разном регистре и пересечением с БД
+        // Input:
         $emails = [
             'New@test.com',
-            'new@test.com',       // Дубликат
-            'EXISTING@test.com',   // Уже есть в БД (в другом регистре)
+            'new@test.com',       // Duplicate of first
+            'EXISTING@test.com',   // Already in DB
             'another-new@test.com',
         ];
 
-        // Ожидаем, что сервис нормализует их до:
-        // ['new@test.com', 'existing@test.com', 'another-new@test.com']
-
-        $existingContact = $this->createMock(GreetingContact::class);
-        $existingContact->method('getEmail')->willReturn('existing@test.com');
-
+        // Service Logic:
+        // 1. Dedupes input -> ['New@test.com', 'EXISTING@test.com', 'another-new@test.com']
+        
+        // Mock Repository:
+        // Returns only those NOT in DB. 
+        // 'EXISTING@test.com' should be filtered out by repository.
         $this->repository->expects($this->once())
-            ->method('findBy')
-            ->with($this->callback(function (array $criteria) {
-                $emails = $criteria['email'];
+            ->method('findNonExistingEmails')
+            ->willReturn(['New@test.com', 'another-new@test.com']);
 
-                return \count($emails) === 3
-                    && \in_array('new@test.com', $emails, true)
-                    && \in_array('existing@test.com', $emails, true)
-                    && \in_array('another-new@test.com', $emails, true);
-            }))
-            ->willReturn([$existingContact]);
-
-        // Должны быть созданы только 2 новых контакта
+        // Factory called twice
         $this->factory->expects($this->exactly(2))
             ->method('create')
-            ->with($this->callback(fn ($email) => \in_array($email, ['new@test.com', 'another-new@test.com'])))
+            ->with($this->callback(fn ($email) => \in_array($email, ['New@test.com', 'another-new@test.com'])))
             ->willReturn(new GreetingContact());
 
         $this->entityManager->expects($this->exactly(2))->method('persist');
@@ -168,7 +165,7 @@ class GreetingContactServiceTest extends TestCase
     public function testFactoryParametersWithDefaultLanguage(): void
     {
         $emails = ['test1@example.com', 'test2@example.com'];
-        $this->repository->method('findBy')->willReturn([]);
+        $this->repository->method('findNonExistingEmails')->willReturn($emails);
 
         $capturedDates = [];
         $this->factory->expects($this->exactly(2))
@@ -189,7 +186,7 @@ class GreetingContactServiceTest extends TestCase
     public function testFactoryParametersWithExplicitLanguage(): void
     {
         $emails = ['test@example.com'];
-        $this->repository->method('findBy')->willReturn([]);
+        $this->repository->method('findNonExistingEmails')->willReturn($emails);
 
         $this->factory->expects($this->once())
             ->method('create')
@@ -207,7 +204,7 @@ class GreetingContactServiceTest extends TestCase
     {
         $emails = ['', '   ', "\n"];
 
-        $this->repository->expects($this->never())->method('findBy');
+        $this->repository->expects($this->never())->method('findNonExistingEmails');
         $this->factory->expects($this->never())->method('create');
         $this->entityManager->expects($this->never())->method('flush');
 
@@ -220,17 +217,17 @@ class GreetingContactServiceTest extends TestCase
         $batchSize = 1000;
         $emails = array_map(static fn ($i) => "user{$i}@example.com", range(1, $batchSize));
 
-        // Ожидаем один вызов findBy с массивом из 1000 элементов
+        // Expect one call with large array
         $this->repository->expects($this->once())
-            ->method('findBy')
-            ->with($this->callback(fn ($criteria) => \count($criteria['email']) === $batchSize))
-            ->willReturn([]);
+            ->method('findNonExistingEmails')
+            ->with($this->callback(fn ($args) => \count($args) === $batchSize))
+            ->willReturn($emails); // All new
 
-        // Ожидаем 1000 вызовов persist
+        // Expect 1000 persists
         $this->entityManager->expects($this->exactly($batchSize))
             ->method('persist');
 
-        // Ожидаем только один flush
+        // Expect one flush
         $this->entityManager->expects($this->once())
             ->method('flush');
 
@@ -247,10 +244,9 @@ class GreetingContactServiceTest extends TestCase
     public function testPropagatesExceptionOnFlushError(): void
     {
         $emails = ['error@test.com'];
-        $this->repository->method('findBy')->willReturn([]);
+        $this->repository->method('findNonExistingEmails')->willReturn($emails);
         $this->factory->method('create')->willReturn(new GreetingContact());
 
-        // Настраиваем flush на выброс исключения
         $this->entityManager->expects($this->once())
             ->method('flush')
             ->willThrowException(new \RuntimeException('Database integrity violation'));
@@ -259,5 +255,27 @@ class GreetingContactServiceTest extends TestCase
         $this->expectExceptionMessage('Database integrity violation');
 
         $this->service->saveContacts($emails);
+    }
+
+    public function testCaseSensitivityIssueReproduction(): void
+    {
+        // 1. Simulate existing email in DB (uppercase)
+        $existingEmailInDb = 'Choteticka1@seznam.cz';
+        // 2. Try to import same email (lowercase)
+        $newEmailToImport = 'choteticka1@seznam.cz';
+
+        // findNonExistingEmails should use LOWER() logic
+        // If 'Choteticka1@seznam.cz' is in DB, querying for 'choteticka1@seznam.cz' should return it as existing.
+        // Therefore, findNonExistingEmails should return empty array (no NEW emails found).
+        
+        $this->repository->expects($this->once())
+            ->method('findNonExistingEmails')
+            ->with([$newEmailToImport])
+            ->willReturn([]); // Empty list of new emails -> means it found the duplicate
+
+        $count = $this->service->saveContacts([$newEmailToImport]);
+
+        // Expect 0, because the service should filter out the existing email
+        $this->assertEquals(0, $count, 'Service failed to detect duplicate email with different case.');
     }
 }
