@@ -12,12 +12,14 @@ use App\Greeting\Service\GreetingContactService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class GreetingContactServiceTest extends TestCase
 {
     private GreetingContactRepository&MockObject $repository;
     private GreetingContactFactory&MockObject $factory;
     private EntityManagerInterface&MockObject $entityManager;
+    private LoggerInterface&MockObject $logger;
     private GreetingContactService $service;
 
     protected function setUp(): void
@@ -25,11 +27,13 @@ class GreetingContactServiceTest extends TestCase
         $this->repository = $this->createMock(GreetingContactRepository::class);
         $this->factory = $this->createMock(GreetingContactFactory::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->service = new GreetingContactService(
             $this->repository,
             $this->factory,
-            $this->entityManager
+            $this->entityManager,
+            $this->logger
         );
     }
 

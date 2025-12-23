@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Greeting\Controller;
 
-use App\Enum\Status;
 use App\Greeting\Entity\GreetingContact;
 use App\Greeting\Enum\GreetingLanguage;
+use App\Greeting\Exception\ContactAlreadyDeletedException;
+use App\Greeting\Exception\ContactAlreadyInactiveException;
 use App\Greeting\Form\GreetingImportType;
 use App\Greeting\Repository\GreetingContactRepository;
 use App\Greeting\Repository\GreetingLogRepository;
 use App\Greeting\Service\EmailGeneratorService;
+use App\Greeting\Service\GreetingContactService;
 use App\Greeting\Service\GreetingImportHandler;
 use App\Greeting\Service\GreetingMailService;
 use App\Greeting\Service\GreetingService;
-use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,13 +29,12 @@ class GreetingUiController extends AbstractController
     public function __construct(
         private readonly GreetingContactRepository $greetingContactRepository,
         private readonly GreetingLogRepository $greetingLogRepository,
-        private readonly EntityManagerInterface $entityManager,
         private readonly GreetingImportHandler $greetingImportHandler,
         private readonly GreetingMailService $greetingMailService,
         private readonly TranslatorInterface $translator,
         private readonly GreetingService $greetingService,
         private readonly EmailGeneratorService $emailGeneratorService,
-        private readonly LoggerInterface $logger,
+        private readonly GreetingContactService $greetingContactService,
     ) {
     }
 
@@ -145,26 +144,17 @@ class GreetingUiController extends AbstractController
             return $this->json(['success' => false], Response::HTTP_NOT_FOUND);
         }
 
-        if ($contact->getStatus() === Status::Deleted) {
-            $this->addFlash('warning', $this->translator->trans(
-                'dashboard.delete_error_already_deleted',
-                [],
+        try {
+            $this->greetingContactService->delete($contact);
+
+            $this->addFlash('success', $this->translator->trans(
+                'dashboard.delete_success',
+                ['%email%' => $contact->getEmail()],
                 'greeting'
             ));
-
-            // Return success=true to trigger reload and show the warning
-            return $this->json(['success' => true]);
+        } catch (ContactAlreadyDeletedException $e) {
+            $this->addFlash('warning', $this->translator->trans($e->getMessage(), [], 'greeting'));
         }
-
-        $contact->setStatus(Status::Deleted);
-        $this->entityManager->flush();
-
-        $this->logger->info('Greeting contact deleted: {email}', ['email' => $contact->getEmail()]);
-        $this->addFlash('success', $this->translator->trans(
-            'dashboard.delete_success',
-            ['%email%' => $contact->getEmail()],
-            'greeting'
-        ));
 
         return $this->json(['success' => true]);
     }
@@ -176,26 +166,17 @@ class GreetingUiController extends AbstractController
             return $this->json(['success' => false], Response::HTTP_NOT_FOUND);
         }
 
-        if ($contact->getStatus() === Status::Inactive || $contact->getStatus() === Status::Deleted) {
-            $this->addFlash('warning', $this->translator->trans(
-                'dashboard.deactivate_error_already_inactive',
-                [],
+        try {
+            $this->greetingContactService->deactivate($contact);
+
+            $this->addFlash('success', $this->translator->trans(
+                'dashboard.deactivate_success',
+                ['%email%' => $contact->getEmail()],
                 'greeting'
             ));
-
-            // Return success=true to trigger reload and show the warning
-            return $this->json(['success' => true]);
+        } catch (ContactAlreadyInactiveException $e) {
+            $this->addFlash('warning', $this->translator->trans($e->getMessage(), [], 'greeting'));
         }
-
-        $contact->setStatus(Status::Inactive);
-        $this->entityManager->flush();
-
-        $this->logger->info('Greeting contact deactivated: {email}', ['email' => $contact->getEmail()]);
-        $this->addFlash('success', $this->translator->trans(
-            'dashboard.deactivate_success',
-            ['%email%' => $contact->getEmail()],
-            'greeting'
-        ));
 
         return $this->json(['success' => true]);
     }

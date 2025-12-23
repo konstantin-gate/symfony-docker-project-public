@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace App\Greeting\Service;
 
+use App\Enum\Status;
+use App\Greeting\Entity\GreetingContact;
 use App\Greeting\Enum\GreetingLanguage;
+use App\Greeting\Exception\ContactAlreadyDeletedException;
+use App\Greeting\Exception\ContactAlreadyInactiveException;
 use App\Greeting\Factory\GreetingContactFactory;
 use App\Greeting\Repository\GreetingContactRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 
 readonly class GreetingContactService
 {
@@ -15,6 +20,7 @@ readonly class GreetingContactService
         private GreetingContactRepository $repository,
         private GreetingContactFactory $factory,
         private EntityManagerInterface $entityManager,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -70,5 +76,27 @@ readonly class GreetingContactService
         $this->entityManager->flush();
 
         return \count($emailsToCreate);
+    }
+
+    public function delete(GreetingContact $contact): void
+    {
+        if ($contact->getStatus() === Status::Deleted) {
+            throw new ContactAlreadyDeletedException('dashboard.delete_error_already_deleted');
+        }
+
+        $contact->setStatus(Status::Deleted);
+        $this->entityManager->flush();
+        $this->logger->info('Greeting contact deleted: {email}', ['email' => $contact->getEmail()]);
+    }
+
+    public function deactivate(GreetingContact $contact): void
+    {
+        if ($contact->getStatus() === Status::Inactive || $contact->getStatus() === Status::Deleted) {
+            throw new ContactAlreadyInactiveException('dashboard.deactivate_error_already_inactive');
+        }
+
+        $contact->setStatus(Status::Inactive);
+        $this->entityManager->flush();
+        $this->logger->info('Greeting contact deactivated: {email}', ['email' => $contact->getEmail()]);
     }
 }
