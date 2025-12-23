@@ -99,8 +99,7 @@ class GreetingMailServiceTest extends TestCase
                 /** @var EmailRequest $request */
                 $request = $requests[0];
 
-                return $request instanceof EmailRequest
-                    && $request->to === 'test@example.com'
+                return $request->to === 'test@example.com'
                     && $request->subject === $subject
                     && $request->template === 'email/greeting.html.twig'
                     && ($request->context['subject'] ?? null) === $subject
@@ -116,7 +115,7 @@ class GreetingMailServiceTest extends TestCase
     /**
      * @throws ExceptionInterface
      */
-    public function testContinuesOnServiceException(): void
+    public function testHandlesServiceExceptionInBatch(): void
     {
         $contact1 = $this->createMock(GreetingContact::class);
         $contact1->method('getEmail')->willReturn('user1@example.com');
@@ -129,29 +128,22 @@ class GreetingMailServiceTest extends TestCase
             ['id-2', $contact2],
         ]);
 
-        // First call fails, second succeeds
-        $this->emailSequenceService->expects($this->exactly(2))
+        $this->emailSequenceService->expects($this->once())
             ->method('sendSequence')
-            ->willReturnCallback(function (array $requests) {
-                if ($requests[0]->to === 'user1@example.com') {
-                    throw new \RuntimeException('API Down');
-                }
-
-                return null;
-            });
+            ->willThrowException(new \RuntimeException('API Down'));
 
         $this->logger->expects($this->once())
-            ->method('error')
-            ->with($this->stringContains('Failed to queue greeting'), $this->arrayHasKey('error'));
+            ->method('critical')
+            ->with($this->stringContains('Failed to queue greeting sequence'), $this->arrayHasKey('error'));
 
         $result = $this->service->sendGreetings(['id-1', 'id-2'], 'Sub', 'Body');
-        $this->assertSame(1, $result); // Only one succeeded
+        $this->assertSame(0, $result);
     }
 
     /**
      * @throws ExceptionInterface
      */
-    public function testContinuesOnMessengerException(): void
+    public function testHandlesMessengerExceptionInBatch(): void
     {
         $contact = $this->createMock(GreetingContact::class);
         $contact->method('getEmail')->willReturn('user@example.com');
@@ -163,8 +155,8 @@ class GreetingMailServiceTest extends TestCase
             ->willThrowException(new TransportException('RabbitMQ is down'));
 
         $this->logger->expects($this->once())
-            ->method('error')
-            ->with($this->stringContains('Failed to queue greeting'));
+            ->method('critical')
+            ->with($this->stringContains('Failed to queue greeting sequence'));
 
         $result = $this->service->sendGreetings(['id-1'], 'Sub', 'Body');
 

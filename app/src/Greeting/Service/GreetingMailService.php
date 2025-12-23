@@ -31,7 +31,7 @@ readonly class GreetingMailService
             return 0;
         }
 
-        $successCount = 0;
+        $emailRequests = [];
 
         foreach ($contactIds as $id) {
             $contact = $this->greetingContactRepository->find($id);
@@ -48,29 +48,31 @@ readonly class GreetingMailService
                 continue;
             }
 
-            try {
-                $emailRequest = new EmailRequest(
-                    to: $email,
-                    subject: $subject,
-                    template: 'email/greeting.html.twig',
-                    context: ['subject' => $subject, 'body' => $body]
-                );
-
-                $this->emailSequenceService->sendSequence([$emailRequest]);
-                ++$successCount;
-            } catch (\Exception $e) {
-                $this->logger->error('Failed to queue greeting for contact {id}: {error}', [
-                    'id' => $id,
-                    'error' => $e->getMessage(),
-                ]);
-            }
+            $emailRequests[] = new EmailRequest(
+                to: $email,
+                subject: $subject,
+                template: 'email/greeting.html.twig',
+                context: ['subject' => $subject, 'body' => $body]
+            );
         }
 
+        $successCount = \count($emailRequests);
+
         if ($successCount > 0) {
-            $this->logger->info('Queued {count} greeting emails with subject "{subject}"', [
-                'count' => $successCount,
-                'subject' => $subject,
-            ]);
+            try {
+                $this->emailSequenceService->sendSequence($emailRequests);
+
+                $this->logger->info('Queued {count} greeting emails with subject "{subject}"', [
+                    'count' => $successCount,
+                    'subject' => $subject,
+                ]);
+            } catch (\Exception $e) {
+                $this->logger->critical('Failed to queue greeting sequence: {error}', [
+                    'error' => $e->getMessage(),
+                ]);
+
+                return 0;
+            }
         }
 
         return $successCount;
