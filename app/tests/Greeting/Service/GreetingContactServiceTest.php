@@ -8,6 +8,9 @@ use App\Greeting\Entity\GreetingContact;
 use App\Greeting\Enum\GreetingLanguage;
 use App\Greeting\Factory\GreetingContactFactory;
 use App\Greeting\Repository\GreetingContactRepository;
+use App\Enum\Status;
+use App\Greeting\Exception\ContactAlreadyDeletedException;
+use App\Greeting\Exception\ContactAlreadyInactiveException;
 use App\Greeting\Service\GreetingContactService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -35,6 +38,67 @@ class GreetingContactServiceTest extends TestCase
             $this->entityManager,
             $this->logger
         );
+    }
+
+    public function testDeleteChangesStatusToDeleted(): void
+    {
+        $contact = new GreetingContact();
+        $contact->setEmail('test@example.com');
+        $contact->setStatus(Status::Active);
+
+        $this->entityManager->expects($this->once())->method('flush');
+        $this->logger->expects($this->once())->method('info');
+
+        $this->service->delete($contact);
+
+        $this->assertEquals(Status::Deleted, $contact->getStatus());
+    }
+
+    public function testDeleteThrowsExceptionIfAlreadyDeleted(): void
+    {
+        $contact = new GreetingContact();
+        $contact->setStatus(Status::Deleted);
+
+        $this->expectException(ContactAlreadyDeletedException::class);
+        $this->entityManager->expects($this->never())->method('flush');
+
+        $this->service->delete($contact);
+    }
+
+    public function testDeactivateChangesStatusToInactive(): void
+    {
+        $contact = new GreetingContact();
+        $contact->setEmail('test@example.com');
+        $contact->setStatus(Status::Active);
+
+        $this->entityManager->expects($this->once())->method('flush');
+        $this->logger->expects($this->once())->method('info');
+
+        $this->service->deactivate($contact);
+
+        $this->assertEquals(Status::Inactive, $contact->getStatus());
+    }
+
+    public function testDeactivateThrowsExceptionIfAlreadyInactive(): void
+    {
+        $contact = new GreetingContact();
+        $contact->setStatus(Status::Inactive);
+
+        $this->expectException(ContactAlreadyInactiveException::class);
+        $this->entityManager->expects($this->never())->method('flush');
+
+        $this->service->deactivate($contact);
+    }
+
+    public function testDeactivateThrowsExceptionIfDeleted(): void
+    {
+        $contact = new GreetingContact();
+        $contact->setStatus(Status::Deleted);
+
+        $this->expectException(ContactAlreadyInactiveException::class);
+        $this->entityManager->expects($this->never())->method('flush');
+
+        $this->service->deactivate($contact);
     }
 
     public function testSaveUniqueContacts(): void
