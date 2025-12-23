@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace App\Greeting\Service;
 
-use App\DTO\EmailRequest;
-use App\Greeting\Repository\GreetingContactRepository;
-use App\Service\EmailSequenceService;
+use App\Greeting\Message\BulkEmailDispatchMessage;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
 readonly class GreetingMailService
 {
     public function __construct(
-        private GreetingContactRepository $greetingContactRepository,
-        private EmailSequenceService $emailSequenceService,
+        private MessageBusInterface $bus,
         private LoggerInterface $logger,
     ) {
     }
@@ -31,50 +29,20 @@ readonly class GreetingMailService
             return 0;
         }
 
-        $emailRequests = [];
+        // Normalize IDs to strings to ensure safe serialization
+        $stringIds = array_map(static fn ($id) => (string) $id, $contactIds);
+        $message = new BulkEmailDispatchMessage(
+            contactIds: $stringIds,
+            subject: $subject,
+            body: $body
+        );
+        $this->bus->dispatch($message);
+        $count = \count($stringIds);
+        $this->logger->info('Dispatched bulk email job for {count} contacts.', [
+            'count' => $count,
+            'subject' => $subject,
+        ]);
 
-        foreach ($contactIds as $id) {
-            $contact = $this->greetingContactRepository->find($id);
-
-            if (!$contact) {
-                $this->logger->error('Contact with ID {id} not found, skipping.', ['id' => $id]);
-                continue;
-            }
-
-            $email = (string) $contact->getEmail();
-
-            if ($email === '') {
-                $this->logger->error('Contact with ID {id} has no email address, skipping.', ['id' => $id]);
-                continue;
-            }
-
-            $emailRequests[] = new EmailRequest(
-                to: $email,
-                subject: $subject,
-                template: 'email/greeting.html.twig',
-                context: ['subject' => $subject, 'body' => $body]
-            );
-        }
-
-        $successCount = \count($emailRequests);
-
-        if ($successCount > 0) {
-            try {
-                $this->emailSequenceService->sendSequence($emailRequests);
-
-                $this->logger->info('Queued {count} greeting emails with subject "{subject}"', [
-                    'count' => $successCount,
-                    'subject' => $subject,
-                ]);
-            } catch (\Exception $e) {
-                $this->logger->critical('Failed to queue greeting sequence: {error}', [
-                    'error' => $e->getMessage(),
-                ]);
-
-                return 0;
-            }
-        }
-
-        return $successCount;
+        return $count;
     }
 }

@@ -88,4 +88,23 @@ class GreetingContactRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @param string[] $ids
+     *
+     * @return string[]
+     */
+    public function findEmailsByIds(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('c')
+            ->select('c.email')
+            ->where('c.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getSingleColumnResult();
+    }
 }
