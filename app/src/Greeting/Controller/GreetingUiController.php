@@ -109,6 +109,14 @@ class GreetingUiController extends AbstractController
     #[Route('/{_locale}/greeting/send', name: 'greeting_send', requirements: ['_locale' => '%app.supported_locales%'], methods: ['POST'])]
     public function send(Request $request): Response
     {
+        $token = (string) $request->request->get('_token');
+
+        if (!$this->isCsrfTokenValid('greeting_send', $token)) {
+            $this->addFlash('error', $this->translator->trans('import.error_validation', [], 'greeting'));
+
+            return $this->redirectToRoute('greeting_dashboard', ['_locale' => $request->getLocale()]);
+        }
+
         $selectedIds = $request->request->all('contacts');
         $subject = (string) $request->request->get('subject');
         $body = (string) $request->request->get('body');

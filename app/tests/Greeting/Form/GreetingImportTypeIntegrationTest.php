@@ -47,7 +47,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
      */
     public function testFormCreationFromContainer(): void
     {
-        $form = $this->formFactory->create(GreetingImportType::class);
+        $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
         $this->assertInstanceOf(FormInterface::class, $form);
 
@@ -67,7 +67,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
      */
     public function testSubmitValidDataWithContainerValidation(): void
     {
-        $form = $this->formFactory->create(GreetingImportType::class);
+        $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
         $form->submit([
             'emails' => "test1@example.com\ntest2@example.com",
@@ -96,7 +96,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
      */
     public function testValidationWithContainerValidator(): void
     {
-        $form = $this->formFactory->create(GreetingImportType::class);
+        $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
         $form->submit([
             'emails' => "test1@example.com\ninvalid_email",
             'registrationDate' => (new \DateTimeImmutable())->format('Y-m-d'),
@@ -125,7 +125,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
      */
     public function testTranslationsAndLabels(): void
     {
-        $form = $this->formFactory->create(GreetingImportType::class);
+        $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
         // Kontrola atributů pole emails
         $emailsAttr = $form->get('emails')->getConfig()->getOption('attr');
@@ -153,7 +153,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
      */
     public function testEnumTypeIntegration(): void
     {
-        $form = $this->formFactory->create(GreetingImportType::class);
+        $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
         // Kontrola konfigurace EnumType
         $languageConfig = $form->get('language')->getConfig();
@@ -175,7 +175,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
      */
     public function testDefaultDateValue(): void
     {
-        $form = $this->formFactory->create(GreetingImportType::class);
+        $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
         // Kontrola, že je nastavena výchozí hodnota
         $dateConfig = $form->get('registrationDate')->getConfig();
@@ -195,7 +195,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
      */
     public function testEmptyDataHandling(): void
     {
-        $form = $this->formFactory->create(GreetingImportType::class);
+        $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
         // Toto vyvolá TypeError v callback-validatoru v předchozí verzi
         $form->submit([]);
@@ -210,7 +210,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
      */
     public function testBulkDataSubmission(): void
     {
-        $form = $this->formFactory->create(GreetingImportType::class);
+        $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
         // Generování 100 e-mailů
         $emails = [];
@@ -248,7 +248,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
 
         foreach ($testDates as $dateString) {
             // Vytvoříme NOVÝ formulář pro každou iteraci
-            $form = $this->formFactory->create(GreetingImportType::class);
+            $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
             $form->submit([
                 'emails' => 'test@example.com',
@@ -288,7 +288,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
 
         foreach ($invalidDates as $dateString) {
             // Nový formulář pro každou iteraci
-            $form = $this->formFactory->create(GreetingImportType::class);
+            $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
             $form->submit([
                 'emails' => 'test@example.com',
@@ -325,7 +325,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
     {
         foreach (GreetingLanguage::cases() as $language) {
             // Vytvoříme NOVÝ formulář pro každý jazyk
-            $form = $this->formFactory->create(GreetingImportType::class);
+            $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
             $form->submit([
                 'emails' => 'test@example.com',
@@ -380,7 +380,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
 
         foreach ($testCases as $testCase) {
             // Vytvoříme NOVÝ formulář pro každý testovací případ
-            $form = $this->formFactory->create(GreetingImportType::class);
+            $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
             $form->submit([
                 'emails' => $testCase['input'],
@@ -417,7 +417,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
 
         foreach ($testInputs as $input) {
             // Vytvoříme NOVÝ formulář pro každý testovací případ
-            $form = $this->formFactory->create(GreetingImportType::class);
+            $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
             $form->submit([
                 'emails' => $input,
@@ -445,7 +445,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
     public function testConstraintValidationWithRealValidator(): void
     {
         // Vytvoříme formulář
-        $form = $this->formFactory->create(GreetingImportType::class);
+        $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
         // Získáme konfiguraci pole emails
         $emailsConfig = $form->get('emails')->getConfig();
@@ -468,7 +468,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
      */
     public function testSubmitButtonConfiguration(): void
     {
-        $form = $this->formFactory->create(GreetingImportType::class);
+        $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
         $submitConfig = $form->get('import')->getConfig();
 
@@ -491,7 +491,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
         foreach ($locales as $locale) {
             // Vytvoříme formulář v kontextu locale
             // V reálné aplikaci by to bylo provedeno přes RequestContext
-            $form = $this->formFactory->create(GreetingImportType::class);
+            $form = $this->formFactory->create(GreetingImportType::class, null, ['csrf_protection' => false]);
 
             $form->submit([
                 'emails' => 'test@example.com',

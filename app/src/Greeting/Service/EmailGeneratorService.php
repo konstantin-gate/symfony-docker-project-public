@@ -24,7 +24,7 @@ class EmailGeneratorService
         $emails = [];
 
         for ($i = 0; $i < $count; ++$i) {
-            $emails[] = $this->faker->unique()->safeEmail;
+            $emails[] = $this->faker->unique()->safeEmail();
         }
 
         return $emails;
