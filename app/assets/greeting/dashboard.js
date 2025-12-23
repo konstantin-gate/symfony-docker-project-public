@@ -217,6 +217,26 @@ $(function () {
         });
     });
 
+    // --- Persistence for Active Tab ---
+    const storageKeyActiveTab = 'greeting_dashboard_active_tab';
+    const tabElements = document.querySelectorAll('button[data-bs-toggle="tab"]');
+
+    // Restore active tab
+    const savedTabId = localStorage.getItem(storageKeyActiveTab);
+    if (savedTabId) {
+        const tabToActivate = document.querySelector(`button[data-bs-toggle="tab"][id="${savedTabId}"]`);
+        if (tabToActivate) {
+            tabToActivate.click();
+        }
+    }
+
+    // Save active tab on change
+    tabElements.forEach(el => {
+        el.addEventListener('shown.bs.tab', event => {
+            localStorage.setItem(storageKeyActiveTab, event.target.id);
+        });
+    });
+
     // --- Persistence for Subject and Body fields ---
     const subjectInput = $('#subject');
     const bodyInput = $('#body');
