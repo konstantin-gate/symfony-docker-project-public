@@ -15,7 +15,6 @@ use App\Greeting\Service\EmailGeneratorService;
 use App\Greeting\Service\GreetingContactService;
 use App\Greeting\Service\GreetingImportHandler;
 use App\Greeting\Service\GreetingMailService;
-use App\Greeting\Service\GreetingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,7 +31,6 @@ class GreetingUiController extends AbstractController
         private readonly GreetingImportHandler $greetingImportHandler,
         private readonly GreetingMailService $greetingMailService,
         private readonly TranslatorInterface $translator,
-        private readonly GreetingService $greetingService,
         private readonly EmailGeneratorService $emailGeneratorService,
         private readonly GreetingContactService $greetingContactService,
     ) {
@@ -46,7 +44,7 @@ class GreetingUiController extends AbstractController
     public function index(): Response
     {
         $importForm = $this->createForm(GreetingImportType::class);
-        $groupedContacts = $this->greetingService->getContactsGroupedByLanguage();
+        $groupedContacts = $this->greetingContactRepository->findAllActiveGroupedByLanguage();
 
         // Získáme seznam ID kontaktů, kterým byl odeslán e-mail za posledních 7 dní
         $greetedContactIds = $this->greetingLogRepository->findGreetedContactIdsSince(

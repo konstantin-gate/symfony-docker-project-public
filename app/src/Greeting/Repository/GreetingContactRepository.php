@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Greeting\Repository;
 
+use App\Enum\Status;
 use App\Greeting\Entity\GreetingContact;
+use App\Greeting\Enum\GreetingLanguage;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -21,6 +23,28 @@ class GreetingContactRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, GreetingContact::class);
+    }
+
+    /**
+     * @return array<string, array<int, GreetingContact>>
+     */
+    public function findAllActiveGroupedByLanguage(): array
+    {
+        // Get all active contacts sorted by email
+        $contacts = $this->findBy(['status' => Status::Active], ['email' => 'ASC']);
+
+        $groupedContacts = [];
+
+        foreach (GreetingLanguage::cases() as $langEnum) {
+            $groupedContacts[$langEnum->value] = [];
+        }
+
+        foreach ($contacts as $contact) {
+            $lang = $contact->getLanguage()->value;
+            $groupedContacts[$lang][] = $contact;
+        }
+
+        return $groupedContacts;
     }
 
     /**
