@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Greeting\Service;
 
+use App\Greeting\DTO\GreetingImportResult;
 use App\Greeting\Enum\GreetingLanguage;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -19,20 +20,17 @@ readonly class GreetingImportHandler
     ) {
     }
 
-    /**
-     * @return int Number of newly imported contacts
-     *
-     * @throws \Exception
-     */
     public function handleImport(
         ?string $xmlFilePath,
         ?string $textContent,
         GreetingLanguage $language = GreetingLanguage::Russian,
-    ): int {
+    ): GreetingImportResult {
         $count = 0;
+        $hasData = false;
 
         // 1. Parsing text field
         if ($textContent !== null && trim($textContent) !== '') {
+            $hasData = true;
             try {
                 $textEmails = $this->greetingEmailParser->parse($textContent);
                 $textEmails = array_values(array_unique($textEmails));
@@ -44,12 +42,14 @@ readonly class GreetingImportHandler
                 $this->logger->error('Text parsing failed during import', [
                     'error' => $e->getMessage(),
                 ]);
-                throw $e;
+
+                return GreetingImportResult::failure('import.error_validation');
             }
         }
 
         // 2. XML Parsing (Streaming)
         if ($xmlFilePath !== null) {
+            $hasData = true;
             try {
                 $batch = [];
                 $batchSize = 500;
@@ -75,10 +75,15 @@ readonly class GreetingImportHandler
                     'error' => $e->getMessage(),
                     'file' => $xmlFilePath,
                 ]);
-                throw $e;
+
+                return GreetingImportResult::failure('import.error_xml_parsing');
             }
         }
 
-        return $count;
+        if (!$hasData) {
+            return GreetingImportResult::failure('import.error_no_data');
+        }
+
+        return GreetingImportResult::success($count);
     }
 }

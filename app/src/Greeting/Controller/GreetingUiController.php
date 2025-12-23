@@ -73,26 +73,23 @@ class GreetingUiController extends AbstractController
                 /** @var UploadedFile|null $xmlFile */
                 $xmlFile = $importForm->get('xmlFile')->getData();
 
-                try {
-                    $xmlFilePath = $xmlFile?->getPathname();
-                    $textContent = $data['emails'] ?? null;
+                $xmlFilePath = $xmlFile?->getPathname();
+                $textContent = $data['emails'] ?? null;
 
-                    $countNewEmails = $this->greetingImportHandler->handleImport(
-                        $xmlFilePath,
-                        $textContent,
-                        $data['language']
-                    );
+                $result = $this->greetingImportHandler->handleImport(
+                    $xmlFilePath,
+                    $textContent,
+                    $data['language']
+                );
 
-                    if ($countNewEmails === 0 && empty($xmlFilePath) && empty($textContent)) {
-                        $this->addFlash('error', $this->translator->trans('import.error_no_data', [], 'greeting'));
-                    } else {
-                        $message = $countNewEmails > 0
-                            ? $this->translator->trans('import.success', ['%count%' => $countNewEmails], 'greeting')
-                            : $this->translator->trans('import.success_zero', [], 'greeting');
-                        $this->addFlash('success', $message);
-                    }
-                } catch (\Exception) {
-                    $this->addFlash('error', $this->translator->trans('import.error_xml_parsing', [], 'greeting'));
+                if ($result->isSuccess) {
+                    $message = $result->count > 0
+                        ? $this->translator->trans('import.success', ['%count%' => $result->count], 'greeting')
+                        : $this->translator->trans('import.success_zero', [], 'greeting');
+                    $this->addFlash('success', $message);
+                } else {
+                    $errorKey = $result->errorKey ?? 'import.error_validation';
+                    $this->addFlash('error', $this->translator->trans($errorKey, [], 'greeting'));
                 }
             } else {
                 $this->addFlash('error', $this->translator->trans('import.error_validation', [], 'greeting'));

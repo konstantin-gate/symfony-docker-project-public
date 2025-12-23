@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Greeting\Service;
 
+use App\Greeting\DTO\GreetingImportResult;
 use App\Greeting\Enum\GreetingLanguage;
 use App\Greeting\Service\GreetingContactService;
 use App\Greeting\Service\GreetingEmailParser;
@@ -52,9 +53,6 @@ class GreetingImportHandlerTest extends TestCase
         }
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testImportSuccess(): void
     {
         $xmlFile = '/tmp/test.xml';
@@ -70,17 +68,16 @@ class GreetingImportHandlerTest extends TestCase
             ->with($emails, GreetingLanguage::Russian)
             ->willReturn(1);
 
-        // Expect clear() after processing the batch/end
         $this->entityManager->expects($this->once())->method('clear');
 
         $result = $this->handler->handleImport($xmlFile, null);
 
-        $this->assertEquals(1, $result);
+        $this->assertInstanceOf(GreetingImportResult::class, $result);
+        $this->assertTrue($result->isSuccess);
+        $this->assertEquals(1, $result->count);
+        $this->assertNull($result->errorKey);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testImportFromTextOnly(): void
     {
         $textContent = 'text@test.com';
@@ -96,21 +93,12 @@ class GreetingImportHandlerTest extends TestCase
             ->with($emails, GreetingLanguage::Russian)
             ->willReturn(1);
 
-        // No XML file, so loop doesn't run, no batch clear.
-        // Wait, text import doesn't clear EM in current impl?
-        // Let's check impl:
-        // if ($textContent) { ... saveContacts ... }
-        // if ($xmlFilePath) { ... }
-        // The text part does NOT clear EM in my implementation.
-        // This is fine as text content is usually small (from textarea).
-
         $result = $this->handler->handleImport(null, $textContent);
-        $this->assertEquals(1, $result);
+
+        $this->assertTrue($result->isSuccess);
+        $this->assertEquals(1, $result->count);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testImportFromTextAndXml(): void
     {
         $xmlFile = '/tmp/test.xml';
@@ -121,21 +109,16 @@ class GreetingImportHandlerTest extends TestCase
 
         $this->contactService->expects($this->exactly(2))
             ->method('saveContacts')
-            ->willReturnMap([
-                [['text@test.com'], GreetingLanguage::Russian, 1], // First call (Text) returns 1
-                [['xml@test.com'], GreetingLanguage::Russian, 1],  // Second call (XML) returns 1
-            ]);
+            ->willReturnOnConsecutiveCalls(1, 1);
 
         $this->entityManager->expects($this->once())->method('clear');
 
         $result = $this->handler->handleImport($xmlFile, $textContent);
 
-        $this->assertEquals(2, $result);
+        $this->assertTrue($result->isSuccess);
+        $this->assertEquals(2, $result->count);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testPassesCustomLanguageToContactService(): void
     {
         $xmlFile = '/tmp/test.xml';
@@ -149,30 +132,24 @@ class GreetingImportHandlerTest extends TestCase
         $this->entityManager->expects($this->once())->method('clear');
 
         $result = $this->handler->handleImport($xmlFile, null, GreetingLanguage::English);
-        $this->assertEquals(1, $result);
+        $this->assertTrue($result->isSuccess);
+        $this->assertEquals(1, $result->count);
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function testReturnsZeroWhenParsersReturnEmpty(): void
+    public function testReturnsSuccessZeroWhenParsersReturnEmpty(): void
     {
         $this->xmlParser->method('parse')->willReturn($this->mockXmlGenerator([]));
         $this->emailParser->method('parse')->willReturn([]);
 
         $this->contactService->expects($this->never())->method('saveContacts');
 
-        // Even if empty, if xmlFilePath is provided, it tries to iterate.
-        // But generator is empty, so loop doesn't body, so no saveContacts.
-
         $result = $this->handler->handleImport('/tmp/empty.xml', 'some text');
-        $this->assertEquals(0, $result);
+
+        $this->assertTrue($result->isSuccess);
+        $this->assertEquals(0, $result->count);
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function testImportWithNoData(): void
+    public function testImportWithNoDataReturnsError(): void
     {
         $this->xmlParser->expects($this->never())->method('parse');
         $this->emailParser->expects($this->never())->method('parse');
@@ -180,13 +157,11 @@ class GreetingImportHandlerTest extends TestCase
 
         $result = $this->handler->handleImport(null, null);
 
-        $this->assertEquals(0, $result);
+        $this->assertFalse($result->isSuccess);
+        $this->assertEquals('import.error_no_data', $result->errorKey);
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function testImportFailsOnInvalidXml(): void
+    public function testImportReturnsErrorOnInvalidXml(): void
     {
         $xmlFile = '/tmp/invalid.xml';
 
@@ -201,21 +176,17 @@ class GreetingImportHandlerTest extends TestCase
                 $this->arrayHasKey('file')
             );
 
-        $this->expectException(\RuntimeException::class);
+        $result = $this->handler->handleImport($xmlFile, null);
 
-        $this->handler->handleImport($xmlFile, null);
+        $this->assertFalse($result->isSuccess);
+        $this->assertEquals('import.error_xml_parsing', $result->errorKey);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function testBatchProcessingCallsSaveContactsMultipleTimes(): void
     {
         $xmlFile = '/tmp/large.xml';
 
         // Generate 1001 emails (batch size is 500)
-        // Should call saveContacts 3 times: 500, 500, 1.
-
         $emails = [];
         for ($i = 0; $i < 1001; ++$i) {
             $emails[] = "user{$i}@example.com";
@@ -225,12 +196,11 @@ class GreetingImportHandlerTest extends TestCase
 
         $this->contactService->expects($this->exactly(3))
             ->method('saveContacts')
-            ->willReturn(500, 500, 1);
+            ->willReturnOnConsecutiveCalls(500, 500, 1);
 
-        // Expect clear() 3 times
         $this->entityManager->expects($this->exactly(3))->method('clear');
 
         $result = $this->handler->handleImport($xmlFile, null);
-        $this->assertEquals(1001, $result);
+        $this->assertEquals(1001, $result->count);
     }
 }
