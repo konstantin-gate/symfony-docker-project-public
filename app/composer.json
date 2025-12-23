@@ -28,7 +28,8 @@
         "symfony/uid": "8.0.*",
         "symfony/validator": "8.0.*",
         "symfony/webpack-encore-bundle": "^2.4",
-        "symfony/yaml": "8.0.*"
+        "symfony/yaml": "8.0.*",
+        "ext-xmlreader": "*"
     },
     "config": {
         "allow-plugins": {

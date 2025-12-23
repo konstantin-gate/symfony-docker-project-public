@@ -7,68 +7,73 @@ namespace App\Greeting\Service;
 class GreetingXmlParser
 {
     /**
-     * @return string[]
+     * @return \Generator<string>
      */
-    public function parse(string $content): array
+    public function parse(string $filePath): \Generator
     {
-        $emails = [];
-
-        if (trim($content) === '') {
-            return [];
+        if (!file_exists($filePath)) {
+            throw new \RuntimeException("File not found: $filePath");
         }
 
-        // Security: Explicitly disable external entity loading for libxml
-        $backupEntityLoader = libxml_use_internal_errors(true);
-        libxml_set_external_entity_loader(static fn () => null);
+        // LIBXML_NONET disables network access for security (XXE prevention)
+        // PHP XMLReader::open signature: open(string $uri, ?string $encoding = null, int $options = 0)
+        $reader = \XMLReader::open($filePath, null, \LIBXML_NONET);
+
+        if (!$reader) {
+            throw new \RuntimeException("Could not open XML file: $filePath");
+        }
+
+        $internalErrors = libxml_use_internal_errors(true);
 
         try {
-            $xml = simplexml_load_string($content);
+            while ($reader->read()) {
+                if ($reader->nodeType === \XMLReader::ELEMENT && strtolower($reader->localName) === 'email') {
+                    $email = $reader->readString();
 
-            if (false === $xml) {
-                $errors = libxml_get_errors();
-                libxml_clear_errors();
-                $lastError = reset($errors);
-                throw new \RuntimeException('Invalid XML: ' . ($lastError->message ?? 'unknown error'));
-            }
+                    $validEmail = $this->processEmail($email);
 
-            // Use XPath with local-name() to find <email> tags regardless of namespaces
-            $emailElements = $xml->xpath('//*[local-name()="email"]');
-
-            if (\is_array($emailElements)) {
-                foreach ($emailElements as $element) {
-                    $originalEmail = trim((string) $element);
-
-                    if ($originalEmail === '') {
-                        continue;
-                    }
-
-                    // Normalize for validation and duplicate check
-                    $normalizedEmail = mb_strtolower($originalEmail);
-
-                    if (str_contains($normalizedEmail, '@')) {
-                        [$local, $domain] = explode('@', $normalizedEmail, 2);
-                        $asciiDomain = idn_to_ascii($domain, \IDNA_NONTRANSITIONAL_TO_ASCII, \INTL_IDNA_VARIANT_UTS46);
-
-                        if (false !== $asciiDomain) {
-                            $normalizedEmail = $local . '@' . $asciiDomain;
-                        }
-                    }
-
-                    // Use normalized email as key to prevent duplicates, but keep original email as value
-                    if (!isset($emails[$normalizedEmail])
-                        && filter_var($normalizedEmail, \FILTER_VALIDATE_EMAIL, \FILTER_FLAG_EMAIL_UNICODE)) {
-                        $emails[$normalizedEmail] = $originalEmail;
+                    if ($validEmail !== null) {
+                        yield $validEmail;
                     }
                 }
             }
+
+            if (libxml_get_errors()) {
+                $error = libxml_get_last_error();
+                throw new \RuntimeException('Invalid XML: ' . ($error->message ?? 'unknown error'));
+            }
         } catch (\Exception $e) {
-            throw new \RuntimeException('Error parsing XML file: ' . $e->getMessage());
+            throw new \RuntimeException('Error parsing XML file: ' . $e->getMessage(), 0, $e);
         } finally {
-            // Restore libxml state
-            libxml_use_internal_errors($backupEntityLoader);
-            libxml_set_external_entity_loader(null);
+            $reader->close();
+            libxml_clear_errors();
+            libxml_use_internal_errors($internalErrors);
+        }
+    }
+
+    private function processEmail(string $email): ?string
+    {
+        $originalEmail = trim($email);
+
+        if ($originalEmail === '') {
+            return null;
         }
 
-        return array_values($emails);
+        $normalizedEmail = mb_strtolower($originalEmail);
+
+        if (str_contains($normalizedEmail, '@')) {
+            [$local, $domain] = explode('@', $normalizedEmail, 2);
+            $asciiDomain = idn_to_ascii($domain, \IDNA_NONTRANSITIONAL_TO_ASCII, \INTL_IDNA_VARIANT_UTS46);
+
+            if (false !== $asciiDomain) {
+                $normalizedEmail = $local . '@' . $asciiDomain;
+            }
+        }
+
+        if (filter_var($normalizedEmail, \FILTER_VALIDATE_EMAIL, \FILTER_FLAG_EMAIL_UNICODE)) {
+            return $originalEmail;
+        }
+
+        return null;
     }
 }

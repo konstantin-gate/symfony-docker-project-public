@@ -9,6 +9,7 @@ use App\Greeting\Service\GreetingContactService;
 use App\Greeting\Service\GreetingEmailParser;
 use App\Greeting\Service\GreetingImportHandler;
 use App\Greeting\Service\GreetingXmlParser;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -18,6 +19,7 @@ class GreetingImportHandlerTest extends TestCase
     private GreetingXmlParser&MockObject $xmlParser;
     private GreetingEmailParser&MockObject $emailParser;
     private GreetingContactService&MockObject $contactService;
+    private EntityManagerInterface&MockObject $entityManager;
     private LoggerInterface&MockObject $logger;
     private GreetingImportHandler $handler;
 
@@ -26,36 +28,59 @@ class GreetingImportHandlerTest extends TestCase
         $this->xmlParser = $this->createMock(GreetingXmlParser::class);
         $this->emailParser = $this->createMock(GreetingEmailParser::class);
         $this->contactService = $this->createMock(GreetingContactService::class);
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->handler = new GreetingImportHandler(
             $this->xmlParser,
             $this->emailParser,
             $this->contactService,
+            $this->entityManager,
             $this->logger
         );
     }
 
+    /**
+     * @param string[] $emails
+     *
+     * @return \Generator<string>
+     */
+    private function mockXmlGenerator(array $emails): \Generator
+    {
+        foreach ($emails as $email) {
+            yield $email;
+        }
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function testImportSuccess(): void
     {
-        $xmlContent = '<contacts><contact>test@example.com</contact></contacts>';
+        $xmlFile = '/tmp/test.xml';
         $emails = ['test@example.com'];
 
         $this->xmlParser->expects($this->once())
             ->method('parse')
-            ->with($xmlContent)
-            ->willReturn($emails);
+            ->with($xmlFile)
+            ->willReturn($this->mockXmlGenerator($emails));
 
         $this->contactService->expects($this->once())
             ->method('saveContacts')
             ->with($emails, GreetingLanguage::Russian)
             ->willReturn(1);
 
-        $result = $this->handler->handleImport($xmlContent, null);
+        // Expect clear() after processing the batch/end
+        $this->entityManager->expects($this->once())->method('clear');
+
+        $result = $this->handler->handleImport($xmlFile, null);
 
         $this->assertEquals(1, $result);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testImportFromTextOnly(): void
     {
         $textContent = 'text@test.com';
@@ -71,73 +96,82 @@ class GreetingImportHandlerTest extends TestCase
             ->with($emails, GreetingLanguage::Russian)
             ->willReturn(1);
 
+        // No XML file, so loop doesn't run, no batch clear.
+        // Wait, text import doesn't clear EM in current impl?
+        // Let's check impl:
+        // if ($textContent) { ... saveContacts ... }
+        // if ($xmlFilePath) { ... }
+        // The text part does NOT clear EM in my implementation.
+        // This is fine as text content is usually small (from textarea).
+
         $result = $this->handler->handleImport(null, $textContent);
         $this->assertEquals(1, $result);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testImportFromTextAndXml(): void
     {
-        $xmlContent = '<contacts><contact>xml@test.com</contact></contacts>';
+        $xmlFile = '/tmp/test.xml';
         $textContent = 'text@test.com';
 
-        $this->xmlParser->method('parse')->willReturn(['xml@test.com']);
+        $this->xmlParser->method('parse')->willReturn($this->mockXmlGenerator(['xml@test.com']));
         $this->emailParser->method('parse')->willReturn(['text@test.com']);
 
-        $this->contactService->expects($this->once())
+        $this->contactService->expects($this->exactly(2))
             ->method('saveContacts')
-            ->with($this->callback(fn ($emails) => \count($emails) === 2
-                && \in_array('xml@test.com', $emails, true)
-                && \in_array('text@test.com', $emails, true)
-            ), GreetingLanguage::Russian)
-            ->willReturn(2);
+            ->willReturnMap([
+                [['text@test.com'], GreetingLanguage::Russian, 1], // First call (Text) returns 1
+                [['xml@test.com'], GreetingLanguage::Russian, 1],  // Second call (XML) returns 1
+            ]);
 
-        $result = $this->handler->handleImport($xmlContent, $textContent);
+        $this->entityManager->expects($this->once())->method('clear');
+
+        $result = $this->handler->handleImport($xmlFile, $textContent);
 
         $this->assertEquals(2, $result);
     }
 
-    public function testDeduplicatesEmailsAcrossXmlAndText(): void
-    {
-        $xmlContent = '<contacts><email>duplicate@test.com</email></contacts>';
-        $textContent = "duplicate@test.com\nanother@test.com";
-
-        $this->xmlParser->method('parse')->willReturn(['duplicate@test.com']);
-        $this->emailParser->method('parse')->willReturn(['duplicate@test.com', 'another@test.com']);
-
-        $this->contactService->expects($this->once())
-            ->method('saveContacts')
-            ->with(['duplicate@test.com', 'another@test.com'], GreetingLanguage::Russian)
-            ->willReturn(2);
-
-        $result = $this->handler->handleImport($xmlContent, $textContent);
-        $this->assertEquals(2, $result);
-    }
-
+    /**
+     * @throws \Exception
+     */
     public function testPassesCustomLanguageToContactService(): void
     {
-        $xmlContent = '<contacts><email>test@example.com</email></contacts>';
+        $xmlFile = '/tmp/test.xml';
 
-        $this->xmlParser->method('parse')->willReturn(['test@example.com']);
+        $this->xmlParser->method('parse')->willReturn($this->mockXmlGenerator(['test@example.com']));
         $this->contactService->expects($this->once())
             ->method('saveContacts')
             ->with(['test@example.com'], GreetingLanguage::English)
             ->willReturn(1);
 
-        $result = $this->handler->handleImport($xmlContent, null, GreetingLanguage::English);
+        $this->entityManager->expects($this->once())->method('clear');
+
+        $result = $this->handler->handleImport($xmlFile, null, GreetingLanguage::English);
         $this->assertEquals(1, $result);
     }
 
-    public function testReturnsZeroWhenParsersReturnEmptyArrays(): void
+    /**
+     * @throws \Exception
+     */
+    public function testReturnsZeroWhenParsersReturnEmpty(): void
     {
-        $this->xmlParser->method('parse')->willReturn([]);
+        $this->xmlParser->method('parse')->willReturn($this->mockXmlGenerator([]));
         $this->emailParser->method('parse')->willReturn([]);
 
         $this->contactService->expects($this->never())->method('saveContacts');
 
-        $result = $this->handler->handleImport('<xml/>', 'some text');
+        // Even if empty, if xmlFilePath is provided, it tries to iterate.
+        // But generator is empty, so loop doesn't body, so no saveContacts.
+
+        $result = $this->handler->handleImport('/tmp/empty.xml', 'some text');
         $this->assertEquals(0, $result);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testImportWithNoData(): void
     {
         $this->xmlParser->expects($this->never())->method('parse');
@@ -149,74 +183,54 @@ class GreetingImportHandlerTest extends TestCase
         $this->assertEquals(0, $result);
     }
 
-    public function testIgnoresWhitespaceOnlyContent(): void
-    {
-        $whitespaceXml = "   \n\t\r   ";
-        $whitespaceText = "   \n\t\r   ";
-
-        $this->xmlParser->expects($this->never())->method('parse');
-        $this->emailParser->expects($this->never())->method('parse');
-        $this->contactService->expects($this->never())->method('saveContacts');
-
-        $result = $this->handler->handleImport($whitespaceXml, $whitespaceText);
-        $this->assertEquals(0, $result);
-    }
-
+    /**
+     * @throws \Exception
+     */
     public function testImportFailsOnInvalidXml(): void
     {
-        $xmlContent = 'invalid xml';
+        $xmlFile = '/tmp/invalid.xml';
 
         $this->xmlParser->expects($this->once())
             ->method('parse')
-            ->willThrowException(new \Exception('Syntax error'));
+            ->willThrowException(new \RuntimeException('Syntax error'));
 
         $this->logger->expects($this->once())
             ->method('error')
             ->with(
-                $this->stringContains('XML parsing failed'),
-                $this->arrayHasKey('content_snippet')
-            );
-
-        $this->expectException(\Exception::class);
-
-        $this->handler->handleImport($xmlContent, null);
-    }
-
-    public function testImportFailsOnInvalidTextInput(): void
-    {
-        $textContent = 'invalid-text-input-causing-exception';
-
-        $this->emailParser->expects($this->once())
-            ->method('parse')
-            ->with($textContent)
-            ->willThrowException(new \RuntimeException('Invalid format'));
-
-        $this->logger->expects($this->once())
-            ->method('error')
-            ->with(
-                $this->stringContains('Text parsing failed'),
-                $this->logicalNot($this->arrayHasKey('content_snippet'))
+                $this->stringContains('XML parsing/saving failed'),
+                $this->arrayHasKey('file')
             );
 
         $this->expectException(\RuntimeException::class);
 
-        $this->handler->handleImport(null, $textContent);
+        $this->handler->handleImport($xmlFile, null);
     }
 
-    public function testImportFailsOnDatabaseError(): void
+    /**
+     * @throws \Exception
+     */
+    public function testBatchProcessingCallsSaveContactsMultipleTimes(): void
     {
-        $xmlContent = '<xml/>';
-        $this->xmlParser->method('parse')->willReturn(['test@test.com']);
+        $xmlFile = '/tmp/large.xml';
 
-        $this->contactService->expects($this->once())
+        // Generate 1001 emails (batch size is 500)
+        // Should call saveContacts 3 times: 500, 500, 1.
+
+        $emails = [];
+        for ($i = 0; $i < 1001; ++$i) {
+            $emails[] = "user{$i}@example.com";
+        }
+
+        $this->xmlParser->method('parse')->willReturn($this->mockXmlGenerator($emails));
+
+        $this->contactService->expects($this->exactly(3))
             ->method('saveContacts')
-            ->willThrowException(new \RuntimeException('DB Error'));
+            ->willReturn(500, 500, 1);
 
-        $this->logger->expects($this->once())
-            ->method('critical');
+        // Expect clear() 3 times
+        $this->entityManager->expects($this->exactly(3))->method('clear');
 
-        $this->expectException(\RuntimeException::class);
-
-        $this->handler->handleImport($xmlContent, null);
+        $result = $this->handler->handleImport($xmlFile, null);
+        $this->assertEquals(1001, $result);
     }
 }

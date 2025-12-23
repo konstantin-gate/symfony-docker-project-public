@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Greeting\Service;
 
 use App\Greeting\Enum\GreetingLanguage;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
 readonly class GreetingImportHandler
@@ -13,6 +14,7 @@ readonly class GreetingImportHandler
         private GreetingXmlParser $greetingXmlParser,
         private GreetingEmailParser $greetingEmailParser,
         private GreetingContactService $greetingContactService,
+        private EntityManagerInterface $entityManager,
         private LoggerInterface $logger,
     ) {
     }
@@ -22,29 +24,22 @@ readonly class GreetingImportHandler
      *
      * @throws \Exception
      */
-    public function handleImport(?string $xmlContent, ?string $textContent, GreetingLanguage $language = GreetingLanguage::Russian): int
-    {
-        $emails = [];
+    public function handleImport(
+        ?string $xmlFilePath,
+        ?string $textContent,
+        GreetingLanguage $language = GreetingLanguage::Russian,
+    ): int {
+        $count = 0;
 
-        // 1. Парсинг XML
-        if ($xmlContent !== null && trim($xmlContent) !== '') {
-            try {
-                $xmlEmails = $this->greetingXmlParser->parse($xmlContent);
-                $emails = array_merge($emails, $xmlEmails);
-            } catch (\Exception $e) {
-                $this->logger->error('XML parsing failed during import', [
-                    'error' => $e->getMessage(),
-                    'content_snippet' => mb_substr($xmlContent, 0, 100),
-                ]);
-                throw $e;
-            }
-        }
-
-        // 2. Парсинг текстового поля
+        // 1. Parsing text field
         if ($textContent !== null && trim($textContent) !== '') {
             try {
                 $textEmails = $this->greetingEmailParser->parse($textContent);
-                $emails = array_merge($emails, $textEmails);
+                $textEmails = array_values(array_unique($textEmails));
+
+                if (!empty($textEmails)) {
+                    $count += $this->greetingContactService->saveContacts($textEmails, $language);
+                }
             } catch (\Exception $e) {
                 $this->logger->error('Text parsing failed during import', [
                     'error' => $e->getMessage(),
@@ -53,21 +48,37 @@ readonly class GreetingImportHandler
             }
         }
 
-        $emails = array_values(array_unique($emails));
+        // 2. XML Parsing (Streaming)
+        if ($xmlFilePath !== null) {
+            try {
+                $batch = [];
+                $batchSize = 500;
 
-        if (empty($emails)) {
-            return 0;
+                foreach ($this->greetingXmlParser->parse($xmlFilePath) as $email) {
+                    $batch[] = $email;
+
+                    if (\count($batch) >= $batchSize) {
+                        $count += $this->greetingContactService->saveContacts($batch, $language);
+                        $batch = [];
+
+                        // Clear identity map to free memory during large imports
+                        $this->entityManager->clear();
+                    }
+                }
+
+                if (!empty($batch)) {
+                    $count += $this->greetingContactService->saveContacts($batch, $language);
+                    $this->entityManager->clear();
+                }
+            } catch (\Exception $e) {
+                $this->logger->error('XML parsing/saving failed during import', [
+                    'error' => $e->getMessage(),
+                    'file' => $xmlFilePath,
+                ]);
+                throw $e;
+            }
         }
 
-        try {
-            // 3. Сохранение
-            return $this->greetingContactService->saveContacts($emails, $language);
-        } catch (\Exception $e) {
-            $this->logger->critical('Database error during contact import', [
-                'error' => $e->getMessage(),
-                'email_count' => \count($emails),
-            ]);
-            throw $e;
-        }
+        return $count;
     }
 }

@@ -67,8 +67,9 @@ class GreetingLogRepositoryTest extends KernelTestCase
         $retrievedLog = $this->entityManager->getRepository(GreetingLog::class)->find($logId);
 
         $this->assertNotNull($retrievedLog);
-        // @phpstan-ignore-next-line
-        $this->assertSame($logId->toRfc4122(), $retrievedLog->getId()->toRfc4122());
+        $retrievedLogId = $retrievedLog->getId();
+        $this->assertNotNull($retrievedLogId);
+        $this->assertSame($logId->toRfc4122(), $retrievedLogId->toRfc4122());
         $this->assertSame($year, $retrievedLog->getYear());
         $this->assertEqualsWithDelta(
             $log->getSentAt(),
@@ -79,8 +80,9 @@ class GreetingLogRepositoryTest extends KernelTestCase
         // 4. Verify the associated GreetingContact
         $retrievedContact = $retrievedLog->getContact();
         $this->assertNotNull($retrievedContact);
-        // @phpstan-ignore-next-line
-        $this->assertSame($contactId->toRfc4122(), $retrievedContact->getId()->toRfc4122());
+        $retrievedContactId = $retrievedContact->getId();
+        $this->assertNotNull($retrievedContactId);
+        $this->assertSame($contactId->toRfc4122(), $retrievedContactId->toRfc4122());
         $this->assertSame($email, $retrievedContact->getEmail());
     }
 
