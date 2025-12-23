@@ -134,9 +134,28 @@ class GreetingCleanupDuplicatesCommand extends Command
 
         $io->text(\sprintf('Processing duplicates for: %s (Found %d)', $email, \count($contacts)));
 
+        // Optimization: Preload log existence for all contacts in this group
+        $contactIds = array_map(static fn (GreetingContact $c) => (string) $c->getId(), $contacts);
+        $idsWithLogs = array_flip($this->greetingLogRepository->getContactIdsWithLogs($contactIds));
+
         // Step 3: Select Winner and Losers
         // Sort contacts to find the best candidate to keep
-        usort($contacts, fn (GreetingContact $a, GreetingContact $b) => $this->compareContacts($a, $b));
+        usort($contacts, static function (GreetingContact $a, GreetingContact $b) use ($idsWithLogs) {
+            $hasLogsA = isset($idsWithLogs[(string) $a->getId()]);
+            $hasLogsB = isset($idsWithLogs[(string) $b->getId()]);
+
+            // Priority 1: Has logs
+            if ($hasLogsA && !$hasLogsB) {
+                return -1; // A is better
+            }
+
+            if (!$hasLogsA && $hasLogsB) {
+                return 1; // B is better
+            }
+
+            // Priority 2: Oldest (earlier createdAt is better)
+            return $a->getCreatedAt() <=> $b->getCreatedAt();
+        });
 
         // The first element after sort is the "Winner" (best one to keep)
         $winner = array_shift($contacts);
@@ -172,38 +191,5 @@ class GreetingCleanupDuplicatesCommand extends Command
         if (!$isDryRun) {
             $this->entityManager->flush();
         }
-    }
-
-    /**
-     * Compare two contacts to determine which one is "better".
-     * Returns -1 if $a is better (should come first), 1 if $b is better.
-     */
-    private function compareContacts(GreetingContact $a, GreetingContact $b): int
-    {
-        $hasLogsA = $this->hasLogs($a);
-        $hasLogsB = $this->hasLogs($b);
-
-        // Priority 1: Has logs
-        if ($hasLogsA && !$hasLogsB) {
-            return -1; // A is better
-        }
-
-        if (!$hasLogsA && $hasLogsB) {
-            return 1; // B is better
-        }
-
-        // Priority 2: Oldest (earlier createdAt is better)
-        // If both have logs or both don't, compare dates
-        return $a->getCreatedAt() <=> $b->getCreatedAt();
-    }
-
-    private function hasLogs(GreetingContact $contact): bool
-    {
-        // Optimization: check if we can query this efficiently.
-        // Since we are inside a command, n+1 queries are acceptable for batch processing,
-        // but fetching count is better than fetching collection.
-        // Assuming greetingLogRepository doesn't have a count method yet, let's use a simple query.
-
-        return $this->greetingLogRepository->count(['contact' => $contact]) > 0;
     }
 }

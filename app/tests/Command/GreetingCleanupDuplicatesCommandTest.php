@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Uid\Uuid;
 
 class GreetingCleanupDuplicatesCommandTest extends TestCase
 {
@@ -83,7 +84,7 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
             ->willReturn([$contact1, $contact2]);
 
         // Mock log check - neither has logs
-        $this->logRepository->method('count')->willReturn(0);
+        $this->logRepository->method('getContactIdsWithLogs')->willReturn([]);
 
         // Expect NO changes
         $this->entityManager->expects($this->never())->method('remove');
@@ -99,6 +100,9 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
 
     public function testExecuteForceDeletesLoser(): void
     {
+        $winnerId = Uuid::v4();
+        $loserId = Uuid::v4();
+
         // Mock finding duplicates
         $connection = $this->createMock(Connection::class);
         $this->entityManager->method('getConnection')->willReturn($connection);
@@ -111,10 +115,12 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
 
         // Contacts
         $winner = new GreetingContact();
+        $winner->setId($winnerId);
         $winner->setEmail('winner@test.com');
         $winner->setCreatedAt(new \DateTimeImmutable('2024-01-01')); // Older
 
         $loser = new GreetingContact();
+        $loser->setId($loserId);
         $loser->setEmail('winner@test.com');
         $loser->setCreatedAt(new \DateTimeImmutable('2024-01-02')); // Newer
 
@@ -122,12 +128,9 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
             ->willReturn([$winner, $loser]);
 
         // Winner has logs, Loser doesn't
-        $this->logRepository->expects($this->exactly(2))
-            ->method('count')
-            ->willReturnMap([
-                [['contact' => $winner], 1], // Has logs
-                [['contact' => $loser], 0],  // No logs
-            ]);
+        $this->logRepository->expects($this->once())
+            ->method('getContactIdsWithLogs')
+            ->willReturn([(string) $winnerId]);
 
         // Expectations
         $this->entityManager->expects($this->once())->method('beginTransaction');

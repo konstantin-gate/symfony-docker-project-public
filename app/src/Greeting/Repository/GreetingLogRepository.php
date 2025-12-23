@@ -24,6 +24,27 @@ class GreetingLogRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param string[] $contactIds
+     *
+     * @return string[] Array of contact IDs that have at least one log entry
+     */
+    public function getContactIdsWithLogs(array $contactIds): array
+    {
+        if (empty($contactIds)) {
+            return [];
+        }
+
+        $results = $this->createQueryBuilder('gl')
+            ->select('DISTINCT IDENTITY(gl.contact) as contactId')
+            ->where('gl.contact IN (:ids)')
+            ->setParameter('ids', $contactIds)
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_map(static fn (array $row) => (string) $row['contactId'], $results);
+    }
+
+    /**
      * @return array<string, string>
      */
     public function findGreetedContactIdsSince(\DateTimeImmutable $since): array
