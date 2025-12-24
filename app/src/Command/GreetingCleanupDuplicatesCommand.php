@@ -16,6 +16,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/**
+ * Příkaz pro vyhledání a odstranění duplicitních e-mailových kontaktů.
+ * Ponechává kontakt s historií nebo nejstarší, ostatní maže.
+ */
 #[AsCommand(
     name: 'greeting:cleanup-duplicates',
     description: 'Finds and removes duplicate email contacts, keeping the one with history or the oldest one.',
@@ -30,6 +34,9 @@ class GreetingCleanupDuplicatesCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * Konfiguruje parametry příkazu.
+     */
     protected function configure(): void
     {
         $this
@@ -38,6 +45,8 @@ class GreetingCleanupDuplicatesCommand extends Command
     }
 
     /**
+     * Spouští logiku pro vyčištění duplicit.
+     *
      * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -52,15 +61,15 @@ class GreetingCleanupDuplicatesCommand extends Command
             $io->warning('Running in FORCE mode. Changes WILL be made to the database.');
         }
 
-        // Step 1: Find duplicate groups
+        // Krok 1: Nalezení skupin duplicit
         $duplicateEmails = $this->findDuplicateEmails();
 
         if (empty($duplicateEmails)) {
             $io->success('No duplicate emails found.');
 
-            // Even if no duplicates, we should normalize existing emails if needed (optional, but good practice per requirement)
-            // But the requirement says: "У 'Победителя' нормализуем email...".
-            // Let's strictly follow duplicates cleanup first.
+            // I když nejsou žádné duplicity, měli bychom normalizovat existující e-maily, pokud je to potřeba (volitelné, ale dobrá praxe)
+            // Ale požadavek zní: "U 'Vítěze' normalizujeme email...".
+            // Budeme se striktně držet čištění duplicit.
             return Command::SUCCESS;
         }
 
@@ -99,6 +108,8 @@ class GreetingCleanupDuplicatesCommand extends Command
     }
 
     /**
+     * Vyhledá e-maily, které mají v databázi více než jeden záznam.
+     *
      * @return string[]
      *
      * @throws Exception
@@ -118,6 +129,9 @@ class GreetingCleanupDuplicatesCommand extends Command
         return array_map(static fn (array $row) => (string) $row['e'], $results);
     }
 
+    /**
+     * Zpracuje skupinu duplicit pro jeden e-mail: vybere vítěze, smaže ostatní a normalizuje vítěze.
+     */
     private function processDuplicateGroup(
         string $email,
         SymfonyStyle $io,
@@ -125,7 +139,7 @@ class GreetingCleanupDuplicatesCommand extends Command
         int &$deletedCount,
         int &$normalizedCount,
     ): void {
-        // Step 2: Find all contacts for this email (case-insensitive)
+        // Najít všechny kontakty pro tento e-mail (bez ohledu na velikost písmen)
         $contacts = $this->greetingContactRepository->findByEmailsCaseInsensitive([$email]);
 
         if (\count($contacts) < 2) {
@@ -134,34 +148,34 @@ class GreetingCleanupDuplicatesCommand extends Command
 
         $io->text(\sprintf('Processing duplicates for: %s (Found %d)', $email, \count($contacts)));
 
-        // Optimization: Preload log existence for all contacts in this group
+        // Optimalizace: Přednačtení existence logů pro všechny kontakty v této skupině
         $contactIds = array_map(static fn (GreetingContact $c) => (string) $c->getId(), $contacts);
         $idsWithLogs = array_flip($this->greetingLogRepository->getContactIdsWithLogs($contactIds));
 
-        // Step 3: Select Winner and Losers
-        // Sort contacts to find the best candidate to keep
+        // Výběr vítěze a poražených
+        // Seřadíme kontakty tak, abychom našli nejlepšího kandidáta na ponechání
         usort($contacts, static function (GreetingContact $a, GreetingContact $b) use ($idsWithLogs) {
             $hasLogsA = isset($idsWithLogs[(string) $a->getId()]);
             $hasLogsB = isset($idsWithLogs[(string) $b->getId()]);
 
-            // Priority 1: Has logs
+            // Priorita 1: Má logy
             if ($hasLogsA && !$hasLogsB) {
-                return -1; // A is better
+                return -1; // A je lepší
             }
 
             if (!$hasLogsA && $hasLogsB) {
-                return 1; // B is better
+                return 1; // B je lepší
             }
 
-            // Priority 2: Oldest (earlier createdAt is better)
+            // Priorita 2: Nejstarší (dřívější datum vytvoření je lepší)
             return $a->getCreatedAt() <=> $b->getCreatedAt();
         });
 
-        // The first element after sort is the "Winner" (best one to keep)
+        // První prvek po seřazení je "Vítěz" (nejlepší k ponechání)
         $winner = array_shift($contacts);
         $losers = $contacts;
 
-        // Step 4: Action
+        // Akce
         foreach ($losers as $loser) {
             $io->text(\sprintf(' - Deleting: ID %s, Email "%s", Created %s',
                 $loser->getId(),
@@ -175,7 +189,7 @@ class GreetingCleanupDuplicatesCommand extends Command
             ++$deletedCount;
         }
 
-        // Normalize winner email if needed
+        // Normalizace e-mailu vítěze, pokud je potřeba
         if ($winner->getEmail() !== mb_strtolower((string) $winner->getEmail())) {
             $io->text(\sprintf(' - Normalizing winner: "%s" -> "%s"', $winner->getEmail(), mb_strtolower((string) $winner->getEmail())));
 

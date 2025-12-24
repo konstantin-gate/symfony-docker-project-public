@@ -11,6 +11,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/**
+ * Příkaz pro výpis seznamu všech možných stavů (Status Enum) a jejich parametrů.
+ */
 #[AsCommand(
     name: 'app:status:list',
     description: 'Displays a list of all possible statuses and their parameters',
@@ -22,6 +25,9 @@ class StatusListCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * Vypíše tabulku statusů a jejich vlastností do konzole.
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

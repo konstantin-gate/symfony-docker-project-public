@@ -10,6 +10,9 @@ use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * Služba pro hromadné odesílání e-mailů prostřednictvím Messengeru.
+ */
 readonly class GreetingMailService
 {
     public function __construct(
@@ -19,6 +22,8 @@ readonly class GreetingMailService
     }
 
     /**
+     * Odešle hromadnou zprávu pro vybrané kontakty do fronty.
+     *
      * @param string[]|Uuid[] $contactIds
      *
      * @throws ExceptionInterface
@@ -29,7 +34,7 @@ readonly class GreetingMailService
             return 0;
         }
 
-        // Normalize IDs to strings to ensure safe serialization
+        // Normalizace ID na řetězce pro bezpečnou serializaci
         $stringIds = array_map(static fn ($id) => (string) $id, $contactIds);
         $message = new BulkEmailDispatchMessage(
             contactIds: $stringIds,

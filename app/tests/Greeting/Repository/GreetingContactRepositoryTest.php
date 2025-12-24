@@ -12,6 +12,7 @@ use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -102,6 +103,10 @@ class GreetingContactRepositoryTest extends KernelTestCase
         $this->entityManager->flush();
     }
 
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
     public function testFindAllActiveGroupedByLanguage(): void
     {
         // 1. Prepare data
@@ -136,9 +141,9 @@ class GreetingContactRepositoryTest extends KernelTestCase
 
         // 4. Assert contents
         // Filter result to only include our test contacts (in case DB is not clean)
-        $filterByPrefix = fn (array $group) => array_values(array_filter(
+        $filterByPrefix = static fn (array $group) => array_values(array_filter(
             $group,
-            fn (GreetingContact $c) => str_starts_with((string) $c->getEmail(), $prefix)
+            static fn (GreetingContact $c) => str_starts_with((string) $c->getEmail(), $prefix)
         ));
 
         $enGroup = $filterByPrefix($grouped[GreetingLanguage::English->value]);

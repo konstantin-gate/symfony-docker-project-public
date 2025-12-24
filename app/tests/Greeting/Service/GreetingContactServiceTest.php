@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Greeting\Service;
 
+use App\Enum\Status;
 use App\Greeting\Entity\GreetingContact;
 use App\Greeting\Enum\GreetingLanguage;
-use App\Greeting\Factory\GreetingContactFactory;
-use App\Greeting\Repository\GreetingContactRepository;
-use App\Enum\Status;
 use App\Greeting\Exception\ContactAlreadyDeletedException;
 use App\Greeting\Exception\ContactAlreadyInactiveException;
+use App\Greeting\Factory\GreetingContactFactory;
+use App\Greeting\Repository\GreetingContactRepository;
 use App\Greeting\Service\GreetingContactService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;

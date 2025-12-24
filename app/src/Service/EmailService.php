@@ -9,6 +9,10 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 
+/**
+ * Služba pro odesílání e-mailů s využitím šablon Twig.
+ * Zajišťuje základní konfiguraci odesílatele a odeslání zprávy přes MailerInterface.
+ */
 readonly class EmailService
 {
     public function __construct(
@@ -19,6 +23,8 @@ readonly class EmailService
     }
 
     /**
+     * Odešle e-mail na zadanou adresu pomocí Twig šablony.
+     *
      * @param array<string, mixed> $context
      *
      * @throws TransportExceptionInterface

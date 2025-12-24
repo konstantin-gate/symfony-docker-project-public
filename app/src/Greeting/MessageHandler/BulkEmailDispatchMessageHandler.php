@@ -13,6 +13,10 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 
+/**
+ * Handler pro zpracování hromadného odesílání e-mailů.
+ * Zpracovává zprávu BulkEmailDispatchMessage po dávkách.
+ */
 #[AsMessageHandler]
 readonly class BulkEmailDispatchMessageHandler
 {
@@ -27,6 +31,9 @@ readonly class BulkEmailDispatchMessageHandler
     }
 
     /**
+     * Zpracuje zprávu o hromadném odeslání.
+     * Rozdělí kontakty do dávek a pro každou dávku inicializuje sekvenci odesílání.
+     *
      * @throws ExceptionInterface
      */
     public function __invoke(BulkEmailDispatchMessage $message): void
@@ -46,7 +53,7 @@ readonly class BulkEmailDispatchMessageHandler
         $processedCount = 0;
 
         foreach ($chunks as $chunkIndex => $chunkIds) {
-            // Optimization: Fetch only email strings, avoiding full entity hydration.
+            // Optimalizace: Načítáme pouze e-mailové řetězce, abychom se vyhnuli plné hydrataci entit.
             $emails = $this->greetingContactRepository->findEmailsByIds($chunkIds);
 
             $emailRequests = [];
@@ -68,8 +75,8 @@ readonly class BulkEmailDispatchMessageHandler
                 $this->emailSequenceService->sendSequence($emailRequests);
             }
 
-            // Clear EntityManager to free up memory (even if we used scalar hydration,
-            // it's good practice in long-running workers for other potential accumulations).
+            // Vyčistit EntityManager pro uvolnění paměti (i když jsme použili skalární hydrataci,
+            // je to dobrá praxe v dlouhotrvajících workerech pro jiné potenciální akumulace).
             $this->entityManager->clear();
 
             $processedCount += \count($emails);

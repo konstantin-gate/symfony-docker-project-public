@@ -7,6 +7,9 @@ namespace App\Greeting\Service;
 use Faker\Factory;
 use Faker\Generator;
 
+/**
+ * Služba pro generování testovacích e-mailů pomocí knihovny Faker.
+ */
 class EmailGeneratorService
 {
     private Generator $faker;
@@ -17,6 +20,8 @@ class EmailGeneratorService
     }
 
     /**
+     * Vygeneruje zadaný počet unikátních e-mailových adres.
+     *
      * @return array<int, string>
      */
     public function generateEmails(int $count): array

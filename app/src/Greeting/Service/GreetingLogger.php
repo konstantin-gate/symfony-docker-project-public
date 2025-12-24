@@ -8,6 +8,9 @@ use App\Greeting\Factory\GreetingLogFactory;
 use App\Greeting\Repository\GreetingContactRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
+/**
+ * Služba pro logování odeslaných pozdravů.
+ */
 readonly class GreetingLogger
 {
     public function __construct(
@@ -17,6 +20,9 @@ readonly class GreetingLogger
     ) {
     }
 
+    /**
+     * Zaznamená odeslání pozdravu pro daný e-mail.
+     */
     public function logForEmail(string $email): void
     {
         $contact = $this->contactRepository->findOneBy(['email' => $email]);

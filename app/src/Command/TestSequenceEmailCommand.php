@@ -11,7 +11,11 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Messenger\Exception\ExceptionInterface;
 
+/**
+ * Příkaz pro testování sekvenčního odesílání e-mailů s časovou prodlevou.
+ */
 #[AsCommand(
     name: 'greeting:test-sequence-email',
     description: 'Sends a sequence of test emails to verify delay',
@@ -24,6 +28,9 @@ class TestSequenceEmailCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * Vytvoří a odešle sekvenci testovacích e-mailů do fronty.
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -60,7 +67,7 @@ class TestSequenceEmailCommand extends Command
             $io->success(\sprintf('Messages dispatched in %.2f seconds. Start worker to process them.', $duration));
 
             return Command::SUCCESS;
-        } catch (\Exception $e) {
+        } catch (\Exception|ExceptionInterface $e) {
             $io->error('Error: ' . $e->getMessage());
 
             return Command::FAILURE;

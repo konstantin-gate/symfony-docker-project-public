@@ -13,14 +13,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 /**
- * Toto je pomocný příkaz pro kontrolu:
+ * Toto je pomocný příkaz pro kontrolu odesílání e-mailů.
+ *
+ * Použití:
  * docker compose exec php bin/console greeting:test-email test@example.com
  *
  * Po provedení zkontrolujte soubor v app/var/mails/:
  * 1. Bude vytvořen soubor .eml s jedinečným časovým razítkem.
  * 2. Uvnitř bude správný MIME (HTML + Text).
  *
- * Jak zkontrolovat (Test)
+ * Jak zkontrolovat (Test prostředí):
  * docker compose exec php bin/console greeting:test-email test@example.com --env=test
  *
  * Dopis nebude vytvořen, nedojde k žádným chybám.
@@ -37,11 +39,17 @@ class TestEmailCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * Konfiguruje argumenty příkazu.
+     */
     protected function configure(): void
     {
         $this->addArgument('to', InputArgument::REQUIRED, 'Recipient email');
     }
 
+    /**
+     * Odešle testovací e-mail a vypíše výsledek.
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $to = $input->getArgument('to');

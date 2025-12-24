@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Greeting\Service;
 
+/**
+ * Služba pro parsování a extrakci e-mailů z textového řetězce.
+ */
 class GreetingEmailParser
 {
     /**
-     * Parse a string of emails into an array of unique, valid email addresses.
-     * Supported separators: comma, space, newline, semicolon.
+     * Převede řetězec s e-maily na pole unikátních, platných e-mailových adres.
+     * Podporované oddělovače: čárka, mezera, nový řádek, středník.
      *
      * @return array<string>
      */

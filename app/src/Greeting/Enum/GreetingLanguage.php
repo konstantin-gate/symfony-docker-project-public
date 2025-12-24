@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Greeting\Enum;
 
+/**
+ * Výčet podporovaných jazyků pro pozdravy.
+ */
 enum GreetingLanguage: string
 {
     case Czech = 'cs';

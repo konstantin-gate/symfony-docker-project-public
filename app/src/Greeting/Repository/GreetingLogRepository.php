@@ -9,6 +9,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repozitář pro správu entit GreetingLog.
+ *
  * @extends ServiceEntityRepository<GreetingLog>
  *
  * @method GreetingLog|null find($id, $lockMode = null, $lockVersion = null)
@@ -24,6 +26,8 @@ class GreetingLogRepository extends ServiceEntityRepository
     }
 
     /**
+     * Získá seznam ID kontaktů, které mají alespoň jeden záznam v logu (byly osloveny).
+     *
      * @param string[] $contactIds
      *
      * @return string[] Array of contact IDs that have at least one log entry
@@ -45,6 +49,8 @@ class GreetingLogRepository extends ServiceEntityRepository
     }
 
     /**
+     * Najde ID kontaktů a datum posledního oslovení od zadaného data.
+     *
      * @return array<string, string>
      */
     public function findGreetedContactIdsSince(\DateTimeImmutable $since): array

@@ -25,6 +25,8 @@ readonly class EmailSequenceService
     }
 
     /**
+     * Odešle sekvenci e-mailů s definovaným časovým odstupem.
+     *
      * @param EmailRequest[] $requests
      *
      * @throws ExceptionInterface

@@ -9,6 +9,9 @@ use App\Greeting\Enum\GreetingLanguage;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Služba pro zpracování importu kontaktů z různých zdrojů (text, XML).
+ */
 readonly class GreetingImportHandler
 {
     public function __construct(
@@ -20,6 +23,9 @@ readonly class GreetingImportHandler
     ) {
     }
 
+    /**
+     * Řídí proces importu na základě vstupních dat (XML soubor nebo text).
+     */
     public function handleImport(
         ?string $xmlFilePath,
         ?string $textContent,
@@ -28,9 +34,10 @@ readonly class GreetingImportHandler
         $count = 0;
         $hasData = false;
 
-        // 1. Parsing text field
+        // 1. Parsování textového pole
         if ($textContent !== null && trim($textContent) !== '') {
             $hasData = true;
+
             try {
                 $textEmails = $this->greetingEmailParser->parse($textContent);
                 $textEmails = array_values(array_unique($textEmails));
@@ -47,9 +54,10 @@ readonly class GreetingImportHandler
             }
         }
 
-        // 2. XML Parsing (Streaming)
+        // 2. Parsování XML (Streamování)
         if ($xmlFilePath !== null) {
             $hasData = true;
+
             try {
                 $batch = [];
                 $batchSize = 500;
@@ -61,7 +69,7 @@ readonly class GreetingImportHandler
                         $count += $this->greetingContactService->saveContacts($batch, $language);
                         $batch = [];
 
-                        // Clear identity map to free memory during large imports
+                        // Vyčištění identity map pro uvolnění paměti během velkých importů
                         $this->entityManager->clear();
                     }
                 }

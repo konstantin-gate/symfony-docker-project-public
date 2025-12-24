@@ -20,10 +20,15 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
+ * Formulář pro import kontaktů (podporuje textový vstup a upload XML).
+ *
  * @extends AbstractType<mixed>
  */
 class GreetingImportType extends AbstractType
 {
+    /**
+     * Sestaví formulář pro import.
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -105,6 +110,9 @@ class GreetingImportType extends AbstractType
             ]);
     }
 
+    /**
+     * Konfiguruje výchozí volby formuláře.
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

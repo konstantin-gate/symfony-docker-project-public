@@ -8,8 +8,14 @@ use App\Enum\Status;
 use App\Greeting\Entity\GreetingContact;
 use App\Greeting\Enum\GreetingLanguage;
 
+/**
+ * Továrna pro vytváření instancí GreetingContact.
+ */
 class GreetingContactFactory
 {
+    /**
+     * Vytvoří nový kontakt s danými parametry a výchozím stavem Active.
+     */
     public function create(
         string $email,
         GreetingLanguage $language,

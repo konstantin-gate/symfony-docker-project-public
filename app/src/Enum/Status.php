@@ -7,9 +7,17 @@ namespace App\Enum;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * Výčet stavů entity s podporou překladů a UI vlastností.
+ *
+ * Definuje možné stavy (Koncept, Aktivní, atd.) a poskytuje metody
+ * pro získání jejich překladových klíčů, barev pro UI a logických příznaků (viditelnost, editovatelnost).
+ */
 enum Status: string implements TranslatableInterface
 {
-    // Definice konstant (hodnoty, které se uloží do DB)
+    /**
+     * Definice konstant (hodnoty, které se uloží do DB).
+     */
     case Concept = 'concept';
     case Active = 'active';
     case Inactive = 'inactive';
@@ -32,7 +40,7 @@ enum Status: string implements TranslatableInterface
      */
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {
-        // Překládáme klíč pomocí domény 'statuses'
+        /* Překládáme klíč pomocí domény 'statuses' */
         return $translator->trans($this->getTranslationKey(), [], 'statuses', $locale);
     }
 

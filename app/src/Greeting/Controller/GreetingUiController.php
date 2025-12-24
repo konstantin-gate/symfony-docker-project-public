@@ -23,6 +23,10 @@ use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * Kontroler pro uživatelské rozhraní správy pozdravů (Dashboard).
+ * Zajišťuje zobrazení přehledu, import kontaktů, odesílání e-mailů a správu jednotlivých kontaktů.
+ */
 class GreetingUiController extends AbstractController
 {
     public function __construct(
@@ -37,6 +41,8 @@ class GreetingUiController extends AbstractController
     }
 
     /**
+     * Zobrazí hlavní panel (dashboard) se seznamem kontaktů a statistikami.
+     *
      * @throws \DateMalformedStringException
      */
     #[Route('/greeting/dashboard', name: 'greeting_dashboard_default', methods: ['GET'])]
@@ -58,6 +64,9 @@ class GreetingUiController extends AbstractController
         ]);
     }
 
+    /**
+     * Zpracuje formulář pro import kontaktů (z textu nebo XML).
+     */
     #[Route('/{_locale}/greeting/import', name: 'greeting_import', requirements: ['_locale' => '%app.supported_locales%'], methods: ['POST'])]
     public function import(Request $request): Response
     {
@@ -98,6 +107,8 @@ class GreetingUiController extends AbstractController
     }
 
     /**
+     * Zpracuje požadavek na hromadné odeslání e-mailů vybraným kontaktům.
+     *
      * @throws ExceptionInterface
      */
     #[Route('/{_locale}/greeting/send', name: 'greeting_send', requirements: ['_locale' => '%app.supported_locales%'], methods: ['POST'])]
@@ -132,6 +143,9 @@ class GreetingUiController extends AbstractController
         return $this->redirectToRoute('greeting_dashboard', ['_locale' => $request->getLocale()]);
     }
 
+    /**
+     * Smaže konkrétní kontakt (nastaví stav Deleted).
+     */
     #[Route('/{_locale}/greeting/contact/{id}/delete', name: 'greeting_delete_contact', requirements: ['_locale' => '%app.supported_locales%'], methods: ['DELETE'])]
     public function delete(string $id): Response
     {
@@ -154,6 +168,9 @@ class GreetingUiController extends AbstractController
         return $this->json(['success' => true]);
     }
 
+    /**
+     * Deaktivuje konkrétní kontakt (nastaví stav Inactive).
+     */
     #[Route('/{_locale}/greeting/contact/{id}/deactivate', name: 'greeting_deactivate_contact', requirements: ['_locale' => '%app.supported_locales%'], methods: ['POST'])]
     public function deactivate(string $id): Response
     {
@@ -176,6 +193,9 @@ class GreetingUiController extends AbstractController
         return $this->json(['success' => true]);
     }
 
+    /**
+     * Generuje náhodné e-maily pro testovací účely (pouze v non-prod).
+     */
     #[Route('/greeting/generate-test-emails', name: 'greeting_generate_test_emails', methods: ['GET'])]
     public function generateTestEmails(): Response
     {
@@ -188,6 +208,9 @@ class GreetingUiController extends AbstractController
         return new Response(implode(' ', $emails));
     }
 
+    /**
+     * Vyhledá kontakt podle ID a nastaví flash message, pokud nenalezen.
+     */
     private function findContact(string $id): ?GreetingContact
     {
         $contact = $this->greetingContactRepository->find($id);

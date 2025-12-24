@@ -9,6 +9,9 @@ use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Entita reprezentující záznam o odeslání pozdravu.
+ */
 #[ORM\Entity]
 #[ORM\Table(name: 'greeting_log')]
 class GreetingLog
@@ -30,6 +33,9 @@ class GreetingLog
     #[Assert\PositiveOrZero]
     private int $year;
 
+    /**
+     * Vytvoří nový záznam o odeslání pro daný kontakt a rok.
+     */
     public function __construct(GreetingContact $contact, int $year)
     {
         $this->contact = $contact;
@@ -37,11 +43,17 @@ class GreetingLog
         $this->sentAt = new \DateTimeImmutable();
     }
 
+    /**
+     * Vrátí unikátní identifikátor logu.
+     */
     public function getId(): ?Uuid
     {
         return $this->id;
     }
 
+    /**
+     * Nastaví unikátní identifikátor logu.
+     */
     public function setId(?Uuid $id): self
     {
         $this->id = $id;
@@ -49,11 +61,17 @@ class GreetingLog
         return $this;
     }
 
+    /**
+     * Vrátí kontakt, kterému byl pozdrav odeslán.
+     */
     public function getContact(): ?GreetingContact
     {
         return $this->contact;
     }
 
+    /**
+     * Nastaví kontakt pro tento log.
+     */
     public function setContact(?GreetingContact $contact): self
     {
         $this->contact = $contact;
@@ -61,11 +79,17 @@ class GreetingLog
         return $this;
     }
 
+    /**
+     * Vrátí datum a čas odeslání.
+     */
     public function getSentAt(): \DateTimeImmutable
     {
         return $this->sentAt;
     }
 
+    /**
+     * Nastaví datum a čas odeslání.
+     */
     public function setSentAt(\DateTimeImmutable $sentAt): self
     {
         $this->sentAt = $sentAt;
@@ -73,11 +97,17 @@ class GreetingLog
         return $this;
     }
 
+    /**
+     * Vrátí rok, za který byl pozdrav odeslán.
+     */
     public function getYear(): int
     {
         return $this->year;
     }
 
+    /**
+     * Nastaví rok odeslání.
+     */
     public function setYear(int $year): self
     {
         $this->year = $year;

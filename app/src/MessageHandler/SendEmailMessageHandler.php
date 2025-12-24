@@ -10,6 +10,10 @@ use App\Service\EmailService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+/**
+ * Handler pro zpracování zprávy SendEmailMessage.
+ * Zajišťuje odeslání e-mailu prostřednictvím EmailService a následné logování.
+ */
 #[AsMessageHandler]
 readonly class SendEmailMessageHandler
 {
@@ -20,6 +24,9 @@ readonly class SendEmailMessageHandler
     }
 
     /**
+     * Zpracuje požadavek na odeslání e-mailu.
+     * Odešle e-mail a zaloguje tuto událost.
+     *
      * @throws TransportExceptionInterface
      */
     public function __invoke(SendEmailMessage $message): void

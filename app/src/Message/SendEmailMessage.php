@@ -6,6 +6,9 @@ namespace App\Message;
 
 use App\DTO\EmailRequest;
 
+/**
+ * Zpráva pro Messenger reprezentující požadavek na odeslání jednoho e-mailu.
+ */
 readonly class SendEmailMessage
 {
     /**
@@ -19,6 +22,9 @@ readonly class SendEmailMessage
     ) {
     }
 
+    /**
+     * Vytvoří novou instanci zprávy na základě DTO požadavku.
+     */
     public static function fromRequest(EmailRequest $request): self
     {
         return new self(

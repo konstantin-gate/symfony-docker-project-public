@@ -14,6 +14,9 @@ use App\Greeting\Repository\GreetingContactRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Služba pro správu kontaktů (vytváření, mazání, deaktivace).
+ */
 readonly class GreetingContactService
 {
     public function __construct(
@@ -25,6 +28,8 @@ readonly class GreetingContactService
     }
 
     /**
+     * Uloží seznam e-mailů jako nové kontakty.
+     *
      * @param string[] $emails
      */
     public function saveContacts(array $emails, GreetingLanguage $language = GreetingLanguage::Russian): int
@@ -33,8 +38,8 @@ readonly class GreetingContactService
             return 0;
         }
 
-        // Нормализация и реализация уникальности входных данных
-        // Мы используем ключи массива для дедупликации, сохраняя оригинальное написание (хотя для сохранения все равно будет lower)
+        // Normalizace a zajištění unikátnosti vstupních dat
+        // Používáme klíče pole pro deduplikaci, zachováváme originální zápis (ačkoliv pro uložení bude stejně použito malé písmo)
         $uniqueEmailsMap = [];
 
         foreach ($emails as $email) {
@@ -57,8 +62,8 @@ readonly class GreetingContactService
 
         $uniqueEmails = array_values($uniqueEmailsMap);
 
-        // Получаем список только тех email, которых еще нет в базе
-        // Метод репозитория теперь корректно работает с регистром
+        // Získáme seznam pouze těch e-mailů, které ještě nejsou v databázi
+        // Metoda repozitáře nyní korektně pracuje s velikostí písmen
         $emailsToCreate = $this->repository->findNonExistingEmails($uniqueEmails);
 
         if (empty($emailsToCreate)) {
@@ -68,7 +73,7 @@ readonly class GreetingContactService
         $now = new \DateTimeImmutable();
 
         foreach ($emailsToCreate as $email) {
-            // Factory создает сущность, и там внутри setEmail сделает strtolower
+            // Factory vytvoří entitu a uvnitř setEmail provede převod na malá písmena
             $contact = $this->factory->create($email, $language, $now);
             $this->entityManager->persist($contact);
         }
@@ -78,6 +83,9 @@ readonly class GreetingContactService
         return \count($emailsToCreate);
     }
 
+    /**
+     * Označí kontakt jako smazaný (soft-delete).
+     */
     public function delete(GreetingContact $contact): void
     {
         if ($contact->getStatus() === Status::Deleted) {
@@ -89,6 +97,9 @@ readonly class GreetingContactService
         $this->logger->info('Greeting contact deleted: {email}', ['email' => $contact->getEmail()]);
     }
 
+    /**
+     * Deaktivuje kontakt (např. při odhlášení).
+     */
     public function deactivate(GreetingContact $contact): void
     {
         if ($contact->getStatus() === Status::Inactive || $contact->getStatus() === Status::Deleted) {

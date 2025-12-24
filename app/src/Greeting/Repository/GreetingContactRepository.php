@@ -11,6 +11,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repozitář pro správu entit GreetingContact.
+ *
  * @extends ServiceEntityRepository<GreetingContact>
  *
  * @method GreetingContact|null find($id, $lockMode = null, $lockVersion = null)
@@ -26,11 +28,13 @@ class GreetingContactRepository extends ServiceEntityRepository
     }
 
     /**
+     * Najde všechny aktivní kontakty seskupené podle jazyka.
+     *
      * @return array<string, array<int, GreetingContact>>
      */
     public function findAllActiveGroupedByLanguage(): array
     {
-        // Get all active contacts sorted by email
+        // Získáme všechny aktivní kontakty seřazené podle e-mailu
         $contacts = $this->findBy(['status' => Status::Active], ['email' => 'ASC']);
 
         $groupedContacts = [];
@@ -60,7 +64,7 @@ class GreetingContactRepository extends ServiceEntityRepository
             return [];
         }
 
-        // Нормализуем входные данные к нижнему регистру для сравнения
+        // Normalizujeme vstupní data na malá písmena pro porovnání
         $normalizedInputMap = [];
 
         foreach ($emails as $email) {
@@ -69,7 +73,7 @@ class GreetingContactRepository extends ServiceEntityRepository
 
         $normalizedEmails = array_keys($normalizedInputMap);
 
-        // Находим те, которые УЖЕ ЕСТЬ в базе (по нижнему регистру)
+        // Najdeme ty, které JIŽ EXISTUJÍ v databázi (dle malých písmen)
         $existingEmails = $this->createQueryBuilder('c')
             ->select('LOWER(c.email)')
             ->where('LOWER(c.email) IN (:emails)')
@@ -77,8 +81,8 @@ class GreetingContactRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleColumnResult();
 
-        // Удаляем из списка нормализованных входных те, что нашлись
-        $existingMap = array_flip($existingEmails); // для быстрого поиска
+        // Odstraníme ze seznamu normalizovaných vstupů ty, které byly nalezeny
+        $existingMap = array_flip($existingEmails); // pro rychlé vyhledávání
 
         $nonExistingOriginals = [];
 
@@ -92,6 +96,8 @@ class GreetingContactRepository extends ServiceEntityRepository
     }
 
     /**
+     * Najde kontakty podle e-mailů (case-insensitive).
+     *
      * @param string[] $emails
      *
      * @return GreetingContact[]
@@ -102,8 +108,8 @@ class GreetingContactRepository extends ServiceEntityRepository
             return [];
         }
 
-        // Use LOWER() for case insensitive search.
-        // Also normalize input emails to lowercase to ensure match.
+        // Použijeme LOWER() pro case-insensitive vyhledávání.
+        // Také normalizujeme vstupní e-maily na malá písmena pro shodu.
         $normalizedEmails = array_map(static fn (string $email) => mb_strtolower($email), $emails);
 
         return $this->createQueryBuilder('c')
@@ -114,6 +120,8 @@ class GreetingContactRepository extends ServiceEntityRepository
     }
 
     /**
+     * Najde e-mailové adresy podle seznamu ID.
+     *
      * @param string[] $ids
      *
      * @return string[]

@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace App\Greeting\Service;
 
+/**
+ * Parser pro efektivní čtení XML souborů s e-maily (streamování).
+ */
 class GreetingXmlParser
 {
     /**
+     * Postupně načítá e-maily z XML souboru.
+     *
      * @return \Generator<string>
      */
     public function parse(string $filePath): \Generator
@@ -15,8 +20,8 @@ class GreetingXmlParser
             throw new \RuntimeException("File not found: $filePath");
         }
 
-        // LIBXML_NONET disables network access for security (XXE prevention)
-        // PHP XMLReader::open signature: open(string $uri, ?string $encoding = null, int $options = 0)
+        // LIBXML_NONET zakazuje síťový přístup z bezpečnostních důvodů (prevence XXE)
+        // Signatura PHP XMLReader::open: open(string $uri, ?string $encoding = null, int $options = 0)
         $reader = \XMLReader::open($filePath, null, \LIBXML_NONET);
 
         if (!$reader) {
@@ -51,6 +56,9 @@ class GreetingXmlParser
         }
     }
 
+    /**
+     * Validuje a normalizuje e-mail (podpora IDN domén).
+     */
     private function processEmail(string $email): ?string
     {
         $originalEmail = trim($email);

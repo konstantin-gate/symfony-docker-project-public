@@ -207,7 +207,7 @@ XML;
         }
 
         $this->tempFiles[] = $file;
-        $handle = fopen($file, 'wb');
+        $handle = fopen($file, 'w');
 
         if (false === $handle) {
             throw new \RuntimeException('Failed to open temporary file for writing');
