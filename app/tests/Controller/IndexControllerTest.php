@@ -6,11 +6,17 @@ namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * Třída testuje hlavní kontroler aplikace.
+ */
 final class IndexControllerTest extends WebTestCase
 {
+    /**
+     * Testuje hlavní stránku aplikace a její přesměrování.
+     */
     public function testIndex(): void
     {
-        $client = static::createClient();
+        $client = self::createClient();
         $client->request('GET', '/');
 
         self::assertResponseRedirects('/cs');

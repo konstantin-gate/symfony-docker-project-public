@@ -13,12 +13,31 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/**
+ * Integrační test pro ověření funkčnosti formuláře GreetingImportType.
+ * Testuje vytvoření formuláře, validaci vstupních dat, překlady a integraci s kontejnerem.
+ *
+ * Tato třída testuje:
+ * - Vytvoření formuláře z kontejneru
+ * - Validaci vstupních dat (e-maily, datum, jazyk)
+ * - Překlady a popisky polí
+ * - Integrace s Doctrine EntityManager pro testování databázových operací
+ * - Validaci souborů (XML upload)
+ * - Práce s EnumType a datovými typy
+ * - Testování různých formátů dat, oddělovačů e-mailů a locale
+ * - Kontrolu výchozích hodnot, konfigurace tlačítek a atributů polí
+ * - Testování chování formuláře v různých scénářích a edge cases
+ */
 class GreetingImportTypeIntegrationTest extends KernelTestCase
 {
     private FormFactoryInterface $formFactory;
     private ValidatorInterface $validator;
     private EntityManagerInterface $entityManager;
 
+    /**
+     * Inicializuje testovací prostředí pro každý test.
+     * Spustí jádro Symfony, načte služby z kontejneru a začne databázovou transakci.
+     */
     protected function setUp(): void
     {
         self::bootKernel();
@@ -28,10 +47,14 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
         $this->validator = $container->get(ValidatorInterface::class);
         $this->entityManager = $container->get(EntityManagerInterface::class);
 
-        // Spustíme transakci pro každý test
+        // Začínáme transakci pro každý test
         $this->entityManager->beginTransaction();
     }
 
+    /**
+     * Ukončuje testovací prostředí po každém testu.
+     * Provádí rollback databázové transakce a volá rodičovskou metodu.
+     */
     protected function tearDown(): void
     {
         // Po každém testu provedeme rollback transakce
@@ -43,7 +66,13 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
     }
 
     /**
-     * Integrační test: vytvoření formuláře přes kontejner a kontrola konfigurace.
+     * Integrační test pro ověření funkčnosti formuláře GreetingImportType.
+     * Testuje vytvoření formuláře, validaci vstupních dat, překlady a integraci s kontejnerem.
+     *
+     * Tato funkce testuje:
+     * - Vytvoření formuláře z kontejneru
+     * - Kontrolu konfigurace formuláře (translation domain)
+     * - Přítomnost všech polí formuláře
      */
     public function testFormCreationFromContainer(): void
     {

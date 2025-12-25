@@ -16,11 +16,19 @@ use Doctrine\ORM\OptimisticLockException;
 use Random\RandomException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
+/**
+ * Testovací třída pro GreetingContactRepository.
+ * Testuje funkčnost uložení, načítání a vyhledávání kontaktů.
+ */
 class GreetingContactRepositoryTest extends KernelTestCase
 {
     private EntityManagerInterface $entityManager;
     private GreetingContactRepository $repository;
 
+    /**
+     * Inicializuje testovací prostředí.
+     * Načte jádro Symfony a připraví entity manager a repository pro testování.
+     */
     protected function setUp(): void
     {
         self::bootKernel();
@@ -32,6 +40,10 @@ class GreetingContactRepositoryTest extends KernelTestCase
         $this->repository = $repository;
     }
 
+    /**
+     * Uvolňuje testovací prostředí.
+     * Zavře entity manager po dokončení testu.
+     */
     protected function tearDown(): void
     {
         parent::tearDown();
@@ -40,6 +52,9 @@ class GreetingContactRepositoryTest extends KernelTestCase
     }
 
     /**
+     * Testuje uložení a načtení kontaktu.
+     * Vytvoří nový kontakt, uloží ho do databáze a ověří, že byl správně uložen a lze ho načíst.
+     *
      * @throws RandomException
      * @throws Exception
      * @throws ORMException
@@ -59,7 +74,7 @@ class GreetingContactRepositoryTest extends KernelTestCase
         $id = $contact->getId();
         $this->assertNotNull($id, 'ID should be generated after persist/flush');
 
-        // Clear the entity manager to ensure we retrieve from the database
+        // Vyčistíme entity manager, aby se kontakt načítal přímo z databáze
         $this->entityManager->clear();
 
         $retrievedContact = $this->repository->find($id);
@@ -70,7 +85,7 @@ class GreetingContactRepositoryTest extends KernelTestCase
         $this->assertSame(Status::Active, $retrievedContact->getStatus());
         $this->assertNotNull($retrievedContact->getUnsubscribeToken());
 
-        // Verify raw storage values
+        // Ověříme surová data uložená v databázi
         $connection = $this->entityManager->getConnection();
         $rawResult = $connection->fetchAssociative(
             'SELECT language, status FROM greeting_contact WHERE id = ?',
@@ -83,6 +98,9 @@ class GreetingContactRepositoryTest extends KernelTestCase
     }
 
     /**
+     * Testuje omezující podmínku pro jedinečnost e-mailu.
+     * Pokusí se uložit dva kontakty se stejným e-mailovým adresou a ověří, že je vyvolána výjimka pro porušení jedinečnosti.
+     *
      * @throws RandomException
      * @throws ORMException
      */
@@ -104,19 +122,23 @@ class GreetingContactRepositoryTest extends KernelTestCase
     }
 
     /**
+     * Testuje vyhledání všech aktivních kontaktů seskupených podle jazyka.
+     * Vytváří testovací data s různými jazyky a stavy, volá metodu findAllActiveGroupedByLanguage()
+     * a ověřuje, že jsou správně seskupeny a seřazeny podle e-mailu.
+     *
      * @throws OptimisticLockException
      * @throws ORMException
      */
     public function testFindAllActiveGroupedByLanguage(): void
     {
-        // 1. Prepare data
-        // Using unique prefix to avoid collision with other tests if DB is shared
+        // 1. Připravíme testovací data
+        // Použijeme jedinečný prefix pro vyhnutí kolize s jinými testy
         $prefix = uniqid('group_test_', true);
 
         $contactsData = [
             ['email' => "{$prefix}_en_active@test.com", 'lang' => GreetingLanguage::English, 'status' => Status::Active],
             ['email' => "{$prefix}_ru_active_2@test.com", 'lang' => GreetingLanguage::Russian, 'status' => Status::Active],
-            ['email' => "{$prefix}_ru_active_1@test.com", 'lang' => GreetingLanguage::Russian, 'status' => Status::Active], // Alphabetically first
+            ['email' => "{$prefix}_ru_active_1@test.com", 'lang' => GreetingLanguage::Russian, 'status' => Status::Active], // Abecedně první
             ['email' => "{$prefix}_cs_inactive@test.com", 'lang' => GreetingLanguage::Czech, 'status' => Status::Inactive],
             ['email' => "{$prefix}_en_deleted@test.com", 'lang' => GreetingLanguage::English, 'status' => Status::Deleted],
         ];
@@ -131,16 +153,16 @@ class GreetingContactRepositoryTest extends KernelTestCase
         $this->entityManager->flush();
         $this->entityManager->clear();
 
-        // 2. Execute
+        // 2. Vykonáme metodu
         $grouped = $this->repository->findAllActiveGroupedByLanguage();
 
-        // 3. Assert keys exist
+        // 3. Ověříme existenci klíčů
         $this->assertArrayHasKey(GreetingLanguage::English->value, $grouped);
         $this->assertArrayHasKey(GreetingLanguage::Russian->value, $grouped);
         $this->assertArrayHasKey(GreetingLanguage::Czech->value, $grouped);
 
-        // 4. Assert contents
-        // Filter result to only include our test contacts (in case DB is not clean)
+        // 4. Ověříme obsah
+        // Filtrujeme výsledek, aby obsahoval pouze naše testovací kontakty
         $filterByPrefix = static fn (array $group) => array_values(array_filter(
             $group,
             static fn (GreetingContact $c) => str_starts_with((string) $c->getEmail(), $prefix)
@@ -150,17 +172,17 @@ class GreetingContactRepositoryTest extends KernelTestCase
         $ruGroup = $filterByPrefix($grouped[GreetingLanguage::Russian->value]);
         $csGroup = $filterByPrefix($grouped[GreetingLanguage::Czech->value]);
 
-        // English: 1 active
+        // Angličtina: 1 aktivní
         $this->assertCount(1, $enGroup);
         $this->assertEquals("{$prefix}_en_active@test.com", $enGroup[0]->getEmail());
 
-        // Czech: 0 active (was inactive)
+        // Čeština: 0 aktivních (byla neaktivní)
         $this->assertCount(0, $csGroup);
 
-        // Russian: 2 active
+        // Rusky: 2 aktivní
         $this->assertCount(2, $ruGroup);
 
-        // Check Sorting: ru_active_1 should be before ru_active_2
+        // Ověříme řazení: ru_active_1 by mělo být před ru_active_2
         $this->assertEquals("{$prefix}_ru_active_1@test.com", $ruGroup[0]->getEmail());
         $this->assertEquals("{$prefix}_ru_active_2@test.com", $ruGroup[1]->getEmail());
     }

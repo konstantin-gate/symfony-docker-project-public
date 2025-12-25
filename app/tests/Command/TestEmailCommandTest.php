@@ -12,17 +12,26 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
+/**
+ * Třída testuje příkaz pro otestování odesílání e-mailů.
+ */
 class TestEmailCommandTest extends TestCase
 {
     private EmailService&MockObject $emailService;
     private TestEmailCommand $command;
 
+    /**
+     * Připraví testovací prostředí.
+     */
     protected function setUp(): void
     {
         $this->emailService = $this->createMock(EmailService::class);
         $this->command = new TestEmailCommand($this->emailService);
     }
 
+    /**
+     * Testuje úspěšné odeslání e-mailu.
+     */
     public function testExecuteSendsEmailSuccessfully(): void
     {
         $to = 'user@test.com';
@@ -47,6 +56,9 @@ class TestEmailCommandTest extends TestCase
         $this->assertStringContainsString('Email sent successfully', $commandTester->getDisplay());
     }
 
+    /**
+     * Testuje zpracování výjimek při odesílání e-mailu.
+     */
     public function testExecuteHandlesExceptionsGracefully(): void
     {
         $this->emailService->expects($this->once())

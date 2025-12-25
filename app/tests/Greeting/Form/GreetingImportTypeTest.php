@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+/**
+ * Testovací třída pro formulář GreetingImportType.
+ * Obsahuje testy pro validaci e-mailových adres, datumu a dalších polí formuláře.
+ *
+ * @author Konstantin Gate
+ */
+
 namespace App\Tests\Greeting\Form;
 
 use App\Greeting\Enum\GreetingLanguage;
@@ -12,6 +19,12 @@ use Symfony\Component\Validator\Validation;
 
 class GreetingImportTypeTest extends TypeTestCase
 {
+    /**
+     * Vytváří a vrací rozšíření pro testování formuláře.
+     * Obsahuje validator pro validaci dat formuláře.
+     *
+     * @return array<ValidatorExtension>
+     */
     protected function getExtensions(): array
     {
         $validator = Validation::createValidator();
@@ -21,11 +34,17 @@ class GreetingImportTypeTest extends TypeTestCase
         ];
     }
 
+    /**
+     * Testuje odeslání formuláře s prázdnou hodnotou e-mailů.
+     * Zjišťuje, zda formulář je platný, když pole e-mailů je prázdné.
+     *
+     * @return void
+     */
     public function testSubmitEmptyEmails(): void
     {
         $form = $this->factory->create(GreetingImportType::class);
 
-        // Nyní předáme prázdnou hodnotu emailů jako prázdný řetězec
+        // Předáváme prázdnou hodnotu e-mailů jako prázdný řetězec
         $formData = [
             'emails' => '',
             'registrationDate' => '2024-12-12',
@@ -34,10 +53,16 @@ class GreetingImportTypeTest extends TypeTestCase
 
         $form->submit($formData);
         $this->assertTrue($form->isSynchronized());
-        // Form is valid because emails are optional now (can be empty string)
+        // Formulář je platný, protože e-maily jsou volitelné (mohou být prázdné)
         $this->assertTrue($form->isValid());
     }
 
+    /**
+     * Testuje odeslání formuláře s neplatnými e-mailovými adresami.
+     * Zjišťuje, zda formulář je neplatný, když jsou poskytnuty neplatné e-maily.
+     *
+     * @return void
+     */
     public function testSubmitInvalidEmails(): void
     {
         $formData = [
@@ -46,7 +71,7 @@ class GreetingImportTypeTest extends TypeTestCase
             'language' => GreetingLanguage::Czech->value,
         ];
 
-        // Create a form with the data
+        // Vytváříme formulář s daty
         $form = $this->factory->create(GreetingImportType::class);
         $form->submit($formData);
 
@@ -55,18 +80,24 @@ class GreetingImportTypeTest extends TypeTestCase
         $this->assertFalse($form->isValid()); // Ale údaje nejsou platné
     }
 
+    /**
+     * Testuje odeslání formuláře s neplatným datem.
+     * Zjišťuje, zda formulář je neplatný, když je poskytnuto neplatné datum.
+     *
+     * @return void
+     */
     public function testSubmitInvalidDate(): void
     {
         $formData = [
             'emails' => 'test1@example.com test2@example.com',
-            'registrationDate' => '2025-12-99',  // Invalid date
+            'registrationDate' => '2025-12-99',  // Neplatné datum
             'language' => GreetingLanguage::Czech->value,
         ];
 
         $form = $this->factory->create(GreetingImportType::class);
         $form->submit($formData);
 
-        // Formulář je synchronizován, ale není platný kvůli prázdnému datu
+        // Formulář je synchronizován, ale není platný kvůli neplatnému datu
         $this->assertTrue($form->isSynchronized());
         $this->assertFalse($form->isValid());
 
@@ -74,6 +105,12 @@ class GreetingImportTypeTest extends TypeTestCase
         $this->assertGreaterThan(0, \count($form->get('registrationDate')->getErrors()));
     }
 
+    /**
+     * Testuje odeslání formuláře s platnými daty.
+     * Zjišťuje, zda formulář je platný, když jsou poskytnuta platná data.
+     *
+     * @return void
+     */
     public function testSubmitValidData(): void
     {
         $formData = [
@@ -82,7 +119,7 @@ class GreetingImportTypeTest extends TypeTestCase
             'language' => GreetingLanguage::Czech->value,
         ];
 
-        // Create a form with the data
+        // Vytváříme formulář s daty
         $form = $this->factory->create(GreetingImportType::class);
         $form->submit($formData);
 
@@ -93,6 +130,12 @@ class GreetingImportTypeTest extends TypeTestCase
         $this->assertEquals($formData['emails'], $form->get('emails')->getData());
     }
 
+    /**
+     * Testuje odeslání formuláře s prázdným datem.
+     * Zjišťuje, zda formulář je neplatný, když je pole data prázdné.
+     *
+     * @return void
+     */
     public function testSubmitEmptyDate(): void
     {
         $formData = [
@@ -108,6 +151,12 @@ class GreetingImportTypeTest extends TypeTestCase
         $this->assertFalse($form->isValid());
     }
 
+    /**
+     * Testuje odeslání formuláře s prázdným jazykem.
+     * Zjišťuje, zda formulář je platný, když je pole jazyka prázdné.
+     *
+     * @return void
+     */
     public function testSubmitEmptyLanguage(): void
     {
         $formData = [

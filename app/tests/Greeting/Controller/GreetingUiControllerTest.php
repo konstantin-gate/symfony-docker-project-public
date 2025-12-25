@@ -11,8 +11,24 @@ use App\Greeting\Enum\GreetingLanguage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
+/**
+ * Třída GreetingUiControllerTest obsahuje testy pro kontroler GreetingUiController.
+ * Testuje funkčnost uživatelského rozhraní pro správu pozdravů, včetně importu kontaktů,
+ * odesílání e-mailů a správy jednotlivých kontaktů.
+ *
+ * @author Konstantin Gate
+ */
 class GreetingUiControllerTest extends WebTestCase
 {
+    /**
+     * Vytvoří nový kontakt s daným e-mailovým adresou a jazykem.
+     * Kontakt je uložen do databáze a vrácen jeho ID.
+     *
+     * @param string $email E-mailová adresa kontaktu
+     * @param string $lang  Jazyk kontaktu (defaultně 'en')
+     *
+     * @return string ID vytvořeného kontaktu
+     */
     private function createContact(string $email, string $lang = 'en'): string
     {
         $container = static::getContainer();
@@ -30,6 +46,10 @@ class GreetingUiControllerTest extends WebTestCase
         return (string) $contact->getId();
     }
 
+    /**
+     * Testuje, zda je dashboard přístupný a obsahuje formulář pro import kontaktů.
+     * Zkontroluje, že stránka vrátí úspěšný HTTP status a že formulář pro import je přítomen.
+     */
     public function testDashboardIsAccessible(): void
     {
         $client = static::createClient();
@@ -39,22 +59,31 @@ class GreetingUiControllerTest extends WebTestCase
         self::assertSelectorExists('form[name="greeting_import"]');
     }
 
+    /**
+     * Testuje, že při odeslání prázdného formuláře pro import kontaktů
+     * uživatel je přesměrován zpět na dashboard a zobrazí se chybová zpráva.
+     */
     public function testImportRedirectsAndShowsFlashOnInvalidData(): void
     {
         $client = static::createClient();
         $crawler = $client->request('GET', '/ru/greeting/dashboard');
 
         $form = $crawler->selectButton('greeting_import[import]')->form();
-        // Submit empty form
+        // Odeslání prázdného formuláře
         $client->submit($form);
 
         self::assertResponseRedirects('/ru/greeting/dashboard');
         $client->followRedirect();
 
-        // Check for error flash message (alert-danger)
+        // Zkontroluje, zda je zobrazena chybová zpráva (alert-danger)
         self::assertSelectorExists('.alert-danger');
     }
 
+    /**
+     * Testuje úspěšný import kontaktů z textového obsahu.
+     * Zkontroluje, že po odeslání formuláře s platnými daty je kontakt úspěšně importován
+     * a zobrazena je úspěšná zpráva.
+     */
     public function testImportTextContentSuccess(): void
     {
         $client = static::createClient();
@@ -70,10 +99,14 @@ class GreetingUiControllerTest extends WebTestCase
         self::assertResponseRedirects('/ru/greeting/dashboard');
         $client->followRedirect();
 
-        // Check for success flash message (alert-success)
+        // Zkontroluje, zda je zobrazena úspěšná zpráva (alert-success)
         self::assertSelectorExists('.alert-success');
     }
 
+    /**
+     * Testuje úspěšný import kontaktů z XML souboru.
+     * Zkontroluje, že kontakt je správně uložen do databáze a zobrazena je úspěšná zpráva.
+     */
     public function testImportXmlFileSuccess(): void
     {
         $client = static::createClient();
@@ -82,7 +115,7 @@ class GreetingUiControllerTest extends WebTestCase
         $form = $crawler->selectButton('greeting_import[import]')->form();
 
         $uniqueEmail = 'xml_test_' . uniqid('', true) . '@example.com';
-        // Create temporary XML file
+        // Vytvoření dočasného XML souboru
         $xmlContent = <<<XML
 <contacts>
     <contact>
@@ -104,7 +137,7 @@ XML;
 
             self::assertSelectorExists('.alert-success');
 
-            // Verify contact persistence
+            // Ověření uložení kontaktu
             /** @var EntityManagerInterface $em */
             $em = static::getContainer()->get(EntityManagerInterface::class);
             $contact = $em->getRepository(GreetingContact::class)->findOneBy(['email' => $uniqueEmail]);
@@ -117,6 +150,10 @@ XML;
         }
     }
 
+    /**
+     * Testuje import kontaktů z kombinace XML souboru a textového obsahu s duplikáty.
+     * Zkontroluje, že jsou uloženy pouze jedinečné kontakty a zobrazena je správná zpráva.
+     */
     public function testImportCombinedXmlAndTextWithDuplicates(): void
     {
         $client = static::createClient();
@@ -128,7 +165,7 @@ XML;
         $xmlOnlyEmail = 'xml_only_' . uniqid('', true) . '@example.com';
         $textOnlyEmail = 'text_only_' . uniqid('', true) . '@example.com';
 
-        // XML with shared and unique email
+        // XML s sdíleným a jedinečným e-mailem
         $xmlContent = <<<XML
 <contacts>
     <contact>
@@ -153,10 +190,10 @@ XML;
             $client->followRedirect();
 
             self::assertSelectorExists('.alert-success');
-            // Expect 3 unique imports: 1 shared + 1 XML only + 1 text only
+            // Očekáváme 3 jedinečné importy: 1 sdílený + 1 pouze XML + 1 pouze text
             self::assertSelectorTextContains('.alert-success', '3');
 
-            // Verify contact persistence
+            // Ověření uložení kontaktů
             /** @var EntityManagerInterface $em */
             $em = static::getContainer()->get(EntityManagerInterface::class);
             $repo = $em->getRepository(GreetingContact::class);
@@ -171,11 +208,15 @@ XML;
         }
     }
 
+    /**
+     * Testuje, že import neúspěšný při neplatném XML souboru.
+     * Zkontroluje, že žádné kontakty nejsou uloženy a zobrazena je chybová zpráva.
+     */
     public function testImportInvalidXmlFileFails(): void
     {
         $client = static::createClient();
 
-        // Get initial count to ensure no changes are made
+        // Získáme počáteční počet kontaktů pro ověření, že se nic nezmění
         /** @var EntityManagerInterface $em */
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $repo = $em->getRepository(GreetingContact::class);
@@ -185,7 +226,7 @@ XML;
 
         $form = $crawler->selectButton('greeting_import[import]')->form();
 
-        // Invalid XML content (missing closing tag for email)
+        // Neplatný obsah XML (chybějící uzavírací tag pro email)
         $xmlContent = '<contacts><email>broken@example.com</contacts>';
         $tempFile = sys_get_temp_dir() . '/test_invalid_' . uniqid('', true) . '.xml';
         file_put_contents($tempFile, $xmlContent);
@@ -199,10 +240,10 @@ XML;
             self::assertResponseRedirects('/ru/greeting/dashboard');
             $client->followRedirect();
 
-            // Check for error flash message (alert-danger)
+            // Zkontroluje, zda je zobrazena chybová zpráva (alert-danger)
             self::assertSelectorExists('.alert-danger');
 
-            // Verify DB count hasn't changed
+            // Ověření, že počet kontaktů se nezměnil
             self::assertSame($initialCount, $repo->count([]));
         } finally {
             if (file_exists($tempFile)) {
@@ -211,6 +252,10 @@ XML;
         }
     }
 
+    /**
+     * Testuje úspěšné odeslání pozdravu vybranému kontaktu.
+     * Zkontroluje, že e-mail je zařazen do fronty a zobrazena je úspěšná zpráva.
+     */
     public function testSendGreetingSuccessfully(): void
     {
         $client = static::createClient();
@@ -220,10 +265,10 @@ XML;
         $crawler = $client->request('GET', '/ru/greeting/dashboard');
         $token = $crawler->filter('input[name="_token"]')->attr('value');
 
-        // Verify the contact checkbox exists
+        // Ověří existence zaškrtávacího políčka pro kontakt
         self::assertSelectorExists('input[name="contacts[]"][value="' . $id . '"]');
 
-        // Bypass DomCrawler form validation which fails on large contact lists
+        // Obchází validaci DomCrawler pro velké seznamy kontaktů
         $client->request('POST', '/ru/greeting/send', [
             'contacts' => [$id],
             'subject' => 'Test Subject',
@@ -237,13 +282,17 @@ XML;
         self::assertSelectorExists('.alert-success');
     }
 
+    /**
+     * Testuje odeslání pozdravů několika kontaktům s různými jazyky.
+     * Zkontroluje, že e-maily jsou zařazeny do fronty pro každý kontakt a zobrazena je úspěšná zpráva.
+     */
     public function testSendToMultipleContactsWithDifferentLanguages(): void
     {
         $client = static::createClient();
         $idEn = $this->createContact('en_multi_' . uniqid('', true) . '@example.com', 'en');
         $idRu = $this->createContact('ru_multi_' . uniqid('', true) . '@example.com', 'ru');
 
-        // Start session
+        // Spustí relaci
         $crawler = $client->request('GET', '/ru/greeting/dashboard');
         $token = $crawler->filter('input[name="_token"]')->attr('value');
 
@@ -258,14 +307,18 @@ XML;
         $client->followRedirect();
 
         self::assertSelectorExists('.alert-success');
-        // Expect success message indicating 2 emails were queued/sent
+        // Očekáváme úspěšnou zprávu, že 2 e-maily byly zařazeny do fronty/odeslány
         self::assertSelectorTextContains('.alert-success', '2');
     }
 
+    /**
+     * Testuje, že při pokusu o odeslání pozdravu bez výběru kontaktů
+     * se zobrazí chybová zpráva.
+     */
     public function testSendWithNoContactsShowsError(): void
     {
         $client = static::createClient();
-        // Start session
+        // Spustí relaci
         $crawler = $client->request('GET', '/ru/greeting/dashboard');
         $token = $crawler->filter('input[name="_token"]')->attr('value');
 
@@ -279,11 +332,14 @@ XML;
         self::assertResponseRedirects('/ru/greeting/dashboard');
         $client->followRedirect();
 
-        // The controller uses 'error' flash which results in alert-danger
+        // Kontroler používá 'error' flash, který se zobrazí jako alert-danger
         self::assertSelectorExists('.alert-danger');
     }
 
     /**
+     * Testuje smazání kontaktu přes JSON požadavek.
+     * Zkontroluje, že kontakt je úspěšně smazán a vrácena je odpověď s úspěchem.
+     *
      * @throws \JsonException
      */
     public function testDeleteContactJson(): void
@@ -302,6 +358,9 @@ XML;
     }
 
     /**
+     * Testuje pokus o smazání neexistujícího kontaktu.
+     * Zkontroluje, že je vrácen HTTP status 404 a odpověď s neúspěchem.
+     *
      * @throws \JsonException
      */
     public function testDeleteContactNotFound(): void
@@ -319,6 +378,9 @@ XML;
     }
 
     /**
+     * Testuje deaktivaci kontaktu přes JSON požadavek.
+     * Zkontroluje, že kontakt je úspěšně deaktivován a vrácena je odpověď s úspěchem.
+     *
      * @throws \JsonException
      */
     public function testDeactivateContactJson(): void
@@ -337,6 +399,9 @@ XML;
     }
 
     /**
+     * Testuje pokus o smazání již smazaného kontaktu.
+     * Zkontroluje, že je vrácena úspěšná odpověď a zobrazena je varovná zpráva.
+     *
      * @throws \JsonException
      */
     public function testDeleteAlreadyDeletedShowsWarning(): void
@@ -359,12 +424,15 @@ XML;
             (string) $client->getResponse()->getContent()
         );
 
-        // Follow "reload" by requesting the dashboard and check for warning flash
+        // Následuje "reload" požadavkem na dashboard a kontroluje varovnou zprávu
         $client->request('GET', '/ru/greeting/dashboard');
         self::assertSelectorExists('.alert-warning');
     }
 
     /**
+     * Testuje pokus o deaktivaci již neaktivního kontaktu.
+     * Zkontroluje, že je vrácena úspěšná odpověď a zobrazena je varovná zpráva.
+     *
      * @throws \JsonException
      */
     public function testDeactivateAlreadyInactiveShowsWarning(): void
@@ -387,15 +455,19 @@ XML;
             (string) $client->getResponse()->getContent()
         );
 
-        // Follow "reload" by requesting the dashboard and check for warning flash
+        // Následuje "reload" požadavkem na dashboard a kontroluje varovnou zprávu
         $client->request('GET', '/ru/greeting/dashboard');
         self::assertSelectorExists('.alert-warning');
     }
 
+    /**
+     * Testuje generování testovacích e-mailů v vývojovém prostředí.
+     * Zkontroluje, že jsou vráceny platné e-mailové adresy.
+     */
     public function testGenerateTestEmailsInDevReturnsEmails(): void
     {
-        // By default, static::createClient() uses 'test' environment,
-        // which is NOT 'prod', so the check in controller allows it.
+        // Ve výchozím nastavení static::createClient() používá prostředí 'test',
+        // které NENÍ 'prod', takže kontrola v kontroleru to povoluje.
         $client = static::createClient();
         $client->request('GET', '/greeting/generate-test-emails');
 
@@ -405,6 +477,10 @@ XML;
         self::assertCount(10, explode(' ', trim($content)));
     }
 
+    /**
+     * Testuje, že při odeslání prázdného formuláře v anglickém rozhraní
+     * se zobrazí chybová zpráva v angličtině.
+     */
     public function testImportInEnglishLocaleShowsEnglishFlash(): void
     {
         $client = static::createClient();
@@ -413,7 +489,7 @@ XML;
         self::assertResponseIsSuccessful();
 
         $form = $crawler->selectButton('greeting_import[import]')->form();
-        // Submit empty form to trigger validation error
+        // Odeslání prázdného formuláře pro vyvolání chyby validace
         $client->submit($form);
 
         self::assertResponseRedirects('/en/greeting/dashboard');
@@ -422,6 +498,10 @@ XML;
         self::assertSelectorTextContains('.alert-danger', 'Please provide either a list of emails or an XML file');
     }
 
+    /**
+     * Testuje, že při odeslání prázdného formuláře v českém rozhraní
+     * se zobrazí chybová zpráva v češtině.
+     */
     public function testImportInCzechLocaleShowsCzechFlash(): void
     {
         $client = static::createClient();
@@ -438,6 +518,9 @@ XML;
         self::assertSelectorTextContains('.alert-danger', 'Prosím zadejte seznam e-mailů nebo nahrajte XML soubor');
     }
 
+    /**
+     * Testuje, že na dashboardu se zobrazí ikona "odesláno" pro kontakty, kterým byl odeslán pozdrav.
+     */
     public function testDashboardShowsSentStatusMarkerForGreetedContacts(): void
     {
         $client = static::createClient();
@@ -449,31 +532,31 @@ XML;
         $contact = $em->getRepository(GreetingContact::class)->find($idStr);
         self::assertNotNull($contact);
 
-        // Create a log entry indicating a greeting was sent
+        // Vytvoření záznamu v logu, který indikuje, že pozdrav byl odeslán
         $log = new GreetingLog($contact, (int) date('Y'));
         $em->persist($log);
         $em->flush();
 
         $client->request('GET', '/ru/greeting/dashboard');
 
-        // Check for the "sent" status dot icon
-        // We look for the dot specifically associated with this contact row/wrapper if possible,
-        // or just generally if the structure is simple.
-        // The dashboard uses: <i class="bi bi-circle-fill status-sent-dot ms-2" ...>
+        // Hledá ikonu "odesláno" status dot
+        // Hledáme ikonu specificky pro řádek tohoto kontaktu, pokud je to možné,
+        // nebo obecně, pokud je struktura jednoduchá.
+        // Dashboard používá: <i class="bi bi-circle-fill status-sent-dot ms-2" ...>
 
-        // Let's find the checkbox for this contact first, then look for the icon in its vicinity or row
-        // Using xpath to find the icon inside the same wrapper where the checkbox with specific value is
+        // Nejprve najdeme zaškrtávací políčko pro tento kontakt, pak hledáme ikonu v jeho blízkosti nebo řádku
+        // Používáme xpath pro hledání ikony uvnitř stejného wrapperu, kde je zaškrtávací políčko se specifickou hodnotou
 
-        // Simplified check: ensure at least one sent marker exists (since we just made one)
-        // and ideally check it is near our contact.
+        // Zjednodušená kontrola: zajistíme, že existuje alespoň jedna ikona "odesláno" (protože jsme ji právě vytvořili)
+        // a ideálně zkontrolujeme, že je blízko našemu kontaktu.
 
-        // More precise: Find the checkbox, traverse up to the wrapper, then look for the icon.
+        // Přesnější: Najdeme zaškrtávací políčko, vyhledáme jeho wrapper, pak hledáme ikonu.
         $crawler = $client->getCrawler();
         $checkbox = $crawler->filter('input[name="contacts[]"][value="' . $idStr . '"]');
 
         self::assertCount(1, $checkbox, 'Contact checkbox should exist');
 
-        // The checkbox is inside .contact-item-wrapper along with the icon
+        // Zaškrtávací políčko je uvnitř .contact-item-wrapper spolu s ikonou
         $wrapper = $checkbox->closest('.contact-item-wrapper');
         self::assertNotNull($wrapper);
         $icon = $wrapper->filter('.status-sent-dot');
@@ -481,11 +564,15 @@ XML;
         self::assertCount(1, $icon, 'Sent status dot should be present for greeted contact');
     }
 
+    /**
+     * Testuje, že import kontaktů odmítne neplatný CSRF token.
+     * Zkontroluje, že uživatel je přesměrován zpět na dashboard a zobrazí se chybová zpráva.
+     */
     public function testImportRejectsInvalidCsrfToken(): void
     {
         $client = static::createClient();
 
-        // Simulating a form submission with an invalid CSRF token
+        // Simuluje odeslání formuláře s neplatným CSRF tokenem
         $client->request('POST', '/ru/greeting/import', [
             'greeting_import' => [
                 'emails' => 'test@example.com',
@@ -495,14 +582,18 @@ XML;
             ],
         ]);
 
-        // Expect redirect back to dashboard due to validation error (CSRF is part of validation)
+        // Očekáváme přesměrování zpět na dashboard kvůli chybě validace (CSRF je součástí validace)
         self::assertResponseRedirects('/ru/greeting/dashboard');
         $client->followRedirect();
 
-        // Expect generic validation error message
+        // Očekáváme obecnou chybovou zprávu validace
         self::assertSelectorExists('.alert-danger');
     }
 
+    /**
+     * Testuje, že odeslání pozdravu odmítne neplatný CSRF token.
+     * Zkontroluje, že uživatel je přesměrován zpět na dashboard a zobrazí se chybová zpráva.
+     */
     public function testSendRejectsInvalidCsrfToken(): void
     {
         $client = static::createClient();
@@ -515,17 +606,17 @@ XML;
             '_token' => 'invalid_token_value',
         ]);
 
-        // Expect Access Denied (403) or Redirect with error, depending on implementation.
-        // Standard approach is often 403 or 422 for invalid CSRF.
-        // However, sticking to the controller pattern, it might redirect with flash.
-        // Let's implement the controller to return 422 or 400 for security violation on manual check,
-        // or redirect with error flash.
-        // For this test, let's assume we will implement a redirect with error flash for consistency.
+        // Očekáváme Access Denied (403) nebo přesměrování s chybou, v závislosti na implementaci.
+        // Standardní přístup je často 422 nebo 400 pro neplatný CSRF.
+        // Nicméně, dodržujeme vzor kontroleru, který by mohl přesměrovat s flash zprávou.
+        // Implementujeme kontroler tak, aby vrátil 422 nebo 400 pro porušení bezpečnosti při manuálním kontrole,
+        // nebo přesměroval s chybovou flash zprávou.
+        // Pro tento test předpokládáme, že implementujeme přesměrování s chybovou flash zprávou pro konzistenci.
 
         self::assertResponseRedirects('/ru/greeting/dashboard');
         $client->followRedirect();
 
         self::assertSelectorExists('.alert-danger');
-        // We can check for a specific message if we add one, e.g. "Invalid CSRF token"
+        // Můžeme zkontrolovat specifickou zprávu, pokud ji přidáme, např. "Invalid CSRF token"
     }
 }

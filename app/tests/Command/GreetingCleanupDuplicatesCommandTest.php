@@ -16,6 +16,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * Třída testuje příkaz pro čištění duplicitních pozdravů.
+ */
 class GreetingCleanupDuplicatesCommandTest extends TestCase
 {
     private EntityManagerInterface&MockObject $entityManager;
@@ -23,6 +26,9 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
     private GreetingLogRepository&MockObject $logRepository;
     private CommandTester $commandTester;
 
+    /**
+     * Připraví testovací prostředí.
+     */
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
@@ -37,6 +43,9 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
         $this->commandTester = new CommandTester($command);
     }
 
+    /**
+     * Testuje spuštění v režimu DRY-RUN bez nalezení duplicit.
+     */
     public function testExecuteDryRunNoDuplicates(): void
     {
         $connection = $this->createMock(Connection::class);
@@ -53,9 +62,12 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
         $this->assertStringContainsString('No duplicate emails found', $output);
     }
 
+    /**
+     * Testuje spuštění v režimu DRY-RUN s nalezením duplicit.
+     */
     public function testExecuteDryRunFoundDuplicates(): void
     {
-        // Mock finding duplicates
+        // Mockování nalezení duplicit
         $connection = $this->createMock(Connection::class);
         $this->entityManager->method('getConnection')->willReturn($connection);
 
@@ -65,28 +77,28 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
         ]);
         $connection->method('executeQuery')->willReturn($result);
 
-        // Mock finding contacts
+        // Mockování nalezení kontaktů
         $contact1 = new GreetingContact();
-        $contact1->setEmail('Dup@Test.com'); // Uppercase
-        $contact1->setCreatedAt(new \DateTimeImmutable('2024-01-01')); // Older
+        $contact1->setEmail('Dup@Test.com'); // Velká písmena
+        $contact1->setCreatedAt(new \DateTimeImmutable('2024-01-01')); // Starší
 
         $contact2 = new GreetingContact();
-        $contact2->setEmail('dup@test.com'); // Lowercase
-        $contact2->setCreatedAt(new \DateTimeImmutable('2024-01-02')); // Newer
+        $contact2->setEmail('dup@test.com'); // Malá písmena
+        $contact2->setCreatedAt(new \DateTimeImmutable('2024-01-02')); // Novější
 
-        // Set IDs for output check
-        // Note: ID generation is usually handled by Doctrine, mocking/reflection might be needed if strictly required by test logic,
-        // but for this unit test, the objects are distinct enough.
+        // Nastavení ID pro kontrolu výstupu
+        // Poznámka: Generování ID je obvykle zajišťováno Doctrine, mockování/reflexe může být potřeba, pokud to testovací logika přísně vyžaduje,
+        // ale pro tento unit test jsou objekty dostatečně odlišné.
 
         $this->contactRepository->expects($this->once())
             ->method('findByEmailsCaseInsensitive')
             ->with(['dup@test.com'])
             ->willReturn([$contact1, $contact2]);
 
-        // Mock log check - neither has logs
+        // Mockování kontroly logů - žádný nemá logy
         $this->logRepository->method('getContactIdsWithLogs')->willReturn([]);
 
-        // Expect NO changes
+        // Očekávání: Žádné změny
         $this->entityManager->expects($this->never())->method('remove');
         $this->entityManager->expects($this->never())->method('flush');
 
@@ -95,15 +107,18 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
         $output = $this->commandTester->getDisplay();
         $this->assertStringContainsString('Found 1 emails with duplicates', $output);
         $this->assertStringContainsString('Would delete 1 contacts', $output);
-        $this->assertStringContainsString('normalize 0 emails', $output); // Entity normalizes on set, so it appears normalized already in memory
+        $this->assertStringContainsString('normalize 0 emails', $output); // Entita normalizuje při nastavení, takže je již v paměti normalizovaná
     }
 
+    /**
+     * Testuje vynucené smazání poraženého při čištění duplicit.
+     */
     public function testExecuteForceDeletesLoser(): void
     {
         $winnerId = Uuid::v4();
         $loserId = Uuid::v4();
 
-        // Mock finding duplicates
+        // Mockování nalezení duplicit
         $connection = $this->createMock(Connection::class);
         $this->entityManager->method('getConnection')->willReturn($connection);
 
@@ -113,29 +128,29 @@ class GreetingCleanupDuplicatesCommandTest extends TestCase
         ]);
         $connection->method('executeQuery')->willReturn($result);
 
-        // Contacts
+        // Kontakty
         $winner = new GreetingContact();
         $winner->setId($winnerId);
         $winner->setEmail('winner@test.com');
-        $winner->setCreatedAt(new \DateTimeImmutable('2024-01-01')); // Older
+        $winner->setCreatedAt(new \DateTimeImmutable('2024-01-01')); // Starší
 
         $loser = new GreetingContact();
         $loser->setId($loserId);
         $loser->setEmail('winner@test.com');
-        $loser->setCreatedAt(new \DateTimeImmutable('2024-01-02')); // Newer
+        $loser->setCreatedAt(new \DateTimeImmutable('2024-01-02')); // Novější
 
         $this->contactRepository->method('findByEmailsCaseInsensitive')
             ->willReturn([$winner, $loser]);
 
-        // Winner has logs, Loser doesn't
+        // Vítěz má logy, poražený ne
         $this->logRepository->expects($this->once())
             ->method('getContactIdsWithLogs')
             ->willReturn([(string) $winnerId]);
 
-        // Expectations
+        // Očekávání
         $this->entityManager->expects($this->once())->method('beginTransaction');
         $this->entityManager->expects($this->once())->method('remove')->with($loser);
-        // Winner is already lowercase, so no persist needed for normalization
+        // Vítěz je již malými písmeny, takže není potřeba persistovat pro normalizaci
         $this->entityManager->expects($this->never())->method('persist');
         $this->entityManager->expects($this->once())->method('flush');
         $this->entityManager->expects($this->once())->method('commit');

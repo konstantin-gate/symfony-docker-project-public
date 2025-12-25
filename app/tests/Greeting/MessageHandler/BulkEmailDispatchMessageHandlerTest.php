@@ -14,36 +14,43 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 
+/**
+ * Testovací třída pro BulkEmailDispatchMessageHandler.
+ * Otestuje správné zpracování hromadného odesílání e-mailů v dávkách.
+ */
 class BulkEmailDispatchMessageHandlerTest extends TestCase
 {
     /**
+     * Testuje, zda handler správně zpracuje dávky kontaktů.
+     * Otestuje rozdělení 150 kontaktů do dvou dávek (100 + 50) a správné volání služeb.
+     *
      * @throws ExceptionInterface
      */
     public function testHandlerProcessChunksCorrectly(): void
     {
-        // Setup mocks
+        // Nastavení mocků
         $repository = $this->createMock(GreetingContactRepository::class);
         $emailService = $this->createMock(EmailSequenceService::class);
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
-        // Generate 150 IDs to test 2 chunks (100 + 50)
+        // Generování 150 ID pro testování 2 dávek (100 + 50)
         $allIds = array_map(static fn ($i) => "id-$i", range(1, 150));
 
-        // Mock Repository behavior: return emails for IDs
+        // Mock chování Repository: vrátí e-maily pro ID
         $repository->expects($this->exactly(2))
             ->method('findEmailsByIds')
             ->willReturnCallback(fn (array $ids) => array_map(static fn ($id) => "$id@example.com", $ids));
 
-        // Mock EmailSequenceService: expect 2 calls (one per chunk)
+        // Mock EmailSequenceService: očekává 2 volání (jedno na dávku)
         $emailService->expects($this->exactly(2))
             ->method('sendSequence')
             ->with($this->callback(function (array $requests) {
-                // Check if we receive EmailRequest objects
+                // Zkontroluje, zda dostáváme objekty EmailRequest
                 return \count($requests) > 0 && $requests[0] instanceof EmailRequest;
             }));
 
-        // Mock EntityManager: expect clear() to be called twice
+        // Mock EntityManager: očekává volání clear() dvakrát
         $entityManager->expects($this->exactly(2))
             ->method('clear');
 
@@ -60,11 +67,14 @@ class BulkEmailDispatchMessageHandlerTest extends TestCase
             body: 'Test Body'
         );
 
-        // Invoke handler
+        // Volání handleru
         $handler($message);
     }
 
     /**
+     * Testuje správné zpracování prázdného seznamu kontaktů.
+     * Ověřuje, že handler nevolá žádné služby při prázdném vstupu.
+     *
      * @throws ExceptionInterface
      */
     public function testHandlesEmptyList(): void
