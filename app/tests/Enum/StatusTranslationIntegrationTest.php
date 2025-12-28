@@ -10,12 +10,20 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
 use Symfony\Component\Translation\Translator;
 
+/**
+ * Integrační test pro překlady enumu Status.
+ * Ověřuje, že metoda trans() správně spolupracuje s reálnou komponentou Translator a načítá překlady z YAML souborů.
+ */
 class StatusTranslationIntegrationTest extends TestCase
 {
     private ?Translator $translator = null;
     private Filesystem $filesystem;
     private string $tempDir;
 
+    /**
+     * Připravuje testovací prostředí.
+     * Vytváří dočasný adresář, generuje v něm YAML soubor s překlady a inicializuje instanci Translatoru s tímto zdrojem.
+     */
     protected function setUp(): void
     {
         $this->filesystem = new Filesystem();
@@ -55,6 +63,10 @@ YAML;
         $this->translator->setLocale('ru');
     }
 
+    /**
+     * Uklízí po provedení testu.
+     * Odstraňuje dočasný adresář se všemi vytvořenými soubory a resetuje instanci Translatoru.
+     */
     protected function tearDown(): void
     {
         // Vymažeme dočasný adresář a soubory

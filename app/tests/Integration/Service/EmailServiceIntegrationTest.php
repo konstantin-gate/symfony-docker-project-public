@@ -10,6 +10,10 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mime\Email;
 use Twig\Error\LoaderError;
 
+/**
+ * Integrační test pro EmailService, který testuje odesílání e-mailů s využitím skutečných šablon Twig.
+ * Zajišťuje, že služba správně generuje a odesílá e-maily s renderovaným obsahem.
+ */
 class EmailServiceIntegrationTest extends KernelTestCase
 {
     private EmailService $service;
@@ -19,25 +23,27 @@ class EmailServiceIntegrationTest extends KernelTestCase
         self::bootKernel();
         $container = static::getContainer();
 
-        // Ensure service is public or accessible via aliases if needed,
-        // but in tests we can usually access private services via test container.
+        // Ujistěte se, že služba je veřejná nebo přístupná přes aliasy, pokud je to potřeba,
+        // ale v testech můžeme obvykle přístupovat k soukromým službám přes testový kontejner.
         $this->service = $container->get(EmailService::class);
     }
 
     /**
+     * Testuje odeslání e-mailu s využitím skutečné šablony z projektu: templates/email/greeting.html.twig.
+     *
      * @throws TransportExceptionInterface
      */
     public function testSendsEmailWithRealTemplate(): void
     {
-        // Use a real template existing in the project: templates/email/greeting.html.twig
-        // as seen in the file structure context.
+        // Použijte skutečnou šablonu existující v projektu: templates/email/greeting.html.twig
+        // jak je vidět v kontextu struktury souborů.
         $template = 'email/greeting.html.twig';
         $to = 'integration@example.com';
         $subject = 'Integration Test';
 
-        // Context required by the template:
-        // 'subject' is used in {% block title %}{{ subject }}{% endblock %}
-        // 'body' is used in {{ body|raw }}
+        // Kontext požadovaný šablonou:
+        // 'subject' se používá v {% block title %}{{ subject }}{% endblock %}
+        // 'body' se používá v {{ body|raw }}
         $context = [
             'name' => 'Tester',
             'subject' => $subject,
@@ -46,27 +52,29 @@ class EmailServiceIntegrationTest extends KernelTestCase
 
         $this->service->send($to, $subject, $template, $context);
 
-        // Assert email was sent (queued)
-        // Note: KernelTestCase doesn't include MailerAssertionsTrait by default in older versions,
-        // but often it's available if we use WebTestCase or include the trait manually.
-        // Let's check if we can inspect the mailer.
+        // Ověřte, že byl e-mail odeslán (zařazen do fronty)
+        // Poznámka: KernelTestCase neobsahuje MailerAssertionsTrait výchozí v starších verzích,
+        // ale často je k dispozici, pokud používáme WebTestCase nebo ručně zahrneme trait.
+        // Zkontrolujeme, zda můžeme zkontrolovat poštovní klienta.
 
-        // In recent Symfony versions, we can use:
+        // V novějších verzích Symfony můžeme použít:
         self::assertEmailCount(1);
 
         $email = self::getMailerMessage();
         $this->assertInstanceOf(Email::class, $email);
         $this->assertSame($subject, $email->getSubject());
 
-        // Check if body contains rendered content (proving Twig worked)
-        // Note: The template likely renders "Hello Tester" or similar.
-        // Since we don't know the exact content, just checking it didn't crash is a good start,
-        // but let's try to verify context usage if possible.
-        // We'll assume the template renders at least something non-empty.
+        // Zkontrolujte, zda tělo obsahuje renderovaný obsah (dokazuje, že Twig fungoval)
+        // Poznámka: Šablona pravděpodobně renderuje "Hello Tester" nebo podobně.
+        // Protože nevíme přesný obsah, stačí zkontrolovat, že to nehavarovalo,
+        // ale pokusíme se ověřit použití kontextu, pokud je to možné.
+        // Předpokládáme, že šablona renderuje alespoň něco neprázdného.
         $this->assertNotEmpty($email->getHtmlBody());
     }
 
     /**
+     * Testuje, že je vyvolána výjimka při chybějící šabloně.
+     *
      * @throws TransportExceptionInterface
      */
     public function testThrowsExceptionForMissingTemplate(): void

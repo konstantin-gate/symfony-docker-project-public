@@ -13,6 +13,10 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
+/**
+ * Testovací třída pro příkaz 'app:status:list'.
+ * Ověřuje správné zobrazení tabulky se stavy, jejich barvami, překlady a příznaky viditelnosti a upravitelnosti.
+ */
 class StatusListCommandTest extends KernelTestCase
 {
     protected Application $application;

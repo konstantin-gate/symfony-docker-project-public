@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\TestFixtures;
 
+/**
+ * Testovací enum simulující chybu (failing fixture).
+ * Používá se k ověření chování systému v situacích, kdy metody enumu vyhazují výjimky.
+ */
 enum FailingStatusEnum: string
 {
     case TEST = 'test';

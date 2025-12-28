@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\TestFixtures;
 
+/**
+ * Prázdný enum sloužící jako testovací přípravek (fixture).
+ * Používá se pro testování hraničních případů, kdy enum neobsahuje žádné hodnoty.
+ */
 enum EmptyStatusEnum: string
 {
     // Žádné cases - prázdný enum

@@ -8,17 +8,29 @@ use App\Greeting\Service\GreetingXmlParser;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Testovací třída pro GreetingXmlParser, která testuje funkčnost parzování XML souborů s e-maily.
+ * Testuje validaci XML, zpracování e-mailů, bezpečnost proti XXE útokům a další scénáře.
+ */
 class GreetingXmlParserTest extends TestCase
 {
     private GreetingXmlParser $parser;
     /** @var string[] */
     private array $tempFiles = [];
 
+    /**
+     * Inicializuje testovací prostředí a vytvoří instanci GreetingXmlParser.
+     * Tato metoda se volá před každým testem.
+     */
     protected function setUp(): void
     {
         $this->parser = new GreetingXmlParser();
     }
 
+    /**
+     * Uklízí dočasné soubory po každém testu.
+     * Odstraňuje všechny soubory, které byly vytvořeny během testování.
+     */
     protected function tearDown(): void
     {
         foreach ($this->tempFiles as $file) {
@@ -28,6 +40,14 @@ class GreetingXmlParserTest extends TestCase
         }
     }
 
+    /**
+     * Vytvoří dočasný XML soubor s daným obsahem.
+     * Soubor je automaticky přidán do seznamu k odstranění.
+     *
+     * @param string $content Obsah XML souboru
+     * @return string Cesta k vytvořenému souboru
+     * @throws \RuntimeException Pokud se nepodaří vytvořit soubor
+     */
     private function createXmlFile(string $content): string
     {
         $file = tempnam(sys_get_temp_dir(), 'test_xml_');
@@ -43,13 +63,21 @@ class GreetingXmlParserTest extends TestCase
     }
 
     /**
-     * @return string[]
+     * Zpracuje XML soubor a vrátí e-maily jako pole.
+     * Používá metodu parse() a převádí generátor na pole.
+     *
+     * @param string $file Cesta k XML souboru
+     * @return string[] Pole e-mailových adres
      */
     private function parseToArray(string $file): array
     {
         return iterator_to_array($this->parser->parse($file), false);
     }
 
+    /**
+     * Testuje parzování platného XML souboru s e-maily.
+     * Ověřuje, že jsou správně extrahovány všechny e-maily včetně těch vnořených v tagu <group>.
+     */
     public function testParseValidXml(): void
     {
         $xml = <<<XML
@@ -72,6 +100,10 @@ XML;
         $this->assertContains('user3@example.com', $result);
     }
 
+    /**
+     * Testuje parzování XML souboru bez e-mailových adres.
+     * Ověřuje, že je vráceno prázdné pole, když XML neobsahuje žádné e-maily.
+     */
     public function testParseXmlWithNoEmails(): void
     {
         $xml = '<root><other>data</other><contact>no-email-tag</contact></root>';
@@ -81,52 +113,62 @@ XML;
         $this->assertEmpty($result);
     }
 
+    /**
+     * Testuje chování parzování při neplatném XML.
+     * Ověřuje, že buď je vyhozena výjimka nebo je vráceno prázdné pole.
+     * XMLReader je tolerantnější než SimpleXML a může jednoduše přestat číst nebo ignorovat chyby.
+     *
+     * @param string $invalidXml Neplatný XML obsah
+     */
     #[DataProvider('invalidXmlProvider')]
     public function testParseInvalidXml(string $invalidXml): void
     {
-        // XMLReader is more lenient than SimpleXML. It might just stop reading or ignore garbage.
-        // However, if we want to ensure it throws on totally invalid content:
-        // 'random text' might act as text node if no tags?
-        // Let's see. If it doesn't throw, we assert empty or specific behavior.
-        // But the previous test expected Exception.
-        // If XMLReader::read() generates a warning/error on invalid XML, PHPUnit might catch it.
-        // For now, let's allow it to NOT throw if it just handles it gracefully (returns empty),
-        // UNLESS the prompt implies we must maintain strictness.
-        // Refactoring to streaming usually implies "best effort" or "fail on critical structure".
-        // I'll adjust expectation: either exception or empty result, but specific invalid XML might fail.
+        // XMLReader je tolerantnější než SimpleXML. Může jednoduše přestat číst nebo ignorovat chyby.
+        // Nicméně, pokud chceme zajistit, že vyhodí výjimku při zcela neplatném obsahu:
+        // 'random text' by mohl být interpretován jako textový uzel, pokud nejsou tagy?
+        // Uvidíme. Pokud nevytvoří výjimku, očekáváme prázdný výsledek nebo specifické chování.
+        // Nicméně předchozí test očekával výjimku.
+        // Pokud XMLReader::read() generuje varování/chybu při neplatném XML, PHPUnit by to mohlo zachytit.
+        // Nyní dovolíme, aby NEVYHODIL výjimku, pokud jednoduše zpracuje to gracefully (vrátí prázdné pole),
+        // POKUD to není explicitně požadováno.
+        // Refaktorování na streamování obvykle znamená "nejlepší úsilí" nebo "selhat při kritické struktuře".
+        // Upravím očekávání: buď výjimka nebo prázdný výsledek, ale specifické neplatné XML by mohlo selhat.
 
-        // Actually, let's keep expecting Exception IF XMLReader throws it.
-        // But if it doesn't, we might need to update the test to accept "graceful failure" or fix the code to be strict.
-        // XMLReader::read() returns false on error? No, false on end of stream.
-        // Errors are via libxml.
+        // Aktuálně budeme očekávat výjimku, POKUD XMLReader vyhodí výjimku.
+        // Pokud ne, možná budeme muset aktualizovat test, aby akceptoval "graceful failure" nebo opravit kód, aby byl striktní.
+        // XMLReader::read() vrátí false při chybě? Ne, false na konci streamu.
+        // Chyby jsou přes libxml.
 
-        // For this refactoring, strict XML validation is often secondary to being able to read.
-        // But let's try to see if it works.
-        // If "not a sentence xml" is passed, open() works (it's a file), read() -> fails/warning.
+        // Pro toto refaktorování je striktní validace XML často sekundární k možnosti čtení.
+        // Ale zkusme to vidět, jak to funguje.
+        // Pokud je "not a sentence xml" předáno, open() funguje (je to soubor), read() -> selže/varování.
 
         $file = $this->createXmlFile($invalidXml);
 
         try {
             $result = $this->parseToArray($file);
-            // If we reach here, check if it parsed anything odd.
-            // 'random text' might be parsed as text content of root? No root.
-            // XML requires root.
+            // Pokud se dostaneme sem, zkontrolujeme, zda něco podivného zpracoval.
+            // 'random text' by mohl být zpracován jako textový obsah root? Ne, root.
+            // XML vyžaduje root.
         } catch (\Throwable $e) {
             $this->assertNotEmpty($e->getMessage(), 'Caught exception should have a message');
 
             return;
         }
 
-        // If no exception, maybe it just returned nothing?
-        // XMLReader handles some "bad" XML by just stopping.
-        // For 'malformed syntax', it definitely errors.
-        // I will assume for now we might not strictly throw, so I will comment out expectation or relax it
-        // to "Should not return valid emails from garbage".
+        // Pokud není výjimka, možná jen vrátil nic?
+        // XMLReader zpracovává některé "špatné" XML jednoduše zastavením.
+        // Pro 'malformed syntax' určitě chyba.
+        // Předpokládám, že nyní nemusíme striktně vyhazovat výjimku, takže vyberu očekávání nebo uvolním ho
+        // na "Should not return valid emails from garbage".
         $this->assertEmpty($result, 'Should return empty result for invalid XML if not throwing');
     }
 
     /**
-     * @return array<string, array{0: string}>
+     * Poskytuje datové sady pro test neplatného XML.
+     * Vrací různé typy neplatného XML pro testování chování parzování.
+     *
+     * @return array<string, array{0: string}> Pole s názvy testů a neplatnými XML řetězci
      */
     public static function invalidXmlProvider(): array
     {
@@ -137,17 +179,25 @@ XML;
         ];
     }
 
+    /**
+     * Testuje chování při parzování prázdného XML souboru.
+     * Ověřuje, že je vyhozena výjimka s správnou zprávou.
+     */
     public function testParseEmptyFile(): void
     {
         $file = $this->createXmlFile('');
 
         $this->expectException(\RuntimeException::class);
-        // The message comes from libxml: "Document is empty"
+        // Zpráva pochází z libxml: "Document is empty"
         $this->expectExceptionMessage('Invalid XML');
 
         $this->parseToArray($file);
     }
 
+    /**
+     * Testuje filtrování neplatných e-mailových adres.
+     * Ověřuje, že jsou vyfiltrovány neplatné e-maily a prázdné hodnoty.
+     */
     public function testFiltersInvalidEmails(): void
     {
         $xml = <<<XML
@@ -165,14 +215,19 @@ XML;
         $this->assertEquals(['valid@example.com', 'another.valid@test.org'], array_values($result));
     }
 
+    /**
+     * Testuje ochranu proti XXE útokům.
+     * Ověřuje, že parser neumožňuje čtení souborů z XML entity.
+     * Vytváří tajný soubor a pokouší se o jeho čtení prostřednictvím XML entity.
+     */
     public function testXxeProtection(): void
     {
-        // Create a "secret" file that we will try to read
+        // Vytvořit "tajný" soubor, který se pokusíme přečíst
         $secretFile = sys_get_temp_dir() . '/secret_test_file.txt';
         file_put_contents($secretFile, 'CONFIDENTIAL_DATA');
         $this->tempFiles[] = $secretFile;
 
-        // XML payload that attempts to include the secret file
+        // XML payload, který se pokouší zahrnout tajný soubor
         $xml = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE root [
@@ -187,7 +242,7 @@ XML;
 
         $result = $this->parseToArray($file);
 
-        // Result should NOT contain the secret content
+        // Výsledek NESMÍ obsahovat tajný obsah
         foreach ($result as $email) {
             $this->assertStringNotContainsString('CONFIDENTIAL_DATA', $email);
         }
@@ -196,10 +251,14 @@ XML;
         $this->assertNotContains('CONFIDENTIAL_DATA', $result);
     }
 
+    /**
+     * Testuje parzování velkého XML souboru.
+     * Ověřuje, že parser efektivně zpracovává velký počet e-mailů a splňuje časové limity.
+     */
     public function testParseLargeXml(): void
     {
-        $count = 1000; // Reduced from 10000 for unit test speed, but 10k is fine too.
-        // Generating 10k lines to file.
+        $count = 1000; // Sníženo z 10000 pro rychlost jednotkového testu, ale 10k je také v pořádku.
+        // Generování 10k řádků do souboru.
         $file = tempnam(sys_get_temp_dir(), 'test_large_xml_');
 
         if (false === $file) {
@@ -231,6 +290,10 @@ XML;
         $this->assertLessThan(2.0, $duration, \sprintf('Parsing %d emails took too long: %.2fs', $count, $duration));
     }
 
+    /**
+     * Testuje parzování XML s namespace.
+     * Ověřuje, že jsou správně zpracovány e-maily v různých namespace.
+     */
     public function testParseXmlWithNamespaces(): void
     {
         $xml = <<<XML
@@ -247,6 +310,10 @@ XML;
         $this->assertContains('prefixed_ns@example.com', $result);
     }
 
+    /**
+     * Testuje parzování XML s CDATA sekcemi.
+     * Ověřuje, že jsou správně zpracovány e-maily obsažené v CDATA.
+     */
     public function testParseXmlWithCdata(): void
     {
         $xml = <<<XML
@@ -263,6 +330,10 @@ XML;
         $this->assertContains('another@test.com', $result);
     }
 
+    /**
+     * Testuje parzování XML s komentáři a instrukcemi pro zpracování.
+     * Ověřuje, že komentáře a instrukce jsou ignorovány a e-maily jsou správně extrahovány.
+     */
     public function testParseXmlWithCommentsAndPi(): void
     {
         $xml = <<<XML
@@ -281,6 +352,10 @@ XML;
         $this->assertContains('comment_test@example.com', $result);
     }
 
+    /**
+     * Testuje parzování XML s e-maily obsahujícími Unicode znaky.
+     * Ověřuje, že jsou správně zpracovány e-maily s mezinárodními doménami a speciálními znaky.
+     */
     public function testParseXmlWithUnicodeEmails(): void
     {
         $xml = <<<XML
@@ -298,15 +373,20 @@ XML;
         $this->assertContains('user@пе́льмени.рф', $result);
     }
 
+    /**
+     * Testuje parzování XML s duplicitními e-maily.
+     * Ověřuje, že jsou vráceny všechny e-maily včetně duplikátů.
+     * Deduplikace je prováděna na vyšší úrovni služby.
+     */
     public function testParseXmlWithDuplicateEmails(): void
     {
-        // Note: The new parser does NOT deduplicate globally (streaming).
-        // So this test checks if it returns ALL of them.
-        // The Service handles deduplication.
-        // So we expect 4 items, not 2.
-        // But wait, "Use normalized email as key to prevent duplicates" was in original parser.
-        // In streaming parser, I removed global deduplication to save memory.
-        // So I should update assertion to expect duplicates to be yielded.
+        // Poznámka: Nový parser NEdeduplikuje globálně (streaming).
+        // Takže tento test zkontroluje, zda vrátí VŠECHNY.
+        // Služba se stará o deduplikaci.
+        // Takže očekáváme 4 položky, ne 2.
+        // Ale počkejte, "Use normalized email as key to prevent duplicates" bylo v původním parseru.
+        // V streamovacím parseru jsem odstranil globální deduplikaci pro ušetření paměti.
+        // Takže bych měl aktualizovat assert, aby očekával, že budou vydány duplikáty.
 
         $xml = <<<XML
 <contacts>
@@ -320,12 +400,16 @@ XML;
         $result = $this->parseToArray($file);
 
         $this->assertCount(4, $result);
-        // We assert that they are present, duplicates included.
+        // Ověřujeme, že jsou přítomny, včetně duplikátů.
         $this->assertContains('duplicate@example.com', $result);
         $this->assertContains('DUPLICATE@example.com', $result);
         $this->assertContains('unique@example.com', $result);
     }
 
+    /**
+     * Testuje parzování XML s BOM (Byte Order Mark).
+     * Ověřuje, že jsou správně zpracovány e-maily v souborech s BOM.
+     */
     public function testParseXmlWithBom(): void
     {
         $bom = "\xEF\xBB\xBF";

@@ -8,8 +8,16 @@ use App\Greeting\Enum\GreetingLanguage;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Testovací třída pro enum GreetingLanguage.
+ * Obsahuje testy pro metody getSubject() a getTemplatePath().
+ */
 class GreetingLanguageTest extends TestCase
 {
+    /**
+     * Testuje metodu getSubject() pro všechny jazyky.
+     * Zjišťuje, zda metoda vrací správný předmět e-mailu pro daný jazyk.
+     */
     #[DataProvider('provideLanguageSubjects')]
     public function testGetSubject(GreetingLanguage $language, string $expectedSubject): void
     {
@@ -17,6 +25,9 @@ class GreetingLanguageTest extends TestCase
     }
 
     /**
+     * Poskytuje testovací data pro metodu testGetSubject().
+     * Obsahuje páry jazyk-předmět pro všechny podporované jazyky.
+     *
      * @return array<array<GreetingLanguage|string>>
      */
     public static function provideLanguageSubjects(): array
@@ -28,6 +39,10 @@ class GreetingLanguageTest extends TestCase
         ];
     }
 
+    /**
+     * Testuje metodu getTemplatePath() pro všechny jazyky.
+     * Zjišťuje, zda metoda vrací správnou cestu k šabloně pro daný jazyk.
+     */
     #[DataProvider('provideLanguageTemplatePaths')]
     public function testGetTemplatePath(GreetingLanguage $language, string $expectedTemplatePath): void
     {
@@ -35,6 +50,9 @@ class GreetingLanguageTest extends TestCase
     }
 
     /**
+     * Poskytuje testovací data pro metodu testGetTemplatePath().
+     * Obsahuje páry jazyk-cesta k šabloně pro všechny podporované jazyky.
+     *
      * @return array<array<GreetingLanguage|string>>
      */
     public static function provideLanguageTemplatePaths(): array
@@ -46,18 +64,30 @@ class GreetingLanguageTest extends TestCase
         ];
     }
 
+    /**
+     * Testuje, zda všechny případy enumu mohou být vytvořeny.
+     * Zjišťuje, zda enum obsahuje všechny 3 případy.
+     */
     public function testAllCasesCanBeInstantiated(): void
     {
         $cases = GreetingLanguage::cases();
-        $this->assertCount(3, $cases); // Ensure all 3 cases are present
+        $this->assertCount(3, $cases); // Zajistí, že jsou přítomny všechny 3 případy
     }
 
+    /**
+     * Testuje, zda všechny hodnoty enumu jsou jedinečné.
+     * Zjišťuje, zda žádné dvě hodnoty nejsou stejné.
+     */
     public function testUniqueValues(): void
     {
         $values = array_map(static fn ($case) => $case->value, GreetingLanguage::cases());
         $this->assertCount(\count($values), array_unique($values));
     }
 
+    /**
+     * Testuje, zda metody vrací správné typy návratových hodnot.
+     * Zjišťuje, zda getSubject() a getTemplatePath() vrací řetězce.
+     */
     public function testReturnTypes(): void
     {
         foreach (GreetingLanguage::cases() as $language) {
@@ -68,6 +98,10 @@ class GreetingLanguageTest extends TestCase
         }
     }
 
+    /**
+     * Testuje formát cesty k šabloně.
+     * Zjišťuje, zda cesta končí '.html.twig' a obsahuje kód jazyka.
+     */
     public function testTemplatePathFormat(): void
     {
         foreach (GreetingLanguage::cases() as $language) {
@@ -76,6 +110,10 @@ class GreetingLanguageTest extends TestCase
         }
     }
 
+    /**
+     * Testuje, zda metody vrací neprázdné řetězce.
+     * Zjišťuje, zda getSubject() a getTemplatePath() vrací neprázdné hodnoty.
+     */
     public function testNonEmptyStrings(): void
     {
         foreach (GreetingLanguage::cases() as $language) {
@@ -84,12 +122,20 @@ class GreetingLanguageTest extends TestCase
         }
     }
 
+    /**
+     * Testuje, zda metoda from() vyhazuje výjimku při neplatné hodnotě.
+     * Zjišťuje, zda je vyhozena výjimka ValueError při pokusu vytvořit enum z neplatného kódu jazyka.
+     */
     public function testFromInvalidValueThrowsException(): void
     {
         $this->expectException(\ValueError::class);
         GreetingLanguage::from('invalid');
     }
 
+    /**
+     * Testuje metodu tryFrom() s platnou a neplatnou hodnotou.
+     * Zjišťuje, zda metoda správně vrací enum pro platný kód jazyka a null pro neplatný kód.
+     */
     public function testTryFromValidAndInvalid(): void
     {
         $this->assertSame(GreetingLanguage::Czech, GreetingLanguage::tryFrom('cs'));
@@ -97,6 +143,10 @@ class GreetingLanguageTest extends TestCase
         $this->assertNull(GreetingLanguage::tryFrom('invalid'));
     }
 
+    /**
+     * Testuje rovnost enumů.
+     * Zjišťuje, zda enumy jsou správně porovnávány a zda se liší různé případy.
+     */
     public function testEquality(): void
     {
         $this->assertSame(GreetingLanguage::Czech, GreetingLanguage::from('cs'));
@@ -104,6 +154,9 @@ class GreetingLanguageTest extends TestCase
     }
 
     /**
+     * Testuje serializaci enumu do JSON.
+     * Zjišťuje, zda enum je správně serializován do JSON formátu.
+     *
      * @throws \JsonException
      */
     public function testJsonSerialization(): void
@@ -111,6 +164,10 @@ class GreetingLanguageTest extends TestCase
         $this->assertSame('"cs"', json_encode(GreetingLanguage::Czech, \JSON_THROW_ON_ERROR));
     }
 
+    /**
+     * Testuje jména a hodnoty všech případů enumu.
+     * Zjišťuje, zda enum obsahuje správné jména a hodnoty pro všechny případy.
+     */
     public function testCasesValuesAndNames(): void
     {
         $expected = [

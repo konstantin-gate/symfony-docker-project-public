@@ -14,6 +14,9 @@ use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * Testovací třída pro GreetingMailService, která ověřuje správnou funkčnost služby pro hromadné odesílání e-mailů.
+ */
 class GreetingMailServiceTest extends TestCase
 {
     private MessageBusInterface&MockObject $bus;
@@ -32,6 +35,9 @@ class GreetingMailServiceTest extends TestCase
     }
 
     /**
+     * Testuje chování služby při odesílání zpráv na prázdný seznam kontaktů.
+     * Ověřuje, že není odeslána žádná zpráva a není logováno.
+     *
      * @throws ExceptionInterface
      */
     public function testSendToEmptyList(): void
@@ -44,6 +50,9 @@ class GreetingMailServiceTest extends TestCase
     }
 
     /**
+     * Testuje odeslání hromadné zprávy s platnými daty.
+     * Ověřuje, že je zpráva správně odeslána a logováno.
+     *
      * @throws ExceptionInterface
      */
     public function testDispatchesBulkMessageWithValidData(): void
@@ -69,6 +78,9 @@ class GreetingMailServiceTest extends TestCase
     }
 
     /**
+     * Testuje zpracování smíšených typů ID a jejich normalizaci na řetězce.
+     * Ověřuje, že jsou ID správně normalizována a zpráva odeslána.
+     *
      * @throws ExceptionInterface
      */
     public function testHandlesMixedIdTypesAndNormalizesToStrings(): void

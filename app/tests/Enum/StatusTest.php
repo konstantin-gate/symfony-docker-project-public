@@ -10,6 +10,10 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatableInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * Testovací třída pro enum Status.
+ * Ověřuje atributy enumu, jako jsou klíče pro překlad, barvy, viditelnost a další vlastnosti, včetně integrace s překladatelem.
+ */
 class StatusTest extends TestCase
 {
     /**
