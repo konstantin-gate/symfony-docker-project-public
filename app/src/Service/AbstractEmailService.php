@@ -26,10 +26,14 @@ abstract class AbstractEmailService implements EmailSenderInterface
     {
         $email = (new TemplatedEmail())
             ->from(new Address($this->senderEmail, $this->senderName))
-            ->to($to)
             ->subject($subject)
             ->htmlTemplate($template)
             ->context($context);
+
+        // Podpora pro více příjemců oddělených čárkou
+        foreach (explode(',', $to) as $address) {
+            $email->addTo(trim($address));
+        }
 
         $this->sendEmail($email);
     }
