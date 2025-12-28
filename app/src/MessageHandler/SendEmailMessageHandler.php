@@ -6,7 +6,8 @@ namespace App\MessageHandler;
 
 use App\Greeting\Service\GreetingLogger;
 use App\Message\SendEmailMessage;
-use App\Service\EmailService;
+use App\Service\EmailSenderInterface;
+use Random\RandomException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -18,7 +19,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 readonly class SendEmailMessageHandler
 {
     public function __construct(
-        private EmailService $emailService,
+        private EmailSenderInterface $emailSender,
         private GreetingLogger $greetingLogger,
         private int $emailDelay,
     ) {
@@ -28,11 +29,11 @@ readonly class SendEmailMessageHandler
      * Zpracuje požadavek na odeslání e-mailu.
      * Odešle e-mail a zaloguje tuto událost.
      *
-     * @throws TransportExceptionInterface
+     * @throws TransportExceptionInterface|RandomException
      */
     public function __invoke(SendEmailMessage $message): void
     {
-        $this->emailService->send(
+        $this->emailSender->send(
             $message->to,
             $message->subject,
             $message->template,

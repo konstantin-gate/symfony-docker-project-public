@@ -7,37 +7,28 @@ namespace App\Service;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Address;
 
 /**
  * Služba pro odesílání e-mailů s využitím šablon Twig.
  * Zajišťuje základní konfiguraci odesílatele a odeslání zprávy přes MailerInterface.
  */
-readonly class EmailService
+class EmailService extends AbstractEmailService
 {
     public function __construct(
-        private MailerInterface $mailer,
-        private string $senderEmail,
-        private string $senderName,
+        private readonly MailerInterface $mailer,
+        string $senderEmail,
+        string $senderName,
     ) {
+        parent::__construct($senderEmail, $senderName);
     }
 
     /**
-     * Odešle e-mail na zadanou adresu pomocí Twig šablony.
-     *
-     * @param array<string, mixed> $context
+     * Odešle e-mail přes MailerInterface.
      *
      * @throws TransportExceptionInterface
      */
-    public function send(string $to, string $subject, string $template, array $context = []): void
+    protected function sendEmail(TemplatedEmail $email): void
     {
-        $email = (new TemplatedEmail())
-            ->from(new Address($this->senderEmail, $this->senderName))
-            ->to($to)
-            ->subject($subject)
-            ->htmlTemplate($template)
-            ->context($context);
-
         $this->mailer->send($email);
     }
 }

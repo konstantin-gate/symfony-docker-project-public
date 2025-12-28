@@ -22,7 +22,17 @@ services:
     App\:
         resource: '../src/'
 
+    # Konfigurace továrny pro výběr implementace odesílače e-mailů (SMTP vs Soubor)
+    App\Service\EmailSenderInterface:
+        factory: ['@App\Service\Factory\EmailSenderFactory', 'create']
+        arguments: ['%env(string:EMAIL_DELIVERY_MODE)%']
+
     App\Service\EmailService:
+        arguments:
+            $senderEmail: '%env(MAILER_SENDER_EMAIL)%'
+            $senderName: '%env(MAILER_SENDER_NAME)%'
+
+    App\Service\FileEmailService:
         arguments:
             $senderEmail: '%env(MAILER_SENDER_EMAIL)%'
             $senderName: '%env(MAILER_SENDER_NAME)%'
