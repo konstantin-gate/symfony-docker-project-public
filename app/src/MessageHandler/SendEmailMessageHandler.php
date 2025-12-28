@@ -20,6 +20,7 @@ readonly class SendEmailMessageHandler
     public function __construct(
         private EmailService $emailService,
         private GreetingLogger $greetingLogger,
+        private int $emailDelay,
     ) {
     }
 
@@ -40,5 +41,17 @@ readonly class SendEmailMessageHandler
 
         // Logování odeslaného e-mailu
         $this->greetingLogger->logForEmail($message->to);
+
+        /*
+         * Záměrné zpomalení zpracování fronty (Rate Limiting).
+         *
+         * Tento sleep je zde nezbytný pro případy, kdy se ve frontě nahromadí větší množství zpráv
+         * (např. při výpadku workeru nebo hromadném importu). Bez této prodlevy by se všechny
+         * nahromaděné e-maily odeslaly okamžitě po sobě, což by mohlo vést k tomu, že cílový
+         * poštovní server (nebo odesílací služba) vyhodnotí aktivitu jako SPAM a zablokuje
+         * další odesílání. Tímto zajišťujeme dodržení minimálního intervalu mezi e-maily
+         * i v případě "dohánění" fronty.
+         */
+        sleep($this->emailDelay);
     }
 }
