@@ -45,7 +45,9 @@ class GreetingXmlParserTest extends TestCase
      * Soubor je automaticky přidán do seznamu k odstranění.
      *
      * @param string $content Obsah XML souboru
+     *
      * @return string Cesta k vytvořenému souboru
+     *
      * @throws \RuntimeException Pokud se nepodaří vytvořit soubor
      */
     private function createXmlFile(string $content): string
@@ -67,6 +69,7 @@ class GreetingXmlParserTest extends TestCase
      * Používá metodu parse() a převádí generátor na pole.
      *
      * @param string $file Cesta k XML souboru
+     *
      * @return string[] Pole e-mailových adres
      */
     private function parseToArray(string $file): array

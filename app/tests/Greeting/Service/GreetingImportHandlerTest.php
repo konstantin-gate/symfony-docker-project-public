@@ -56,6 +56,7 @@ class GreetingImportHandlerTest extends TestCase
      * Tato metoda slouží jako náhrada za skutečný XML parser a umožňuje testovat zpracování velkých datových sad.
      *
      * @param string[] $emails Seznam e-mailových adres k generování
+     *
      * @return \Generator<string> Generator e-mailových adres
      */
     private function mockXmlGenerator(array $emails): \Generator

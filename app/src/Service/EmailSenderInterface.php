@@ -13,6 +13,7 @@ interface EmailSenderInterface
 {
     /**
      * @param array<string, mixed> $context
+     *
      * @throws TransportExceptionInterface
      */
     public function send(string $to, string $subject, string $template, array $context = []): void;

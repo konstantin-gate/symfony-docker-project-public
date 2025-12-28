@@ -40,8 +40,6 @@ class EmailServiceTest extends TestCase
     /**
      * Ověřuje, že e-mail je odeslán se všemi správnými údaji.
      * Kontroluje nastavení odesílatele, příjemce, předmětu, HTML šablony a proměnných kontextu.
-     *
-     * @throws TransportExceptionInterface
      */
     public function testSendsTemplatedEmailWithCorrectData(): void
     {
@@ -82,8 +80,6 @@ class EmailServiceTest extends TestCase
     /**
      * Ověřuje, že e-mail lze odeslat i s prázdným kontextem.
      * Zajišťuje, že absence kontextových dat nezpůsobí chybu.
-     *
-     * @throws TransportExceptionInterface
      */
     public function testSendsEmailWithEmptyContext(): void
     {
@@ -101,8 +97,6 @@ class EmailServiceTest extends TestCase
     /**
      * Ověřuje, že metoda vyhodí chybu typu, pokud je příjemce předán jako pole.
      * Očekává se, že příjemce bude řetězec.
-     *
-     * @throws TransportExceptionInterface
      */
     public function testThrowsExceptionOnArrayRecipient(): void
     {
@@ -115,8 +109,6 @@ class EmailServiceTest extends TestCase
     /**
      * Ověřuje, že textová šablona není automaticky nastavena.
      * Pokud není specifikována, měla by zůstat null.
-     *
-     * @throws TransportExceptionInterface
      */
     public function testDoesNotSetTextTemplate(): void
     {

@@ -37,8 +37,6 @@ class GreetingImportTypeTest extends TypeTestCase
     /**
      * Testuje odeslání formuláře s prázdnou hodnotou e-mailů.
      * Zjišťuje, zda formulář je platný, když pole e-mailů je prázdné.
-     *
-     * @return void
      */
     public function testSubmitEmptyEmails(): void
     {
@@ -60,8 +58,6 @@ class GreetingImportTypeTest extends TypeTestCase
     /**
      * Testuje odeslání formuláře s neplatnými e-mailovými adresami.
      * Zjišťuje, zda formulář je neplatný, když jsou poskytnuty neplatné e-maily.
-     *
-     * @return void
      */
     public function testSubmitInvalidEmails(): void
     {
@@ -83,8 +79,6 @@ class GreetingImportTypeTest extends TypeTestCase
     /**
      * Testuje odeslání formuláře s neplatným datem.
      * Zjišťuje, zda formulář je neplatný, když je poskytnuto neplatné datum.
-     *
-     * @return void
      */
     public function testSubmitInvalidDate(): void
     {
@@ -108,8 +102,6 @@ class GreetingImportTypeTest extends TypeTestCase
     /**
      * Testuje odeslání formuláře s platnými daty.
      * Zjišťuje, zda formulář je platný, když jsou poskytnuta platná data.
-     *
-     * @return void
      */
     public function testSubmitValidData(): void
     {
@@ -133,8 +125,6 @@ class GreetingImportTypeTest extends TypeTestCase
     /**
      * Testuje odeslání formuláře s prázdným datem.
      * Zjišťuje, zda formulář je neplatný, když je pole data prázdné.
-     *
-     * @return void
      */
     public function testSubmitEmptyDate(): void
     {
@@ -154,8 +144,6 @@ class GreetingImportTypeTest extends TypeTestCase
     /**
      * Testuje odeslání formuláře s prázdným jazykem.
      * Zjišťuje, zda formulář je platný, když je pole jazyka prázdné.
-     *
-     * @return void
      */
     public function testSubmitEmptyLanguage(): void
     {
