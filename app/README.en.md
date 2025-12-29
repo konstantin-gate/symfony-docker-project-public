@@ -116,6 +116,19 @@ MAILER_SENDER_EMAIL=hello@mycompany.com
 MAILER_SENDER_NAME="My Company Greeting"
 ```
 
+### 4. Email Delivery Modes
+The application supports two modes for delivering messages: via a real SMTP server or by saving to local files (useful for development).
+
+To switch, change the variable in `app/.env.local`:
+
+```dotenv
+# Available values: 'smtp' or 'file'
+EMAIL_DELIVERY_MODE=file
+```
+
+*   **file:** Emails will be saved to the `app/var/mails/` directory in `.eml` format.
+*   **smtp:** Emails will be sent via the configured MAILER_DSN.
+
 ### Console Commands
 The project includes a custom command to view the list of statuses:
 

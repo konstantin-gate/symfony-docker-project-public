@@ -116,6 +116,19 @@ MAILER_SENDER_EMAIL=hello@mycompany.com
 MAILER_SENDER_NAME="My Company Greeting"
 ```
 
+### 4. Režimy doručování e-mailů
+Aplikace podporuje dva režimy doručování zpráv: prostřednictvím skutečného SMTP serveru nebo ukládáním do lokálních souborů (vhodné pro vývoj).
+
+Pro přepnutí změňte proměnnou v `app/.env.local`:
+
+```dotenv
+# Dostupné hodnoty: 'smtp' nebo 'file'
+EMAIL_DELIVERY_MODE=file
+```
+
+*   **file:** E-maily se budou ukládat do adresáře `app/var/mails/` ve formátu `.eml`.
+*   **smtp:** E-maily se budou odesílat přes nastavené MAILER_DSN.
+
 ### Konzolové příkazy
 V projektu je vlastní příkaz pro zobrazení seznamu statusů:
 
