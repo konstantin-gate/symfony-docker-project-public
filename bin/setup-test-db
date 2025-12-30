@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+echo "Setting up test database..."
+docker compose exec -e XDEBUG_MODE=off php bin/console --env=test doctrine:database:drop --force --if-exists
+docker compose exec -e XDEBUG_MODE=off php bin/console --env=test doctrine:database:create
+docker compose exec -e XDEBUG_MODE=off php bin/console --env=test doctrine:migrations:migrate -n
+echo "Test database ready!"

@@ -138,6 +138,15 @@ docker compose exec php bin/console app:status:list
 
 ## Vývoj a testování
 
+### Příprava testovací databáze
+Před prvním spuštěním testů (nebo pokud testovací databáze neexistuje), spusťte inicializační skript z kořenového adresáře projektu:
+
+```bash
+./bin/setup-test-db
+```
+
+Tento skript automaticky vytvoří databázi `symfony_db_test` a provede všechny potřebné migrace.
+
 ### Spuštění testů
 Pro spuštění unit a integračních testů (PHPUnit):
 

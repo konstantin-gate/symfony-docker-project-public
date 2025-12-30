@@ -138,6 +138,15 @@ docker compose exec php bin/console app:status:list
 
 ## Development and Testing
 
+### Test Database Setup
+Before running tests for the first time (or if the test database is missing), run the initialization script from the project root:
+
+```bash
+./bin/setup-test-db
+```
+
+This script will automatically create the `symfony_db_test` database and apply all necessary migrations.
+
 ### Run Tests
 To run unit and integration tests (PHPUnit):
 
