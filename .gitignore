@@ -1,3 +1,6 @@
 /.idea/
 /vendor/
 .aider*
+.gemini
+.vscode
+composer.phar
