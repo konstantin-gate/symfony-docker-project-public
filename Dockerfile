@@ -4,6 +4,7 @@ FROM php:8.4-fpm-alpine
 # Устанавливаем необходимые системные зависимости
 RUN apk update && apk add \
     git \
+    bash \
     zip \
     unzip \
     postgresql-dev \

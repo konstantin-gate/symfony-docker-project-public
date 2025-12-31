@@ -1,0 +1,17 @@
+{
+	"name": "Symfony Docker",
+	"dockerComposeFile": "../docker-compose.yml",
+	"service": "php",
+	"workspaceFolder": "/var/www/html",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"bmewburn.vscode-intelephense-client",
+				"xdebug.php-debug",
+				"esbenp.prettier-vscode",
+				"symfony.vscode-symfony-controller"
+			]
+		}
+	},
+	"remoteUser": "root"
+}
