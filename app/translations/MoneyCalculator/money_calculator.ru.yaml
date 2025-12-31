@@ -1,4 +1,4 @@
 index:
     title: Денежный калькулятор
     description: Модуль финансовых расчетов
-    open_title: Открыть
+    open_tooltip: Перейти к модулю

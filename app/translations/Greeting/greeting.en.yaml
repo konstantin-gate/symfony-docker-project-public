@@ -72,3 +72,8 @@ modal:
     delete_confirm: 'Are you sure you want to delete email %email%?'
     delete_btn: 'Delete'
     cancel_btn: 'Cancel'
+
+index:
+    title: "Greeting Module"
+    description: "Manage greeting contacts and send personalized greetings."
+    open_tooltip: "Go to Dashboard"

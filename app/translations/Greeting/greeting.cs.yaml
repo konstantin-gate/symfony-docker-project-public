@@ -72,3 +72,8 @@ modal:
     delete_confirm: 'Opravdu chcete smazat email %email%?'
     delete_btn: 'Smazat'
     cancel_btn: 'Zrušit'
+
+index:
+    title: "Modul Pozdravy"
+    description: "Spravujte kontakty pro pozdravy a posílejte personalizované pozdravy."
+    open_tooltip: "Přejít na přehled"

@@ -21,18 +21,28 @@
     </div>
     <div class="card mt-3">
         <div class="card-body">
-            <h5 class="card-title">{{'index.greeting_module.title'|trans}}</h5>
-            <p class="card-text text-secondary small-text">{{'index.greeting_module.description'|trans}}</p>
-            <a href="{{ path('greeting_dashboard', {'_locale': app.request.locale}) }}" class="btn btn-primary">{{'index.greeting_module.dashboard_button'|trans}}</a>
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h5 class="card-title">{{'index.title'|trans({}, 'greeting')}}</h5>
+                    <p class="card-text text-secondary small-text">{{'index.description'|trans({}, 'greeting')}}</p>
+                </div>
+                <a href="{{ path('greeting_dashboard', {'_locale': app.request.locale}) }}" class="btn btn-primary" title="{{'index.open_tooltip'|trans({}, 'greeting')}}">
+                    <i class="bi bi-caret-right"></i>
+                </a>
+            </div>
         </div>
     </div>
     <div class="card mt-3">
         <div class="card-body">
-            <h5 class="card-title">{{'index.title'|trans({}, 'money_calculator')}}</h5>
-            <p class="card-text text-secondary small-text">{{'index.description'|trans({}, 'money_calculator')}}</p>
-            <a href="#" class="btn btn-primary" title="{{'index.open_title'|trans({}, 'money_calculator')}}">
-                <i class="bi bi-caret-right"></i>
-            </a>
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h5 class="card-title">{{'index.title'|trans({}, 'money_calculator')}}</h5>
+                    <p class="card-text text-secondary small-text">{{'index.description'|trans({}, 'money_calculator')}}</p>
+                </div>
+                <a href="#" class="btn btn-primary" title="{{'index.open_tooltip'|trans({}, 'money_calculator')}}">
+                    <i class="bi bi-caret-right"></i>
+                </a>
+            </div>
         </div>
     </div>
 </div>
