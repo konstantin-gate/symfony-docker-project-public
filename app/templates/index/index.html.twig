@@ -21,10 +21,15 @@
     </div>
     <div class="card mt-3">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <h5 class="card-title">{{'index.title'|trans({}, 'greeting')}}</h5>
-                    <p class="card-text text-secondary small-text">{{'index.description'|trans({}, 'greeting')}}</p>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="border rounded p-1 me-3 d-flex align-items-center justify-content-center" style="width: 4rem; height: 4rem;">
+                        <img src="{{ asset('images/icon_greeting.png') }}" alt="" style="max-height: 100%; max-width: 100%; height: auto; width: auto;">
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-1">{{'index.title'|trans({}, 'greeting')}}</h5>
+                        <p class="card-text text-secondary small-text mb-0">{{'index.description'|trans({}, 'greeting')}}</p>
+                    </div>
                 </div>
                 <a href="{{ path('greeting_dashboard', {'_locale': app.request.locale}) }}" class="btn btn-primary" title="{{'index.open_tooltip'|trans({}, 'greeting')}}">
                     <i class="bi bi-caret-right"></i>
@@ -34,10 +39,15 @@
     </div>
     <div class="card mt-3">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <h5 class="card-title">{{'index.title'|trans({}, 'money_calculator')}}</h5>
-                    <p class="card-text text-secondary small-text">{{'index.description'|trans({}, 'money_calculator')}}</p>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="border rounded p-2 me-3 d-flex align-items-center justify-content-center" style="width: 4rem; height: 4rem;">
+                        <img src="{{ asset('images/icon_calculator.png') }}" alt="" style="max-height: 100%; max-width: 100%; height: auto; width: auto;">
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-1">{{'index.title'|trans({}, 'money_calculator')}}</h5>
+                        <p class="card-text text-secondary small-text mb-0">{{'index.description'|trans({}, 'money_calculator')}}</p>
+                    </div>
                 </div>
                 <a href="{{ path('money_calculator_dashboard', {'_locale': app.request.locale}) }}" class="btn btn-primary" title="{{'index.open_tooltip'|trans({}, 'money_calculator')}}">
                     <i class="bi bi-caret-right"></i>
