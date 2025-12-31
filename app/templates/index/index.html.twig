@@ -39,7 +39,7 @@
                     <h5 class="card-title">{{'index.title'|trans({}, 'money_calculator')}}</h5>
                     <p class="card-text text-secondary small-text">{{'index.description'|trans({}, 'money_calculator')}}</p>
                 </div>
-                <a href="#" class="btn btn-primary" title="{{'index.open_tooltip'|trans({}, 'money_calculator')}}">
+                <a href="{{ path('money_calculator_dashboard', {'_locale': app.request.locale}) }}" class="btn btn-primary" title="{{'index.open_tooltip'|trans({}, 'money_calculator')}}">
                     <i class="bi bi-caret-right"></i>
                 </a>
             </div>

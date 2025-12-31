@@ -2,3 +2,7 @@ index:
     title: Money Calculator
     description: Financial calculation module
     open_tooltip: Go to module
+
+dashboard:
+    title: Money Calculator
+    back_to_home: Back to Home
