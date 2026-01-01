@@ -1,8 +1,8 @@
 index:
-    title: Money Calculator
+    title: Multi-Currency Wallet
     description: Financial calculation module
     open_tooltip: Go to module
 
 dashboard:
-    title: Money Calculator
+    title: Multi-Currency Wallet
     back_to_home: Back to Home

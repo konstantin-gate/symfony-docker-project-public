@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-{% trans_default_domain 'money_calculator' %}
+{% trans_default_domain 'multi_currency_wallet' %}
 
 {% block title %}{{ 'dashboard.title'|trans }}{% endblock %}
 
@@ -9,7 +9,7 @@
         <a href="{{ path('index_default', {'_locale': app.request.locale}) }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-house"></i> {{ 'dashboard.back_to_home'|trans }}</a>
         <div class="d-flex align-items-center">
             <div class="border rounded p-1 me-3 d-flex align-items-center justify-content-center" style="width: 3rem; height: 3rem;">
-                <img src="{{ asset('images/icon_calculator.png') }}" alt="" style="max-height: 100%; max-width: 100%; height: auto; width: auto;">
+                <img src="{{ asset('images/icon_multi_currency_wallet.png') }}" alt="" style="max-height: 100%; max-width: 100%; height: auto; width: auto;">
             </div>
             <h1>{{ 'dashboard.title'|trans }}</h1>
         </div>
@@ -18,9 +18,9 @@
                 {{ app.request.locale|upper }}
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1" style="min-width: auto;">
-                <li><a class="dropdown-item small" href="{{ path('money_calculator_dashboard', {'_locale': 'cs'}) }}">čeština</a></li>
-                <li><a class="dropdown-item small" href="{{ path('money_calculator_dashboard', {'_locale': 'en'}) }}">english</a></li>
-                <li><a class="dropdown-item small" href="{{ path('money_calculator_dashboard', {'_locale': 'ru'}) }}">русский</a></li>
+                <li><a class="dropdown-item small" href="{{ path('multi_currency_wallet_dashboard', {'_locale': 'cs'}) }}">čeština</a></li>
+                <li><a class="dropdown-item small" href="{{ path('multi_currency_wallet_dashboard', {'_locale': 'en'}) }}">english</a></li>
+                <li><a class="dropdown-item small" href="{{ path('multi_currency_wallet_dashboard', {'_locale': 'ru'}) }}">русский</a></li>
             </ul>
         </div>
     </div>

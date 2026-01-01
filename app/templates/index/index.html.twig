@@ -42,14 +42,14 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
                     <div class="border rounded p-2 me-3 d-flex align-items-center justify-content-center" style="width: 4rem; height: 4rem;">
-                        <img src="{{ asset('images/icon_calculator.png') }}" alt="" style="max-height: 100%; max-width: 100%; height: auto; width: auto;">
+                        <img src="{{ asset('images/icon_multi_currency_wallet.png') }}" alt="" style="max-height: 100%; max-width: 100%; height: auto; width: auto;">
                     </div>
                     <div>
-                        <h5 class="card-title mb-1">{{'index.title'|trans({}, 'money_calculator')}}</h5>
-                        <p class="card-text text-secondary small-text mb-0">{{'index.description'|trans({}, 'money_calculator')}}</p>
+                        <h5 class="card-title mb-1">{{'index.title'|trans({}, 'multi_currency_wallet')}}</h5>
+                        <p class="card-text text-secondary small-text mb-0">{{'index.description'|trans({}, 'multi_currency_wallet')}}</p>
                     </div>
                 </div>
-                <a href="{{ path('money_calculator_dashboard', {'_locale': app.request.locale}) }}" class="btn btn-primary" title="{{'index.open_tooltip'|trans({}, 'money_calculator')}}">
+                <a href="{{ path('multi_currency_wallet_dashboard', {'_locale': app.request.locale}) }}" class="btn btn-primary" title="{{'index.open_tooltip'|trans({}, 'multi_currency_wallet')}}">
                     <i class="bi bi-caret-right"></i>
                 </a>
             </div>

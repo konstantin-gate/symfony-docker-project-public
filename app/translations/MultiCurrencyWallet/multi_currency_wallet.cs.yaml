@@ -1,0 +1,8 @@
+index:
+    title: Multiměnová peněženka
+    description: Modul pro finanční výpočty
+    open_tooltip: Přejít na modul
+
+dashboard:
+    title: Multiměnová peněženka
+    back_to_home: Zpět na úvod
