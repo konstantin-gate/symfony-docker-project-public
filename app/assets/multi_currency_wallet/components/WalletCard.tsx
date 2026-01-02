@@ -36,7 +36,7 @@ export function WalletCard({ currency, symbol, balance, icon, onBalanceChange }:
 
   return (
     <Card className="card-hover bg-card border border-border">
-      <CardContent className="p-5">
+      <CardContent className="!p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <span className="text-2xl">{icon}</span>

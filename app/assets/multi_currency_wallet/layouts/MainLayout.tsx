@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import { Footer } from "@/components/Footer";
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -11,7 +10,6 @@ export function MainLayout({ children }: MainLayoutProps) {
       <main className="flex-1">
         {children}
       </main>
-      <Footer />
     </div>
   );
 }
