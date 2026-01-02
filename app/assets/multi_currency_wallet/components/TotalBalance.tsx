@@ -45,7 +45,7 @@ export function TotalBalance({ balances }: TotalBalanceProps) {
 
   const handleCalculate = () => {
     let totalInUsd = 0;
-    
+
     Object.entries(balances).forEach(([currency, balance]) => {
       const rate = rates[currency] || 1;
       totalInUsd += balance / rate;
@@ -103,9 +103,9 @@ export function TotalBalance({ balances }: TotalBalanceProps) {
           </Button>
 
           {total !== null && (
-            <div className="flex-1 w-full md:w-auto h-10 gradient-primary rounded-md flex items-center justify-center px-6 animate-fade-in">
-              <p className="text-lg font-bold text-primary-foreground whitespace-nowrap">
-                <span className="text-sm font-normal text-primary-foreground/80 mr-2">
+            <div className="flex-1 w-full md:w-auto h-10 rounded-md flex items-center justify-center px-6 animate-fade-in bg-total-balance">
+              <p className="text-lg font-bold text-white whitespace-nowrap">
+                <span className="text-sm font-normal text-white/80 mr-2">
                   {translations['total_balance_result_label'] || "Total Balance"}:
                 </span>
                 <span className="mr-2">{getSymbol()}</span>
