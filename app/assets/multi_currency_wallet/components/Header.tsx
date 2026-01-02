@@ -44,7 +44,7 @@ export function Header() {
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary hover:ring-1 hover:ring-inset hover:ring-border"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -91,7 +91,7 @@ export function Header() {
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     isActive
                       ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary hover:ring-1 hover:ring-inset hover:ring-border"
                   }`}
                 >
                   <Icon className="w-5 h-5" />

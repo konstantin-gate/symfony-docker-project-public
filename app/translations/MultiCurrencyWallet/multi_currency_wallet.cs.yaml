@@ -37,6 +37,20 @@ rates:
     rate: Kurz
     updated: Naposledy aktualizováno
 
+settings:
+    title: Nastavení
+    preferences: Předvolby
+    default_currency: Výchozí měna peněženky
+    default_currency_desc: Tato měna bude použita jako výchozí pro výpočty celkového zůstatku.
+    api_key: API klíč směnných kurzů
+    api_key_placeholder: Zadejte váš API klíč
+    api_key_desc: Volitelné. Vyžadováno pro aktualizace směnných kurzů v reálném čase.
+    auto_update: Automatická denní aktualizace kurzů
+    auto_update_desc: Automaticky načíst nové směnné kurzy jednou denně.
+    save: Uložit nastavení
+    saved_title: Nastavení uloženo
+    saved_desc: Vaše předvolby byly úspěšně aktualizovány.
+
 card:
     edit: Upravit
     czk: česká koruna

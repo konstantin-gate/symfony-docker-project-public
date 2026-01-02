@@ -6,8 +6,8 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <main className="flex-1">
+    <div className="fixed inset-0 w-full flex flex-col bg-background overflow-hidden">
+      <main className="flex-1 overflow-y-auto w-full">
         {children}
       </main>
     </div>
