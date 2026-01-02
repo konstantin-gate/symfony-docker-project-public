@@ -15,6 +15,22 @@ menu:
     update_rates: Update rates
     updating: Updating...
 
+converter:
+    title: Currency Converter
+    amount: Amount
+    enter_amount: Enter amount
+    from: From
+    to: To
+    convert: Convert
+    rate_updated: 'Rate updated:'
+
+quick_tips:
+    title: Quick Tips
+    swap_tip: Use the swap button (↔) to quickly reverse the conversion direction
+    update_tip: Rates are updated periodically - click "Update rates" in the header for fresh data
+    btc_tip: Bitcoin conversions show up to 8 decimal places for precision
+    supported_tip: All major fiat currencies and Bitcoin are supported
+
 card:
     edit: Edit
     czk: Czech Koruna

@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAppConfig } from "@/context/AppConfigContext";
 
 const currencies = [
   { code: "CZK", name: "Czech Koruna" },
@@ -31,6 +32,7 @@ const rates: Record<string, number> = {
 };
 
 export function CurrencyConverter() {
+  const { translations } = useAppConfig();
   const [amount, setAmount] = useState<string>("100");
   const [fromCurrency, setFromCurrency] = useState("USD");
   const [toCurrency, setToCurrency] = useState("EUR");
@@ -63,24 +65,24 @@ export function CurrencyConverter() {
       <CardHeader>
         <CardTitle className="text-xl font-semibold text-foreground flex items-center gap-2">
           <ArrowRightLeft className="w-5 h-5 text-accent" />
-          Currency Converter
+          {translations.converter_title || "Currency Converter"}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col lg:flex-row items-center gap-4">
           <div className="flex-1 w-full">
-            <label className="text-sm font-medium text-muted-foreground mb-2 block">Amount</label>
+            <label className="text-sm font-medium text-muted-foreground mb-2 block">{translations.converter_amount || "Amount"}</label>
             <Input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder="Enter amount"
+              placeholder={translations.converter_enter_amount || "Enter amount"}
               className="text-lg"
             />
           </div>
 
           <div className="flex-1 w-full">
-            <label className="text-sm font-medium text-muted-foreground mb-2 block">From</label>
+            <label className="text-sm font-medium text-muted-foreground mb-2 block">{translations.converter_from || "From"}</label>
             <Select value={fromCurrency} onValueChange={setFromCurrency}>
               <SelectTrigger>
                 <SelectValue />
@@ -88,7 +90,7 @@ export function CurrencyConverter() {
               <SelectContent className="bg-card border border-border">
                 {currencies.map((c) => (
                   <SelectItem key={c.code} value={c.code}>
-                    {c.code} - {c.name}
+                    {c.code} - {translations[`currency_${c.code.toLowerCase()}`] || c.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -105,7 +107,7 @@ export function CurrencyConverter() {
           </Button>
 
           <div className="flex-1 w-full">
-            <label className="text-sm font-medium text-muted-foreground mb-2 block">To</label>
+            <label className="text-sm font-medium text-muted-foreground mb-2 block">{translations.converter_to || "To"}</label>
             <Select value={toCurrency} onValueChange={setToCurrency}>
               <SelectTrigger>
                 <SelectValue />
@@ -113,7 +115,7 @@ export function CurrencyConverter() {
               <SelectContent className="bg-card border border-border">
                 {currencies.map((c) => (
                   <SelectItem key={c.code} value={c.code}>
-                    {c.code} - {c.name}
+                    {c.code} - {translations[`currency_${c.code.toLowerCase()}`] || c.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -124,7 +126,7 @@ export function CurrencyConverter() {
             onClick={handleConvert}
             className="mt-6 gradient-accent text-accent-foreground border-0 px-8"
           >
-            Convert
+            {translations.converter_convert || "Convert"}
           </Button>
         </div>
 
@@ -134,7 +136,7 @@ export function CurrencyConverter() {
               {parseFloat(amount).toLocaleString("cs-CZ")} {fromCurrency} = {formatResult(result.amount, toCurrency)} {toCurrency}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              Rate updated: 31 Dec 2025 01:00
+              {translations.converter_rate_updated || "Rate updated:"} 31 Dec 2025 01:00
             </p>
           </div>
         )}

@@ -15,6 +15,22 @@ menu:
     update_rates: Aktualizovat kurzy
     updating: Aktualizace...
 
+converter:
+    title: Převodník měn
+    amount: Částka
+    enter_amount: Zadejte částku
+    from: Z
+    to: Na
+    convert: Převést
+    rate_updated: 'Kurz aktualizován:'
+
+quick_tips:
+    title: Rychlé tipy
+    swap_tip: Použijte tlačítko pro prohození (↔) pro rychlou změnu směru převodu
+    update_tip: 'Kurzy se pravidelně aktualizují - pro čerstvá data klikněte na "Aktualizovat kurzy" v hlavičce'
+    btc_tip: Převody Bitcoinu se zobrazují s přesností na 8 desetinných míst
+    supported_tip: Jsou podporovány všechny hlavní fiat měny a Bitcoin
+
 card:
     edit: Upravit
     czk: česká koruna
