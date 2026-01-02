@@ -28,7 +28,7 @@ export function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-card border-b border-border shadow-sm">
+    <header className="bg-card border-b border-border shadow-sm w-full">
       <div className="container flex items-center justify-between h-16">
         <Link to="/" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg gradient-accent flex items-center justify-center">

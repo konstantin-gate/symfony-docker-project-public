@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Wallet } from "lucide-react";
 import { WalletCard } from "@/components/WalletCard";
 import { CurrencyConverter } from "@/components/CurrencyConverter";
 import { TotalBalance } from "@/components/TotalBalance";
+import { Header } from "@/components/Header";
+import { PageHeader } from "@/components/PageHeader";
 
 const initialBalances = {
   CZK: 125000,
@@ -36,11 +37,10 @@ const Index = () => {
     <div className="space-y-8">
       {/* Wallet Section */}
       <section>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
-            <Wallet className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <h1 className="text-2xl font-bold text-foreground">My Wallet</h1>
+        <PageHeader />
+
+        <div className="mb-8">
+          <Header />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

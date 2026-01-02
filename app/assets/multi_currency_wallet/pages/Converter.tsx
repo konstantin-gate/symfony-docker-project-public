@@ -1,8 +1,12 @@
 import { CurrencyConverter } from "@/components/CurrencyConverter";
+import { Header } from "@/components/Header";
 
 const Converter = () => {
   return (
     <div className="max-w-4xl mx-auto">
+      <div className="mb-8">
+        <Header />
+      </div>
       <h1 className="text-2xl font-bold text-foreground mb-6">Currency Converter</h1>
       <CurrencyConverter />
       

@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
+import { Header } from "@/components/Header";
 
 const currencies = [
   { code: "CZK", name: "Czech Koruna" },
@@ -45,6 +46,9 @@ const Settings = () => {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <div className="mb-8">
+        <Header />
+      </div>
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
           <SettingsIcon className="w-5 h-5 text-primary-foreground" />

@@ -14,5 +14,12 @@
 {% endblock %}
 
 {% block body %}
-    <div id="root" data-basename="{{ path('multi_currency_wallet_dashboard', {'_locale': app.request.locale}) }}"></div>
+    <div id="root" 
+         data-basename="{{ path('multi_currency_wallet_dashboard', {'_locale': app.request.locale}) }}"
+         data-locale="{{ app.request.locale }}"
+         data-home-url="{{ path('index_default', {'_locale': app.request.locale}) }}"
+         data-title="{{ 'dashboard.title'|trans }}"
+         data-back-text="{{ 'dashboard.back_to_home'|trans }}"
+         data-icon-url="{{ asset('images/icon_multi_currency_wallet.png') }}"
+    ></div>
 {% endblock %}
