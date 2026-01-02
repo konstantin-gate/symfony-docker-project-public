@@ -3,26 +3,16 @@
 
 {% block title %}{{ 'dashboard.title'|trans }}{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('multi_currency_wallet') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('multi_currency_wallet') }}
+{% endblock %}
+
 {% block body %}
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <a href="{{ path('index_default', {'_locale': app.request.locale}) }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-house"></i> {{ 'dashboard.back_to_home'|trans }}</a>
-        <div class="d-flex align-items-center">
-            <div class="border rounded p-1 me-3 d-flex align-items-center justify-content-center" style="width: 3rem; height: 3rem;">
-                <img src="{{ asset('images/icon_multi_currency_wallet.png') }}" alt="" style="max-height: 100%; max-width: 100%; height: auto; width: auto;">
-            </div>
-            <h1>{{ 'dashboard.title'|trans }}</h1>
-        </div>
-        <div class="dropdown">
-            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                {{ app.request.locale|upper }}
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1" style="min-width: auto;">
-                <li><a class="dropdown-item small" href="{{ path('multi_currency_wallet_dashboard', {'_locale': 'cs'}) }}">čeština</a></li>
-                <li><a class="dropdown-item small" href="{{ path('multi_currency_wallet_dashboard', {'_locale': 'en'}) }}">english</a></li>
-                <li><a class="dropdown-item small" href="{{ path('multi_currency_wallet_dashboard', {'_locale': 'ru'}) }}">русский</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
+    <div id="root" data-basename="{{ path('multi_currency_wallet_dashboard', {'_locale': app.request.locale}) }}"></div>
 {% endblock %}
