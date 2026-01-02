@@ -17,8 +17,7 @@ export function PageHeader() {
     const currentPath = window.location.pathname;
     // Simple regex replacement for the first path segment if it matches current locale
     // or just strict string replacement.
-    const newPath = currentPath.replace(`/${locale}/`, `/${newLocale}/`);
-    window.location.href = newPath;
+    window.location.href = currentPath.replace(`/${locale}/`, `/${newLocale}/`);
   };
 
   const languages = [
@@ -30,30 +29,46 @@ export function PageHeader() {
   return (
     <div className="flex justify-between items-center mb-6">
       {/* Back to Home */}
-      <a href={homeUrl} className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 py-2">
-        <Home className="w-4 h-4 mr-2" />
+      <a href={homeUrl} className="btn btn-outline-secondary btn-sm d-inline-flex align-items-center" style={{ fontFamily: 'var(--bs-body-font-family)' }}>
+        <i className="bi bi-house me-2"></i>
         {backText}
       </a>
 
       {/* Center Title */}
       <div className="flex items-center">
-        <div className="border rounded p-1 mr-3 flex items-center justify-center w-12 h-12">
+        <div className="border rounded p-2 mr-4 flex items-center justify-center w-12 h-12">
             <img src={iconUrl} alt="" className="max-h-full max-w-full h-auto w-auto" />
         </div>
-        <h1 className="text-2xl font-bold text-foreground">{title}</h1>
+        <h1 className="text-[calc(1.375rem_+_1.5vw)] xl:text-[2.5rem] font-medium leading-[1.2] text-foreground" style={{ fontFamily: 'var(--bs-body-font-family)' }}>{title}</h1>
       </div>
 
       {/* Language Switcher */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-2 uppercase">
-            {locale}
-            <ChevronDown className="w-4 h-4" />
-          </Button>
+          <button type="button" className="btn btn-outline-secondary btn-sm dropdown-toggle text-uppercase" style={{ fontFamily: 'var(--bs-body-font-family)' }}>
+            <span className="me-1">{locale}</span>
+          </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent 
+            align="end" 
+            className="shadow-sm min-w-0" 
+            style={{ 
+                backgroundColor: '#fff', 
+                borderColor: '#6c757d', 
+                borderWidth: '1px', 
+                borderStyle: 'solid',
+                borderRadius: '0.25rem', 
+                padding: '0.25rem 0',
+                fontFamily: 'var(--bs-body-font-family)'
+            }}
+        >
             {languages.map((lang) => (
-                <DropdownMenuItem key={lang.code} onClick={() => switchLocale(lang.code)}>
+                <DropdownMenuItem 
+                    key={lang.code} 
+                    onClick={() => switchLocale(lang.code)} 
+                    className="text-[#212529] text-[0.875rem] font-normal px-3 py-1 focus:bg-[#f8f9fa] focus:text-[#1e2125] cursor-pointer rounded-none" 
+                    style={{ fontFamily: 'var(--bs-body-font-family)' }}
+                >
                     {lang.label}
                 </DropdownMenuItem>
             ))}
