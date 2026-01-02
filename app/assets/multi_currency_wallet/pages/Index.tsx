@@ -39,7 +39,7 @@ const Index = () => {
       <div className="container pb-8 space-y-8">
         {/* Wallet Section */}
         <section>
-          <div className="mb-8">
+          <div className="mb-2">
             <Header />
           </div>
 

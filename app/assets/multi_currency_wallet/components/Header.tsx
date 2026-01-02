@@ -28,17 +28,8 @@ export function Header() {
   };
 
   return (
-    <header className="bg-card border-b border-border shadow-sm w-full">
-      <div className="container flex items-center justify-between h-16">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg gradient-accent flex items-center justify-center">
-            <Wallet className="w-5 h-5 text-accent-foreground" />
-          </div>
-          <span className="font-semibold text-lg text-foreground hidden sm:inline">
-            Multi-Currency Pocket
-          </span>
-        </Link>
-
+    <header className="w-full">
+      <div className="flex items-center justify-between h-16">
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => {

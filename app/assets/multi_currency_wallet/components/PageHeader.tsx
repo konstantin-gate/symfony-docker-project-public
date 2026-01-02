@@ -27,7 +27,7 @@ export function PageHeader() {
   ];
 
   return (
-    <header className="bg-white border-b border-border shadow-sm mb-4">
+    <header className="bg-white border-b border-border shadow-sm mb-2">
       <div className="container py-4 flex justify-between items-center">
         {/* Back to Home */}
         <a href={homeUrl} className="btn btn-outline-secondary btn-sm d-inline-flex align-items-center" style={{ fontFamily: 'var(--bs-body-font-family)' }}>
