@@ -34,39 +34,40 @@ const Index = () => {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Wallet Section */}
-      <section>
-        <PageHeader />
+    <>
+      <PageHeader />
+      <div className="container pb-8 space-y-8">
+        {/* Wallet Section */}
+        <section>
+          <div className="mb-8">
+            <Header />
+          </div>
 
-        <div className="mb-8">
-          <Header />
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {currencyData.map((currency) => (
+              <WalletCard
+                key={currency.code}
+                currency={currency.code}
+                symbol={currency.symbol}
+                balance={balances[currency.code as keyof typeof balances]}
+                icon={currency.icon}
+                onBalanceChange={(newBalance) => handleBalanceChange(currency.code, newBalance)}
+              />
+            ))}
+          </div>
+        </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {currencyData.map((currency) => (
-            <WalletCard
-              key={currency.code}
-              currency={currency.code}
-              symbol={currency.symbol}
-              balance={balances[currency.code as keyof typeof balances]}
-              icon={currency.icon}
-              onBalanceChange={(newBalance) => handleBalanceChange(currency.code, newBalance)}
-            />
-          ))}
-        </div>
-      </section>
+        {/* Currency Converter */}
+        <section>
+          <CurrencyConverter />
+        </section>
 
-      {/* Currency Converter */}
-      <section>
-        <CurrencyConverter />
-      </section>
-
-      {/* Total Balance */}
-      <section>
-        <TotalBalance balances={balances} />
-      </section>
-    </div>
+        {/* Total Balance */}
+        <section>
+          <TotalBalance balances={balances} />
+        </section>
+      </div>
+    </>
   );
 };
 

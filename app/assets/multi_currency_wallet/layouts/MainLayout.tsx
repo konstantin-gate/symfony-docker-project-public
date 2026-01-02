@@ -8,7 +8,7 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <main className="flex-1 container py-6">
+      <main className="flex-1">
         {children}
       </main>
       <Footer />
