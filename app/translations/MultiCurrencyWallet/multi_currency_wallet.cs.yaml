@@ -31,6 +31,12 @@ quick_tips:
     btc_tip: Převody Bitcoinu se zobrazují s přesností na 8 desetinných míst
     supported_tip: Jsou podporovány všechny hlavní fiat měny a Bitcoin
 
+rates:
+    title: Historie směnných kurzů
+    pair: Měnový pár
+    rate: Kurz
+    updated: Naposledy aktualizováno
+
 card:
     edit: Upravit
     czk: česká koruna

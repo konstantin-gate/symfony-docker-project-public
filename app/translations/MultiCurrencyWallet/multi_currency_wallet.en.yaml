@@ -31,6 +31,12 @@ quick_tips:
     btc_tip: Bitcoin conversions show up to 8 decimal places for precision
     supported_tip: All major fiat currencies and Bitcoin are supported
 
+rates:
+    title: Exchange Rates History
+    pair: Currency Pair
+    rate: Rate
+    updated: Last Updated
+
 card:
     edit: Edit
     czk: Czech Koruna

@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAppConfig } from "@/context/AppConfigContext";
 
 const ratesHistory = [
   { pair: "USD → EUR", rate: "0.85", updated: "31 Dec 2025 01:00" },
@@ -21,22 +22,24 @@ const ratesHistory = [
 ];
 
 export function RatesHistoryTable() {
+  const { translations } = useAppConfig();
+
   return (
     <Card className="bg-card border border-border">
       <CardHeader>
         <CardTitle className="text-xl font-semibold text-foreground flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-accent" />
-          Exchange Rates History
+          {translations.rates_title || "Exchange Rates History"}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="rounded-lg border border-border overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="bg-secondary hover:bg-secondary">
-                <TableHead className="font-semibold text-foreground">Currency Pair</TableHead>
-                <TableHead className="font-semibold text-foreground">Rate</TableHead>
-                <TableHead className="font-semibold text-foreground">Last Updated</TableHead>
+              <TableRow className="bg-muted hover:bg-muted">
+                <TableHead className="font-semibold text-foreground">{translations.rates_pair || "Currency Pair"}</TableHead>
+                <TableHead className="font-semibold text-foreground">{translations.rates_rate || "Rate"}</TableHead>
+                <TableHead className="font-semibold text-foreground">{translations.rates_updated || "Last Updated"}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
