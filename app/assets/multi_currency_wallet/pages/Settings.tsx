@@ -54,7 +54,7 @@ const Settings = () => {
             <Header />
           </div>
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-signature-rich-indigo flex items-center justify-center">
               <SettingsIcon className="w-5 h-5 text-primary-foreground" />
             </div>
             <h1 className="text-2xl font-bold text-foreground">Settings</h1>

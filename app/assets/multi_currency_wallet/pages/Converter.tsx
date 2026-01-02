@@ -1,6 +1,7 @@
 import { CurrencyConverter } from "@/components/CurrencyConverter";
 import { Header } from "@/components/Header";
 import { PageHeader } from "@/components/PageHeader";
+import { ArrowRightLeft } from "lucide-react";
 
 const Converter = () => {
   return (
@@ -11,7 +12,12 @@ const Converter = () => {
           <div className="mb-2">
             <Header />
           </div>
-          <h1 className="text-2xl font-bold text-foreground mb-6">Currency Converter</h1>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-signature-rich-indigo flex items-center justify-center">
+              <ArrowRightLeft className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground">Currency Converter</h1>
+          </div>
           <CurrencyConverter />
           
           <div className="mt-8 p-6 bg-card rounded-lg border border-border">

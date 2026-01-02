@@ -50,6 +50,7 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    --color-signature-rich-indigo: 193 57% 39%;
   }
 
   .dark {
@@ -124,6 +125,10 @@
   }
 
   .bg-total-balance {
-    background-color: #2b869e;
+    background-color: hsl(var(--color-signature-rich-indigo));
+  }
+
+  .bg-signature-rich-indigo {
+    background-color: hsl(var(--color-signature-rich-indigo));
   }
 }
