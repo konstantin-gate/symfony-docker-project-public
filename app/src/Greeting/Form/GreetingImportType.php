@@ -106,7 +106,7 @@ class GreetingImportType extends AbstractType
             ])
             ->add('import', SubmitType::class, [
                 'label' => 'import.submit',
-                'attr' => ['class' => 'btn btn-primary w-100'],
+                'attr' => ['class' => 'btn btn-greeting-import w-100'],
             ]);
     }
 

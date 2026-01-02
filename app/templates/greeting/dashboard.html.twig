@@ -53,7 +53,7 @@
         {# --- Část 1: Import kontaktů --- #}
         <div class="col-md-3">
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-greeting-import text-white">
                     <h5 class="mb-0">{{ 'dashboard.import_title'|trans }}</h5>
                 </div>
                 <div class="card-body">
@@ -135,7 +135,7 @@
         {# --- Část 2: Odeslání pozdravů --- #}
         <div class="col-md-9">
             <div class="card shadow-sm">
-                <div class="card-header bg-success text-white">
+                <div class="card-header text-white bg-greeting-accent">
                     <h5 class="mb-0">{{ 'dashboard.send_title'|trans }}</h5>
                 </div>
                 <div class="card-body">
@@ -255,7 +255,7 @@
                             <textarea name="body" id="body" class="form-control" rows="5" required placeholder="{{ 'dashboard.body_placeholder'|trans }}"></textarea>
                         </div>
 
-                        <button type="submit" name="send_greeting" class="btn btn-success w-100 btn-lg">
+                        <button type="submit" name="send_greeting" class="btn w-100 btn-lg btn-greeting-accent">
                             <i class="bi bi-send"></i> {{ 'dashboard.send_btn'|trans }}
                         </button>
                     </form>
