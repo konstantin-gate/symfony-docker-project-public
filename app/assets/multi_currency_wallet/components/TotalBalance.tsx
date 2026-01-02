@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAppConfig } from "@/context/AppConfigContext";
 
 interface BalanceData {
   [key: string]: number;
@@ -40,6 +41,7 @@ const rates: Record<string, number> = {
 export function TotalBalance({ balances }: TotalBalanceProps) {
   const [targetCurrency, setTargetCurrency] = useState("CZK");
   const [total, setTotal] = useState<number | null>(null);
+  const { translations } = useAppConfig();
 
   const handleCalculate = () => {
     let totalInUsd = 0;
@@ -70,14 +72,14 @@ export function TotalBalance({ balances }: TotalBalanceProps) {
       <CardHeader>
         <CardTitle className="text-xl font-semibold text-foreground flex items-center gap-2">
           <Calculator className="w-5 h-5 text-accent" />
-          Total Wallet Value
+          {translations['total_balance_title'] || "Total Wallet Value"}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="flex-1 w-full sm:max-w-xs">
+        <div className="flex flex-col md:flex-row items-end gap-4">
+          <div className="flex-1 w-full md:max-w-xs">
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
-              Target Currency
+              {translations['total_balance_target_currency'] || "Target Currency"}
             </label>
             <Select value={targetCurrency} onValueChange={setTargetCurrency}>
               <SelectTrigger>
@@ -86,7 +88,7 @@ export function TotalBalance({ balances }: TotalBalanceProps) {
               <SelectContent className="bg-card border border-border">
                 {currencies.map((c) => (
                   <SelectItem key={c.code} value={c.code}>
-                    {c.symbol} {c.code} - {c.name}
+                    {c.symbol} {c.code} - {translations[`currency_${c.code.toLowerCase()}`] || c.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -95,20 +97,23 @@ export function TotalBalance({ balances }: TotalBalanceProps) {
 
           <Button
             onClick={handleCalculate}
-            className="sm:mt-6 gradient-accent text-accent-foreground border-0 px-8"
+            className="w-full md:w-auto gradient-accent text-accent-foreground border-0 px-8 h-10"
           >
-            Calculate Total
+            {translations['total_balance_calculate'] || "Calculate Total"}
           </Button>
-        </div>
 
-        {total !== null && (
-          <div className="mt-6 p-6 gradient-primary rounded-lg text-center animate-fade-in">
-            <p className="text-sm text-primary-foreground/80 mb-2">Total Balance</p>
-            <p className="text-3xl font-bold text-primary-foreground">
-              {getSymbol()}{formatTotal(total)} {targetCurrency}
-            </p>
-          </div>
-        )}
+          {total !== null && (
+            <div className="flex-1 w-full md:w-auto h-10 gradient-primary rounded-md flex items-center justify-center px-6 animate-fade-in">
+              <p className="text-lg font-bold text-primary-foreground whitespace-nowrap">
+                <span className="text-sm font-normal text-primary-foreground/80 mr-2">
+                  {translations['total_balance_result_label'] || "Total Balance"}:
+                </span>
+                <span className="mr-2">{getSymbol()}</span>
+                {formatTotal(total)} {targetCurrency}
+              </p>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

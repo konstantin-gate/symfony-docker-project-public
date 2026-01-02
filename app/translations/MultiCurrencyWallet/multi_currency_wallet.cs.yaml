@@ -6,3 +6,26 @@ index:
 dashboard:
     title: Multiměnová peněženka
     back_to_home: Na hlavní stránku
+
+menu:
+    wallet: Peněženka
+    converter: Převodník
+    rates_history: Historie kurzů
+    settings: Nastavení
+    update_rates: Aktualizovat kurzy
+    updating: Aktualizace...
+
+card:
+    edit: Upravit
+    czk: česká koruna
+    eur: euro
+    usd: americký dolar
+    rub: ruský rubl
+    jpy: japonský jen
+    btc: bitcoin
+
+total_balance:
+    title: Celková hodnota peněženky
+    target_currency: Cílová měna
+    calculate: Vypočítat celkem
+    result_label: Celkový zůstatek

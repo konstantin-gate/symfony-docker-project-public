@@ -57,11 +57,6 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Currency Converter */}
-        <section>
-          <CurrencyConverter />
-        </section>
-
         {/* Total Balance */}
         <section>
           <TotalBalance balances={balances} />

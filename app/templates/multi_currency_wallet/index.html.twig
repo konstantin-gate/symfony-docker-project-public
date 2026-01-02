@@ -21,5 +21,24 @@
          data-title="{{ 'dashboard.title'|trans }}"
          data-back-text="{{ 'dashboard.back_to_home'|trans }}"
          data-icon-url="{{ asset('images/icon_multi_currency_wallet.png') }}"
+         data-translations="{{ {
+             'menu_wallet': 'menu.wallet'|trans,
+             'menu_converter': 'menu.converter'|trans,
+             'menu_rates_history': 'menu.rates_history'|trans,
+             'menu_settings': 'menu.settings'|trans,
+             'menu_update_rates': 'menu.update_rates'|trans,
+             'menu_updating': 'menu.updating'|trans,
+             'card_edit': 'card.edit'|trans,
+             'currency_czk': 'card.czk'|trans,
+             'currency_eur': 'card.eur'|trans,
+             'currency_usd': 'card.usd'|trans,
+             'currency_rub': 'card.rub'|trans,
+             'currency_jpy': 'card.jpy'|trans,
+             'currency_btc': 'card.btc'|trans,
+             'total_balance_title': 'total_balance.title'|trans,
+             'total_balance_target_currency': 'total_balance.target_currency'|trans,
+             'total_balance_calculate': 'total_balance.calculate'|trans,
+             'total_balance_result_label': 'total_balance.result_label'|trans
+         }|json_encode|e('html_attr') }}"
     ></div>
 {% endblock %}

@@ -6,3 +6,26 @@ index:
 dashboard:
     title: Мультивалютный кошелёк
     back_to_home: На главную страницу
+
+menu:
+    wallet: Кошелёк
+    converter: Конвертер
+    rates_history: История курсов
+    settings: Настройки
+    update_rates: Обновить курсы
+    updating: Обновление...
+
+card:
+    edit: Редактировать
+    czk: чешская крона
+    eur: евро
+    usd: доллар США
+    rub: российский рубль
+    jpy: японская иена
+    btc: биткоин
+
+total_balance:
+    title: Общая стоимость кошелька
+    target_currency: Целевая валюта
+    calculate: Рассчитать итог
+    result_label: Общий баланс

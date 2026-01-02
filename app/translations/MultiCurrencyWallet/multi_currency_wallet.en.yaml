@@ -6,3 +6,26 @@ index:
 dashboard:
     title: Multi-Currency Wallet
     back_to_home: Back to Home
+
+menu:
+    wallet: Wallet
+    converter: Converter
+    rates_history: Rates History
+    settings: Settings
+    update_rates: Update rates
+    updating: Updating...
+
+card:
+    edit: Edit
+    czk: Czech Koruna
+    eur: Euro
+    usd: US Dollar
+    rub: Russian Ruble
+    jpy: Japanese Yen
+    btc: Bitcoin
+
+total_balance:
+    title: Total Wallet Value
+    target_currency: Target Currency
+    calculate: Calculate Total
+    result_label: Total Balance

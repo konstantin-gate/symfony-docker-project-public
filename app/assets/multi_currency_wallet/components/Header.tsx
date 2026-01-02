@@ -3,18 +3,20 @@ import { Link, useLocation } from "react-router-dom";
 import { Wallet, ArrowRightLeft, TrendingUp, Settings, RefreshCw, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-
-const navItems = [
-  { name: "Wallet", path: "/", icon: Wallet },
-  { name: "Converter", path: "/converter", icon: ArrowRightLeft },
-  { name: "Rates History", path: "/rates", icon: TrendingUp },
-  { name: "Settings", path: "/settings", icon: Settings },
-];
+import { useAppConfig } from "@/context/AppConfigContext";
 
 export function Header() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const { translations } = useAppConfig();
+
+  const navItems = [
+    { name: translations['menu_wallet'] || "Wallet", path: "/", icon: Wallet },
+    { name: translations['menu_converter'] || "Converter", path: "/converter", icon: ArrowRightLeft },
+    { name: translations['menu_rates_history'] || "Rates History", path: "/rates", icon: TrendingUp },
+    { name: translations['menu_settings'] || "Settings", path: "/settings", icon: Settings },
+  ];
 
   const handleUpdateRates = () => {
     setIsUpdating(true);
@@ -59,7 +61,7 @@ export function Header() {
             className="hidden sm:flex gradient-accent text-accent-foreground border-0 hover:opacity-90"
           >
             <RefreshCw className={`w-4 h-4 mr-2 ${isUpdating ? "animate-spin" : ""}`} />
-            {isUpdating ? "Updating..." : "Update rates"}
+            {isUpdating ? (translations['menu_updating'] || "Updating...") : (translations['menu_update_rates'] || "Update rates")}
           </Button>
 
           {/* Mobile Menu Button */}
@@ -106,7 +108,7 @@ export function Header() {
               className="w-full mt-4 gradient-accent text-accent-foreground border-0"
             >
               <RefreshCw className={`w-4 h-4 mr-2 ${isUpdating ? "animate-spin" : ""}`} />
-              {isUpdating ? "Updating..." : "Update exchange rates"}
+              {isUpdating ? (translations['menu_updating'] || "Updating...") : (translations['menu_update_rates'] || "Update exchange rates")}
             </Button>
           </div>
         </nav>

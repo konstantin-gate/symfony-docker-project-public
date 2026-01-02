@@ -55,7 +55,7 @@ export function CurrencyConverter() {
     if (currency === "BTC") {
       return value.toFixed(8);
     }
-    return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return value.toLocaleString("cs-CZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   return (
@@ -131,7 +131,7 @@ export function CurrencyConverter() {
         {result && (
           <div className="mt-6 p-4 bg-secondary rounded-lg text-center animate-fade-in">
             <p className="text-2xl font-bold text-foreground">
-              {parseFloat(amount).toLocaleString()} {fromCurrency} = {formatResult(result.amount, toCurrency)} {toCurrency}
+              {parseFloat(amount).toLocaleString("cs-CZ")} {fromCurrency} = {formatResult(result.amount, toCurrency)} {toCurrency}
             </p>
             <p className="text-sm text-muted-foreground mt-2">
               Rate updated: 31 Dec 2025 01:00

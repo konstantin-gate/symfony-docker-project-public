@@ -3,6 +3,8 @@ import { Pencil, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAppConfig } from "@/context/AppConfigContext";
 
 interface WalletCardProps {
   currency: string;
@@ -15,6 +17,7 @@ interface WalletCardProps {
 export function WalletCard({ currency, symbol, balance, icon, onBalanceChange }: WalletCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(balance.toString());
+  const { translations } = useAppConfig();
 
   const handleSave = () => {
     const newBalance = parseFloat(editValue) || 0;
@@ -31,7 +34,7 @@ export function WalletCard({ currency, symbol, balance, icon, onBalanceChange }:
     if (currency === "BTC") {
       return value.toFixed(8);
     }
-    return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return value.toLocaleString("cs-CZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   return (
@@ -39,19 +42,29 @@ export function WalletCard({ currency, symbol, balance, icon, onBalanceChange }:
       <CardContent className="!p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">{icon}</span>
-            <span className="font-semibold text-foreground">{currency}</span>
+            <div className="inline-flex items-center justify-center h-10 w-10 rounded-md border border-input bg-background text-sm font-medium shadow-sm">
+              {symbol}
+            </div>
+            <span className="font-light text-foreground">
+              {currency} - {translations[`currency_${currency.toLowerCase()}`] || ""}
+            </span>
           </div>
           {!isEditing && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsEditing(true)}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <Pencil className="w-4 h-4 mr-1" />
-              Edit
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsEditing(true)}
+                  className="text-muted-foreground hover:text-foreground h-8 w-8"
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{translations['card_edit'] || "Edit"}</p>
+              </TooltipContent>
+            </Tooltip>
           )}
         </div>
 
@@ -76,8 +89,9 @@ export function WalletCard({ currency, symbol, balance, icon, onBalanceChange }:
             </div>
           </div>
         ) : (
-          <div className="text-2xl font-bold text-foreground">
-            {symbol}{formatBalance(balance)}
+          <div className="text-2xl font-bold text-foreground flex items-center gap-3">
+            <span>{symbol}</span>
+            <span>{formatBalance(balance)}</span>
           </div>
         )}
       </CardContent>

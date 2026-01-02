@@ -7,6 +7,7 @@ export interface AppConfig {
   title: string;
   backText: string;
   iconUrl: string;
+  translations: Record<string, string>;
 }
 
 const AppConfigContext = createContext<AppConfig | undefined>(undefined);

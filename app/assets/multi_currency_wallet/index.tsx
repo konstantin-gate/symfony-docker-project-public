@@ -10,6 +10,16 @@ const title = rootElement?.getAttribute("data-title") || "Multi Currency Wallet"
 const backText = rootElement?.getAttribute("data-back-text") || "Back to home";
 const iconUrl = rootElement?.getAttribute("data-icon-url") || "";
 
+let translations = {};
+try {
+  const translationsAttr = rootElement?.getAttribute("data-translations");
+  if (translationsAttr) {
+    translations = JSON.parse(translationsAttr);
+  }
+} catch (e) {
+  console.error("Failed to parse translations", e);
+}
+
 const config = {
   basename,
   locale,
@@ -17,6 +27,7 @@ const config = {
   title,
   backText,
   iconUrl,
+  translations,
 };
 
 createRoot(rootElement!).render(<App config={config} />);
