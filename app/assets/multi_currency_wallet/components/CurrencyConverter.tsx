@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRightLeft } from "lucide-react";
+import { ArrowRightLeft, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,32 +11,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAppConfig } from "@/context/AppConfigContext";
-
-const currencies = [
-  { code: "CZK", name: "Czech Koruna" },
-  { code: "EUR", name: "Euro" },
-  { code: "USD", name: "US Dollar" },
-  { code: "RUB", name: "Russian Ruble" },
-  { code: "JPY", name: "Japanese Yen" },
-  { code: "BTC", name: "Bitcoin" },
-];
-
-// Mock exchange rates (relative to USD)
-const rates: Record<string, number> = {
-  USD: 1,
-  EUR: 0.85,
-  CZK: 22.5,
-  RUB: 89.5,
-  JPY: 148.5,
-  BTC: 0.000029,
-};
+import { toast } from "sonner";
 
 export function CurrencyConverter() {
-  const { translations } = useAppConfig();
+  const { translations, initialBalances } = useAppConfig();
   const [amount, setAmount] = useState<string>("100");
   const [fromCurrency, setFromCurrency] = useState("USD");
   const [toCurrency, setToCurrency] = useState("EUR");
-  const [result, setResult] = useState<{ amount: number; rate: number } | null>(null);
+  const [isConverting, setIsConverting] = useState(false);
+  const [result, setResult] = useState<{ amount: number; rate: number; updatedAt?: string } | null>(null);
 
   const handleSwap = () => {
     setFromCurrency(toCurrency);
@@ -44,20 +27,45 @@ export function CurrencyConverter() {
     setResult(null);
   };
 
-  const handleConvert = () => {
-    const value = parseFloat(amount) || 0;
-    const fromRate = rates[fromCurrency];
-    const toRate = rates[toCurrency];
-    const convertedAmount = (value / fromRate) * toRate;
-    const exchangeRate = toRate / fromRate;
-    setResult({ amount: convertedAmount, rate: exchangeRate });
+  const handleConvert = async () => {
+    setIsConverting(true);
+    try {
+      const response = await fetch('/api/multi-currency-wallet/convert', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: amount,
+          from: fromCurrency,
+          to: toCurrency
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Conversion failed');
+      }
+
+      const data = await response.json();
+      setResult({
+        amount: parseFloat(data.amount),
+        rate: parseFloat(data.rate),
+        updatedAt: data.updatedAt
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error(translations.converter_error || "Failed to convert currency");
+    } finally {
+      setIsConverting(false);
+    }
   };
 
   const formatResult = (value: number, currency: string) => {
-    if (currency === "BTC") {
-      return value.toFixed(8);
-    }
-    return value.toLocaleString("cs-CZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const balanceInfo = initialBalances.find(b => b.code === currency);
+    const decimals = balanceInfo?.decimals ?? 2;
+    
+    return value.toLocaleString("cs-CZ", { 
+      minimumFractionDigits: decimals, 
+      maximumFractionDigits: decimals 
+    });
   };
 
   return (
@@ -88,9 +96,9 @@ export function CurrencyConverter() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-card border border-border">
-                {currencies.map((c) => (
+                {initialBalances.map((c) => (
                   <SelectItem key={c.code} value={c.code}>
-                    {c.code} - {translations[`currency_${c.code.toLowerCase()}`] || c.name}
+                    {c.code} - {translations[`currency_${c.code.toLowerCase()}`] || c.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -113,9 +121,9 @@ export function CurrencyConverter() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-card border border-border">
-                {currencies.map((c) => (
+                {initialBalances.map((c) => (
                   <SelectItem key={c.code} value={c.code}>
-                    {c.code} - {translations[`currency_${c.code.toLowerCase()}`] || c.name}
+                    {c.code} - {translations[`currency_${c.code.toLowerCase()}`] || c.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -124,20 +132,24 @@ export function CurrencyConverter() {
 
           <Button
             onClick={handleConvert}
+            disabled={isConverting}
             className="mt-6 gradient-accent text-accent-foreground border-0 px-8"
           >
+            {isConverting && <RefreshCw className="w-4 h-4 mr-2 animate-spin" />}
             {translations.converter_convert || "Convert"}
           </Button>
         </div>
 
         {result && (
-          <div className="mt-6 p-4 bg-secondary rounded-lg text-center animate-fade-in">
+          <div className="mt-6 p-4 bg-muted/50 rounded-lg text-center animate-fade-in border border-border/50">
             <p className="text-2xl font-bold text-foreground">
               {parseFloat(amount).toLocaleString("cs-CZ")} {fromCurrency} = {formatResult(result.amount, toCurrency)} {toCurrency}
             </p>
-            <p className="text-sm text-muted-foreground mt-2">
-              {translations.converter_rate_updated || "Rate updated:"} 31 Dec 2025 01:00
-            </p>
+            {result.updatedAt && (
+              <p className="text-sm text-muted-foreground mt-2">
+                {translations.converter_rate_updated || "Rate updated:"} {result.updatedAt}
+              </p>
+            )}
           </div>
         )}
       </CardContent>
