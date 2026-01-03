@@ -71,6 +71,6 @@ class CurrencyFreaksProvider implements ExchangeRateProviderInterface
      */
     public function getName(): string
     {
-        return 'currencyfreaks.com';
+        return 'CurrencyFreaks.com';
     }
 }

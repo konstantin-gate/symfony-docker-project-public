@@ -87,6 +87,6 @@ class ExchangerateHostProvider implements ExchangeRateProviderInterface
      */
     public function getName(): string
     {
-        return 'exchangerate.host';
+        return 'ExchangeRate.host';
     }
 }
