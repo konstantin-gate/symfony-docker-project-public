@@ -53,6 +53,8 @@ settings:
 
 card:
     edit: Edit
+    save: Save
+    cancel: Cancel
     czk: Czech Koruna
     eur: Euro
     usd: US Dollar

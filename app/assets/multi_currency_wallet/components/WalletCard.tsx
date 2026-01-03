@@ -81,11 +81,11 @@ export function WalletCard({ currency, symbol, balance, icon, decimals, onBalanc
             <div className="flex gap-2">
               <Button size="sm" onClick={handleSave} className="flex-1 gradient-accent text-accent-foreground border-0">
                 <Check className="w-4 h-4 mr-1" />
-                Save
+                {translations['card_save'] || "Save"}
               </Button>
               <Button size="sm" variant="outline" onClick={handleCancel} className="flex-1">
                 <X className="w-4 h-4 mr-1" />
-                Cancel
+                {translations['card_cancel'] || "Cancel"}
               </Button>
             </div>
           </div>

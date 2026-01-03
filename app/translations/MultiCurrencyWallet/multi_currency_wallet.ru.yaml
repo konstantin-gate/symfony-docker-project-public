@@ -53,6 +53,8 @@ settings:
 
 card:
     edit: Редактировать
+    save: Сохранить
+    cancel: Отмена
     czk: чешская крона
     eur: евро
     usd: доллар США

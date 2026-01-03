@@ -53,6 +53,8 @@ settings:
 
 card:
     edit: Upravit
+    save: Uložit
+    cancel: Zrušit
     czk: česká koruna
     eur: euro
     usd: americký dolar
