@@ -10,6 +10,8 @@
         "ext-intl": "*",
         "ext-libxml": "*",
         "ext-simplexml": "*",
+        "ext-xmlreader": "*",
+        "brick/money": "^0.10.3",
         "doctrine/doctrine-bundle": "^3.1",
         "doctrine/doctrine-migrations-bundle": "^3.7",
         "doctrine/orm": "^3.5",
@@ -28,8 +30,7 @@
         "symfony/uid": "8.0.*",
         "symfony/validator": "8.0.*",
         "symfony/webpack-encore-bundle": "^2.4",
-        "symfony/yaml": "8.0.*",
-        "ext-xmlreader": "*"
+        "symfony/yaml": "8.0.*"
     },
     "config": {
         "allow-plugins": {
@@ -76,6 +77,11 @@
         "cs-fix": "php-cs-fixer fix",
         "cs-check": "php-cs-fixer fix --dry-run",
         "phpstan": "phpstan analyse",
+        "db-init": [
+            "php bin/console doctrine:database:create --if-not-exists",
+            "php bin/console doctrine:migrations:migrate --no-interaction",
+            "php bin/console doctrine:fixtures:load --no-interaction"
+        ],
         "qa": [
             "@cs-fix",
             "@phpstan"
@@ -91,6 +97,7 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^4.3",
         "fakerphp/faker": "^1.24",
         "friendsofphp/php-cs-fixer": "^3.91",
         "phpstan/phpstan": "^2.1",
