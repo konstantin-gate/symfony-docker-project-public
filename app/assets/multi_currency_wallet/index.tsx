@@ -37,6 +37,8 @@ try {
   console.error("Failed to parse initial balances", e);
 }
 
+const autoUpdateNeeded = rootElement?.getAttribute("data-auto-update-needed") === "true";
+
 const config = {
   basename,
   locale,
@@ -46,6 +48,7 @@ const config = {
   iconUrl,
   translations,
   initialBalances,
+  autoUpdateNeeded,
 };
 
 createRoot(rootElement!).render(<App config={config} />);

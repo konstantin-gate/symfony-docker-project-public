@@ -22,6 +22,7 @@
          data-back-text="{{ 'dashboard.back_to_home'|trans }}"
          data-icon-url="{{ asset('images/icon_multi_currency_wallet.png') }}"
          data-initial-balances="{{ initial_balances|json_encode|e('html_attr') }}"
+         data-auto-update-needed="{{ auto_update_needed ? 'true' : 'false' }}"
          data-translations="{{ {
              'menu_wallet': 'menu.wallet'|trans,
              'menu_converter': 'menu.converter'|trans,

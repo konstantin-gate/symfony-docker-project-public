@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Wallet, ArrowRightLeft, TrendingUp, Settings, RefreshCw, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,52 +9,60 @@ export function Header() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const { translations } = useAppConfig();
-
-  const navItems = [
-    { name: translations['menu_wallet'] || "Wallet", path: "/", icon: Wallet },
-    { name: translations['menu_converter'] || "Converter", path: "/converter", icon: ArrowRightLeft },
-    { name: translations['menu_rates_history'] || "Rates History", path: "/rates", icon: TrendingUp },
-    { name: translations['menu_settings'] || "Settings", path: "/settings", icon: Settings },
-  ];
-
-  const handleUpdateRates = async () => {
-    setIsUpdating(true);
-    try {
-      const response = await fetch('/api/multi-currency-wallet/update-rates', {
-        method: 'POST',
-      });
-      
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to update rates');
-      }
-
-      if (data.skipped) {
-        toast({
-          title: translations['menu_rates_skipped_title'] || "Rates Up to Date",
-          description: translations['menu_rates_skipped_desc'] || "Exchange rates were updated less than an hour ago.",
+  const { translations, autoUpdateNeeded } = useAppConfig();
+    const hasAutoUpdated = useRef(false);
+  
+    const navItems = [
+      { name: translations['menu_wallet'] || "Wallet", path: "/", icon: Wallet },
+      { name: translations['menu_converter'] || "Converter", path: "/converter", icon: ArrowRightLeft },
+      { name: translations['menu_rates_history'] || "Rates History", path: "/rates", icon: TrendingUp },
+      { name: translations['menu_settings'] || "Settings", path: "/settings", icon: Settings },
+    ];
+  
+    const handleUpdateRates = async () => {
+      setIsUpdating(true);
+      try {
+        const response = await fetch('/api/multi-currency-wallet/update-rates', {
+          method: 'POST',
         });
-      } else {
+        
+        const data = await response.json();
+  
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to update rates');
+        }
+  
+        if (data.skipped) {
+          toast({
+            title: translations['menu_rates_skipped_title'] || "Rates Up to Date",
+            description: translations['menu_rates_skipped_desc'] || "Exchange rates were updated less than an hour ago.",
+          });
+        } else {
+          toast({
+            title: translations['menu_rates_updated_title'] || "Rates Updated",
+            description: `${translations['menu_rates_updated_desc'] || "Exchange rates have been refreshed successfully."} (${data.provider})`,
+          });
+        }
+      } catch (error) {
+        console.error(error);
         toast({
-          title: translations['menu_rates_updated_title'] || "Rates Updated",
-          description: `${translations['menu_rates_updated_desc'] || "Exchange rates have been refreshed successfully."} (${data.provider})`,
+          title: translations['menu_rates_error_title'] || "Update Failed",
+          description: translations['menu_rates_error_desc'] || "Could not update exchange rates. Please try again later.",
+          variant: "destructive",
         });
+      } finally {
+        setIsUpdating(false);
       }
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: translations['menu_rates_error_title'] || "Update Failed",
-        description: translations['menu_rates_error_desc'] || "Could not update exchange rates. Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  return (
+    };
+  
+    useEffect(() => {
+      if (autoUpdateNeeded && !hasAutoUpdated.current) {
+        hasAutoUpdated.current = true;
+        handleUpdateRates();
+      }
+    }, [autoUpdateNeeded]);
+  
+    return (
     <header className="w-full">
       <div className="flex items-center justify-between h-16">
         {/* Desktop Navigation */}

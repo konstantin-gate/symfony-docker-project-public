@@ -16,6 +16,7 @@ export interface AppConfig {
     label: string;
     decimals: number;
   }>;
+  autoUpdateNeeded: boolean;
 }
 
 const AppConfigContext = createContext<AppConfig | undefined>(undefined);
