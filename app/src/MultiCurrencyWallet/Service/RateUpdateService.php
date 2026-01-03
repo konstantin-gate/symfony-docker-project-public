@@ -6,6 +6,7 @@ namespace App\MultiCurrencyWallet\Service;
 
 use App\MultiCurrencyWallet\Entity\ExchangeRate;
 use App\MultiCurrencyWallet\Enum\CurrencyEnum;
+use App\MultiCurrencyWallet\Repository\ExchangeRateRepository;
 use App\MultiCurrencyWallet\Service\RateProvider\Dto\RateDto;
 use App\MultiCurrencyWallet\Service\RateProvider\ExchangeRateProviderInterface;
 use Brick\Math\BigDecimal;
@@ -27,6 +28,7 @@ readonly class RateUpdateService
         #[AutowireIterator('app.rate_provider')]
         private iterable $providers,
         private EntityManagerInterface $entityManager,
+        private ExchangeRateRepository $exchangeRateRepository,
         private LoggerInterface $logger,
     ) {
     }
@@ -41,6 +43,17 @@ readonly class RateUpdateService
      */
     public function updateRates(): string
     {
+        $latestRate = $this->exchangeRateRepository->findLatestUpdate();
+
+        if ($latestRate) {
+            $lastUpdate = $latestRate->getFetchedAt();
+            $diff = (new \DateTimeImmutable())->getTimestamp() - $lastUpdate->getTimestamp();
+
+            if ($diff < 3600) {
+                return 'skipped';
+            }
+        }
+
         $lastException = null;
         $attempted = false;
 

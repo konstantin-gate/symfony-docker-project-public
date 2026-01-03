@@ -18,6 +18,8 @@ menu:
     rates_updated_desc: Курсы валют были успешно обновлены.
     rates_error_title: Ошибка обновления
     rates_error_desc: Не удалось обновить курсы валют. Пожалуйста, попробуйте позже.
+    rates_skipped_title: Курсы актуальны
+    rates_skipped_desc: Курсы валют обновлялись менее часа назад.
 
 converter:
     title: Конвертер валют

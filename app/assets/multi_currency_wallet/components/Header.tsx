@@ -31,10 +31,17 @@ export function Header() {
         throw new Error(data.error || 'Failed to update rates');
       }
 
-      toast({
-        title: translations['menu_rates_updated_title'] || "Rates Updated",
-        description: `${translations['menu_rates_updated_desc'] || "Exchange rates have been refreshed successfully."} (${data.provider})`,
-      });
+      if (data.skipped) {
+        toast({
+          title: translations['menu_rates_skipped_title'] || "Rates Up to Date",
+          description: translations['menu_rates_skipped_desc'] || "Exchange rates were updated less than an hour ago.",
+        });
+      } else {
+        toast({
+          title: translations['menu_rates_updated_title'] || "Rates Updated",
+          description: `${translations['menu_rates_updated_desc'] || "Exchange rates have been refreshed successfully."} (${data.provider})`,
+        });
+      }
     } catch (error) {
       console.error(error);
       toast({

@@ -29,6 +29,7 @@ class UpdateRatesController extends AbstractController
             return $this->json([
                 'success' => true,
                 'provider' => $providerName,
+                'skipped' => 'skipped' === $providerName,
             ]);
         } catch (\Exception $e) {
             return $this->json([

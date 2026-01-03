@@ -18,6 +18,8 @@ menu:
     rates_updated_desc: Exchange rates have been refreshed successfully.
     rates_error_title: Update Failed
     rates_error_desc: Could not update exchange rates. Please try again later.
+    rates_skipped_title: Rates Up to Date
+    rates_skipped_desc: Exchange rates were updated less than an hour ago.
 
 converter:
     title: Currency Converter

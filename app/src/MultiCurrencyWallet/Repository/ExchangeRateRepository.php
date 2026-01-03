@@ -39,4 +39,16 @@ class ExchangeRateRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * Najde záznam s nejnovějším datem stažení.
+     */
+    public function findLatestUpdate(): ?ExchangeRate
+    {
+        return $this->createQueryBuilder('e')
+            ->orderBy('e.fetchedAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

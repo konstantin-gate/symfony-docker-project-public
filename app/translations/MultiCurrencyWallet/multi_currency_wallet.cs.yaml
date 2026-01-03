@@ -18,6 +18,8 @@ menu:
     rates_updated_desc: Směnné kurzy byly úspěšně aktualizovány.
     rates_error_title: Aktualizace selhala
     rates_error_desc: Nepodařilo se aktualizovat směnné kurzy. Zkuste to prosím později.
+    rates_skipped_title: Kurzy jsou aktuální
+    rates_skipped_desc: Směnné kurzy byly aktualizovány před méně než hodinou.
 
 converter:
     title: Převodník měn
