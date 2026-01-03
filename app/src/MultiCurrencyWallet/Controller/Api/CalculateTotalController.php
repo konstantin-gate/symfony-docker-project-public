@@ -7,6 +7,8 @@ namespace App\MultiCurrencyWallet\Controller\Api;
 use App\MultiCurrencyWallet\Enum\CurrencyEnum;
 use App\MultiCurrencyWallet\Repository\BalanceRepository;
 use App\MultiCurrencyWallet\Service\CurrencyConverter;
+use Brick\Money\Exception\MoneyMismatchException;
+use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,6 +25,8 @@ class CalculateTotalController extends AbstractController
 
     /**
      * @throws \JsonException
+     * @throws MoneyMismatchException
+     * @throws UnknownCurrencyException
      */
     #[Route('/api/multi-currency-wallet/calculate-total', name: 'api_multi_currency_wallet_calculate_total', methods: ['POST'])]
     public function __invoke(Request $request): JsonResponse
@@ -55,8 +59,6 @@ class CalculateTotalController extends AbstractController
         return $this->json([
             'total' => (string) $total->getAmount(),
             'currency' => $targetCurrency->value,
-            // Pro formátování na frontendu můžeme vrátit i metadata, pokud by tam nebyla
-            // ale front už je má z Enum.
         ]);
     }
 }

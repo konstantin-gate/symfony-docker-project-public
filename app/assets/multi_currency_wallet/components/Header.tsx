@@ -18,15 +18,33 @@ export function Header() {
     { name: translations['menu_settings'] || "Settings", path: "/settings", icon: Settings },
   ];
 
-  const handleUpdateRates = () => {
+  const handleUpdateRates = async () => {
     setIsUpdating(true);
-    setTimeout(() => {
-      setIsUpdating(false);
-      toast({
-        title: "Rates Updated",
-        description: "Exchange rates have been refreshed successfully.",
+    try {
+      const response = await fetch('/api/multi-currency-wallet/update-rates', {
+        method: 'POST',
       });
-    }, 1500);
+      
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update rates');
+      }
+
+      toast({
+        title: translations['menu_rates_updated_title'] || "Rates Updated",
+        description: `${translations['menu_rates_updated_desc'] || "Exchange rates have been refreshed successfully."} (${data.provider})`,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: translations['menu_rates_error_title'] || "Update Failed",
+        description: translations['menu_rates_error_desc'] || "Could not update exchange rates. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (

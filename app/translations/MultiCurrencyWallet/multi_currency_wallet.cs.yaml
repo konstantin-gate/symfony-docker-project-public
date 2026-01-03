@@ -13,7 +13,11 @@ menu:
     rates_history: Historie kurzů
     settings: Nastavení
     update_rates: Aktualizovat kurzy
-    updating: Aktualizace...
+    updating: Aktualizuji...
+    rates_updated_title: Kurzy aktualizovány
+    rates_updated_desc: Směnné kurzy byly úspěšně aktualizovány.
+    rates_error_title: Aktualizace selhala
+    rates_error_desc: Nepodařilo se aktualizovat směnné kurzy. Zkuste to prosím později.
 
 converter:
     title: Převodník měn

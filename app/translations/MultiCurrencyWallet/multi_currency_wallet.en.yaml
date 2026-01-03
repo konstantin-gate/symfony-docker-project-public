@@ -14,6 +14,10 @@ menu:
     settings: Settings
     update_rates: Update rates
     updating: Updating...
+    rates_updated_title: Rates Updated
+    rates_updated_desc: Exchange rates have been refreshed successfully.
+    rates_error_title: Update Failed
+    rates_error_desc: Could not update exchange rates. Please try again later.
 
 converter:
     title: Currency Converter

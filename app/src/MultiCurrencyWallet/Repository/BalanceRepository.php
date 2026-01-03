@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\MultiCurrencyWallet\Repository;
 
 use App\MultiCurrencyWallet\Entity\Balance;
