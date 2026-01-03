@@ -8,6 +8,14 @@ export interface AppConfig {
   backText: string;
   iconUrl: string;
   translations: Record<string, string>;
+  initialBalances: Array<{
+    code: string;
+    amount: number;
+    symbol: string;
+    icon: string;
+    label: string;
+    decimals: number;
+  }>;
 }
 
 const AppConfigContext = createContext<AppConfig | undefined>(undefined);

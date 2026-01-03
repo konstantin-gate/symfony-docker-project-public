@@ -19,16 +19,25 @@ class WalletFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         // 1. Vytvoření zůstatků pro všechny podporované měny
+        $displayOrderMap = [
+            CurrencyEnum::CZK->value => 1,
+            CurrencyEnum::EUR->value => 2,
+            CurrencyEnum::USD->value => 3,
+            CurrencyEnum::RUB->value => 4,
+            CurrencyEnum::JPY->value => 5,
+            CurrencyEnum::BTC->value => 6,
+        ];
+
         foreach (CurrencyEnum::cases() as $currency) {
             // Náhodná částka mezi 100 a 5000 (pro kryptoměny menší, pro CZK/RUB větší)
-            $randomAmount = match($currency) {
-                CurrencyEnum::BTC => (string) (mt_rand(1, 50) / 1000), // 0.001 - 0.050 BTC
-                CurrencyEnum::ETH => (string) (mt_rand(1, 100) / 100),  // 0.01 - 1.00 ETH
-                CurrencyEnum::CZK, CurrencyEnum::RUB => (string) mt_rand(5000, 50000),
-                default => (string) mt_rand(500, 5000),
+            $randomAmount = match ($currency) {
+                CurrencyEnum::BTC => (string) (random_int(1, 50) / 1000), // 0.001 - 0.050 BTC
+                CurrencyEnum::CZK, CurrencyEnum::RUB, CurrencyEnum::JPY => (string) random_int(5000, 50000),
+                default => (string) random_int(500, 5000),
             };
 
             $balance = new Balance($currency, $randomAmount);
+            $balance->setDisplayOrder($displayOrderMap[$currency->value]);
             $manager->persist($balance);
         }
 
@@ -39,7 +48,7 @@ class WalletFixtures extends Fixture
             'EUR' => '0.92',
             'RUB' => '90.00',
             'BTC' => '0.0000105', // 1 USD = 0.0000105 BTC (cca 95k USD za BTC)
-            'ETH' => '0.00037',   // 1 USD = 0.00037 ETH (cca 2.7k USD za ETH)
+            'JPY' => '150.00',
             'USD' => '1.00',
         ];
 

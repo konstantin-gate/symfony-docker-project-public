@@ -20,6 +20,23 @@ try {
   console.error("Failed to parse translations", e);
 }
 
+let initialBalances: Array<{
+  code: string;
+  amount: number;
+  symbol: string;
+  icon: string;
+  label: string;
+  decimals: number;
+}> = [];
+try {
+  const balancesAttr = rootElement?.getAttribute("data-initial-balances");
+  if (balancesAttr) {
+    initialBalances = JSON.parse(balancesAttr);
+  }
+} catch (e) {
+  console.error("Failed to parse initial balances", e);
+}
+
 const config = {
   basename,
   locale,
@@ -28,6 +45,7 @@ const config = {
   backText,
   iconUrl,
   translations,
+  initialBalances,
 };
 
 createRoot(rootElement!).render(<App config={config} />);

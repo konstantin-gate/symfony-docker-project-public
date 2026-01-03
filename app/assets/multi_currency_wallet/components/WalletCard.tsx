@@ -11,10 +11,11 @@ interface WalletCardProps {
   symbol: string;
   balance: number;
   icon: string;
+  decimals: number;
   onBalanceChange: (newBalance: number) => void;
 }
 
-export function WalletCard({ currency, symbol, balance, icon, onBalanceChange }: WalletCardProps) {
+export function WalletCard({ currency, symbol, balance, icon, decimals, onBalanceChange }: WalletCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(balance.toString());
   const { translations } = useAppConfig();
@@ -31,11 +32,11 @@ export function WalletCard({ currency, symbol, balance, icon, onBalanceChange }:
   };
 
   const formatBalance = (value: number) => {
-    if (currency === "BTC") {
-      return value.toFixed(8);
-    }
-    return value.toLocaleString("cs-CZ", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return value.toLocaleString("cs-CZ", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   };
+
+  // Calculate step based on decimals (e.g., 2 decimals -> 0.01, 0 decimals -> 1, 8 decimals -> 0.00000001)
+  const step = decimals === 0 ? "1" : `0.${"0".repeat(decimals - 1)}1`;
 
   return (
     <Card className="card-hover bg-card border border-border">
@@ -75,7 +76,7 @@ export function WalletCard({ currency, symbol, balance, icon, onBalanceChange }:
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
               className="text-lg font-bold"
-              step={currency === "BTC" ? "0.00000001" : "0.01"}
+              step={step}
             />
             <div className="flex gap-2">
               <Button size="sm" onClick={handleSave} className="flex-1 gradient-accent text-accent-foreground border-0">

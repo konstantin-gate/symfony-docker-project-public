@@ -34,6 +34,9 @@ class Balance
     #[ORM\Column(type: 'string', length: 64)]
     private string $amount;
 
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $displayOrder = 0;
+
     public function __construct(CurrencyEnum $currency, string $amount = '0')
     {
         $this->currency = $currency;
@@ -48,6 +51,18 @@ class Balance
     public function getCurrency(): CurrencyEnum
     {
         return $this->currency;
+    }
+
+    public function getDisplayOrder(): int
+    {
+        return $this->displayOrder;
+    }
+
+    public function setDisplayOrder(int $displayOrder): self
+    {
+        $this->displayOrder = $displayOrder;
+
+        return $this;
     }
 
     /**
