@@ -72,7 +72,7 @@ class Balance
      */
     public function getMoney(): Money
     {
-        return Money::of($this->amount, $this->currency->value);
+        return Money::of($this->amount, $this->currency->toBrickCurrency());
     }
 
     /**

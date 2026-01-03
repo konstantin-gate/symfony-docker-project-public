@@ -2,6 +2,9 @@
 
 namespace App\MultiCurrencyWallet\Enum;
 
+use Brick\Money\Currency;
+use Brick\Money\Exception\UnknownCurrencyException;
+
 /**
  * Výčet podporovaných měn.
  */
@@ -50,5 +53,17 @@ enum CurrencyEnum: string
             self::BTC => 8,
             default => 2,
         };
+    }
+
+    public function toBrickCurrency(): Currency
+    {
+        try {
+            return Currency::of($this->value);
+        } catch (UnknownCurrencyException $e) {
+            return match ($this) {
+                self::BTC => new Currency('BTC', 0, 'Bitcoin', 8),
+                default => throw $e,
+            };
+        }
     }
 }

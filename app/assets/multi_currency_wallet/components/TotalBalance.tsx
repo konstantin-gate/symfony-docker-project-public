@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calculator } from "lucide-react";
+import { Calculator, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAppConfig } from "@/context/AppConfigContext";
+import { toast } from "sonner";
 
 interface BalanceData {
   [key: string]: number;
@@ -19,52 +20,51 @@ interface TotalBalanceProps {
   balances: BalanceData;
 }
 
-const currencies = [
-  { code: "CZK", symbol: "Kč", name: "Czech Koruna" },
-  { code: "EUR", symbol: "€", name: "Euro" },
-  { code: "USD", symbol: "$", name: "US Dollar" },
-  { code: "RUB", symbol: "₽", name: "Russian Ruble" },
-  { code: "JPY", symbol: "¥", name: "Japanese Yen" },
-  { code: "BTC", symbol: "₿", name: "Bitcoin" },
-];
-
-// Mock exchange rates (relative to USD)
-const rates: Record<string, number> = {
-  USD: 1,
-  EUR: 0.85,
-  CZK: 22.5,
-  RUB: 89.5,
-  JPY: 148.5,
-  BTC: 0.000029,
-};
-
 export function TotalBalance({ balances }: TotalBalanceProps) {
   const [targetCurrency, setTargetCurrency] = useState("CZK");
   const [total, setTotal] = useState<number | null>(null);
-  const { translations } = useAppConfig();
+  const [isLoading, setIsLoading] = useState(false);
+  const { translations, initialBalances } = useAppConfig();
 
-  const handleCalculate = () => {
-    let totalInUsd = 0;
+  const handleCalculate = async (currency: string = targetCurrency) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/multi-currency-wallet/calculate-total', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ targetCurrency: currency }),
+      });
 
-    Object.entries(balances).forEach(([currency, balance]) => {
-      const rate = rates[currency] || 1;
-      totalInUsd += balance / rate;
-    });
+      if (!response.ok) {
+        throw new Error('Failed to calculate total');
+      }
 
-    const targetRate = rates[targetCurrency] || 1;
-    const totalInTarget = totalInUsd * targetRate;
-    setTotal(totalInTarget);
+      const data = await response.json();
+      setTotal(parseFloat(data.total));
+    } catch (error) {
+      toast.error("Calculation failed. Please try again.");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCurrencyChange = (newCurrency: string) => {
+    setTargetCurrency(newCurrency);
+    // Automatically recalculate when currency changes
+    handleCalculate(newCurrency);
   };
 
   const formatTotal = (value: number) => {
-    if (targetCurrency === "BTC") {
-      return value.toFixed(8);
-    }
-    return value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const targetMeta = initialBalances.find(b => b.code === targetCurrency);
+    const decimals = targetMeta ? targetMeta.decimals : 2;
+    return value.toLocaleString("cs-CZ", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   };
 
   const getSymbol = () => {
-    return currencies.find(c => c.code === targetCurrency)?.symbol || "";
+    return initialBalances.find(b => b.code === targetCurrency)?.symbol || "";
   };
 
   return (
@@ -81,14 +81,14 @@ export function TotalBalance({ balances }: TotalBalanceProps) {
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
               {translations['total_balance_target_currency'] || "Target Currency"}
             </label>
-            <Select value={targetCurrency} onValueChange={setTargetCurrency}>
+            <Select value={targetCurrency} onValueChange={handleCurrencyChange}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-card border border-border">
-                {currencies.map((c) => (
-                  <SelectItem key={c.code} value={c.code}>
-                    {c.symbol} {c.code} - {translations[`currency_${c.code.toLowerCase()}`] || c.name}
+                {initialBalances.map((item) => (
+                  <SelectItem key={item.code} value={item.code}>
+                    {item.symbol} {item.code} - {item.label || item.code}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -96,9 +96,11 @@ export function TotalBalance({ balances }: TotalBalanceProps) {
           </div>
 
           <Button
-            onClick={handleCalculate}
+            onClick={() => handleCalculate()}
+            disabled={isLoading}
             className="w-full md:w-auto gradient-accent text-accent-foreground border-0 px-8 h-10"
           >
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
             {translations['total_balance_calculate'] || "Calculate Total"}
           </Button>
 

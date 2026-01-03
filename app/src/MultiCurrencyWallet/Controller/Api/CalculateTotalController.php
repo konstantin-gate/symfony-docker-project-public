@@ -1,0 +1,62 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\MultiCurrencyWallet\Controller\Api;
+
+use App\MultiCurrencyWallet\Enum\CurrencyEnum;
+use App\MultiCurrencyWallet\Repository\BalanceRepository;
+use App\MultiCurrencyWallet\Service\CurrencyConverter;
+use Brick\Money\Money;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
+
+class CalculateTotalController extends AbstractController
+{
+    public function __construct(
+        private readonly BalanceRepository $balanceRepository,
+        private readonly CurrencyConverter $currencyConverter,
+    ) {
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    #[Route('/api/multi-currency-wallet/calculate-total', name: 'api_multi_currency_wallet_calculate_total', methods: ['POST'])]
+    public function __invoke(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        $targetCurrencyCode = $data['targetCurrency'] ?? null;
+
+        if (!$targetCurrencyCode || !CurrencyEnum::tryFrom($targetCurrencyCode)) {
+            return $this->json(['error' => 'Invalid target currency'], 400);
+        }
+
+        $targetCurrency = CurrencyEnum::from($targetCurrencyCode);
+
+        // 1. Načíst všechny zůstatky z DB
+        $balances = $this->balanceRepository->findAll();
+
+        // 2. Inicializovat sumu 0 v cílové měně
+        $total = Money::zero($targetCurrency->toBrickCurrency());
+
+        // 3. Projít a sečíst
+        foreach ($balances as $balance) {
+            // Konverze Money objektu z Balance entity
+            $converted = $this->currencyConverter->convert(
+                $balance->getMoney(),
+                $targetCurrency
+            );
+            $total = $total->plus($converted);
+        }
+
+        return $this->json([
+            'total' => (string) $total->getAmount(),
+            'currency' => $targetCurrency->value,
+            // Pro formátování na frontendu můžeme vrátit i metadata, pokud by tam nebyla
+            // ale front už je má z Enum.
+        ]);
+    }
+}

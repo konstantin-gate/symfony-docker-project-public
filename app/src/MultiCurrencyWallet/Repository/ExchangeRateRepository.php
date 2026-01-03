@@ -7,6 +7,7 @@ namespace App\MultiCurrencyWallet\Repository;
 use App\MultiCurrencyWallet\Entity\ExchangeRate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\MultiCurrencyWallet\Enum\CurrencyEnum;
 
 /**
  * @extends ServiceEntityRepository<ExchangeRate>
@@ -23,5 +24,19 @@ class ExchangeRateRepository extends ServiceEntityRepository
         parent::__construct($registry, ExchangeRate::class);
     }
 
-    // Zde mohou být metody pro hledání např. nejnovějšího kurzu pro daný pár.
+    /**
+     * Vyhledá nejnovější směnný kurz pro daný pár měn bez ohledu na směr (Base/Target).
+     */
+    public function findLatestExchangeRate(CurrencyEnum $currencyA, CurrencyEnum $currencyB): ?ExchangeRate
+    {
+        return $this->createQueryBuilder('e')
+            ->where('(e.baseCurrency = :currencyA AND e.targetCurrency = :currencyB)')
+            ->orWhere('(e.baseCurrency = :currencyB AND e.targetCurrency = :currencyA)')
+            ->setParameter('currencyA', $currencyA)
+            ->setParameter('currencyB', $currencyB)
+            ->orderBy('e.fetchedAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
