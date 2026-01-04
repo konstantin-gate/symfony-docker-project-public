@@ -13,6 +13,10 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * Entita reprezentující zůstatek v peněžence pro konkrétní měnu.
+ * Uchovává informaci o měně, částce (jako řetězec pro zachování přesnosti) a pořadí zobrazení v uživatelském rozhraní.
+ */
 #[ORM\Entity(repositoryClass: BalanceRepository::class)]
 #[ORM\Table(name: 'wallet_balance')]
 #[ORM\UniqueConstraint(name: 'unique_currency_idx', columns: ['currency'])]

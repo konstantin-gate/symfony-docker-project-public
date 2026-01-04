@@ -11,6 +11,11 @@ use Brick\Math\RoundingMode;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 
+/**
+ * Služba pro převod peněžních částek mezi různými měnami.
+ * Zajišťuje výpočet výsledné částky na základě aktuálních nebo historických směnných kurzů uložených v databázi.
+ * Podporuje přímé převody, inverzní kurzy i křížové převody přes referenční měnu (USD).
+ */
 readonly class CurrencyConverter
 {
     public function __construct(

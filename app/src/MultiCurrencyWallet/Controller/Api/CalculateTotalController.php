@@ -15,6 +15,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * API kontroler pro výpočet celkové hodnoty peněženky.
+ * Sečte všechny zůstatky v peněžence a převede je na zvolenou cílovou měnu.
+ */
 class CalculateTotalController extends AbstractController
 {
     public function __construct(
@@ -24,6 +28,8 @@ class CalculateTotalController extends AbstractController
     }
 
     /**
+     * Vypočítá celkovou hodnotu peněženky v požadované měně.
+     *
      * @throws \JsonException
      * @throws MoneyMismatchException
      * @throws UnknownCurrencyException

@@ -26,6 +26,11 @@ class ConvertController extends AbstractController
     ) {
     }
 
+    /**
+     * Zpracovává požadavek na převod měn.
+     * Přijímá zdrojovou a cílovou měnu spolu s částkou, provádí výpočet pomocí služby CurrencyConverter
+     * a vrací výsledek včetně informace o čase poslední aktualizace kurzů.
+     */
     #[Route('/api/multi-currency-wallet/convert', name: 'api_multi_currency_wallet_convert', methods: ['POST'])]
     public function __invoke(Request $request): JsonResponse
     {

@@ -20,6 +20,11 @@ class UpdateRatesController extends AbstractController
     ) {
     }
 
+    /**
+     * Zpracovává požadavek na manuální aktualizaci směnných kurzů.
+     * Vyvolá proces synchronizace dat prostřednictvím RateUpdateService a vrací výsledek operace
+     * včetně informace o použitém poskytovateli nebo o tom, zda byla aktualizace přeskočena.
+     */
     #[Route('/api/multi-currency-wallet/update-rates', name: 'api_multi_currency_wallet_update_rates', methods: ['POST'])]
     public function __invoke(): JsonResponse
     {
