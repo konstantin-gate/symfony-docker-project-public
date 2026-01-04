@@ -1,0 +1,119 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\MultiCurrencyWallet\Integration\Api;
+
+use App\MultiCurrencyWallet\Entity\ExchangeRate;
+use App\MultiCurrencyWallet\Entity\WalletConfiguration;
+use App\MultiCurrencyWallet\Enum\CurrencyEnum;
+use Brick\Math\BigDecimal;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+/**
+ * Integrační testy pro API endpointy spravující směnné kurzy.
+ * Ověřuje funkčnost aktualizace kurzů (včetně logiky přeskakování) a získávání referenčních kurzů.
+ */
+class RatesApiTest extends WebTestCase
+{
+    /**
+     * Testuje, že aktualizace kurzů je přeskočena, pokud jsou v databázi čerstvá data (méně než hodinu stará).
+     *
+     * @throws \JsonException
+     */
+    public function testUpdateRatesSkippedIfFresh(): void
+    {
+        $client = self::createClient();
+        $container = $client->getContainer();
+        /** @var EntityManagerInterface $em */
+        $em = $container->get(EntityManagerInterface::class);
+
+        // Vyčištění tabulky kurzů
+        $em->createQuery('DELETE FROM App\MultiCurrencyWallet\Entity\ExchangeRate')->execute();
+
+        // 1. Vložíme "čerstvý" kurz (stáří 5 minut)
+        $rate = new ExchangeRate(
+            CurrencyEnum::USD,
+            CurrencyEnum::EUR,
+            BigDecimal::of('0.85'),
+            new \DateTimeImmutable('-5 minutes')
+        );
+        $em->persist($rate);
+        $em->flush();
+
+        // 2. Voláme API endpoint pro aktualizaci
+        $client->request('POST', '/api/multi-currency-wallet/update-rates');
+
+        self::assertResponseIsSuccessful();
+        $data = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+
+        // Očekáváme, že služba vrátí status 'skipped'
+        $this->assertTrue($data['success']);
+        $this->assertTrue($data['skipped']);
+        $this->assertEquals('skipped', $data['provider']);
+    }
+
+    /**
+     * Testuje získání seznamu referenčních kurzů.
+     * Ověřuje, že API vrací správně vypočítané křížové kurzy na základě nastavené hlavní měny.
+     *
+     * @throws \JsonException
+     */
+    public function testGetReferenceRates(): void
+    {
+        $client = self::createClient();
+        $container = $client->getContainer();
+        /** @var EntityManagerInterface $em */
+        $em = $container->get(EntityManagerInterface::class);
+
+        // Vyčištění databáze
+        $em->createQuery('DELETE FROM App\MultiCurrencyWallet\Entity\ExchangeRate')->execute();
+        $em->createQuery('DELETE FROM App\MultiCurrencyWallet\Entity\WalletConfiguration')->execute();
+
+        // 1. Nastavení konfigurace (Hlavní měna = USD)
+        $config = new WalletConfiguration();
+        $config->setMainCurrency(CurrencyEnum::USD);
+        $em->persist($config);
+
+        // 2. Příprava testovacích kurzů
+        // USD -> CZK = 22.50
+        $rateCzk = new ExchangeRate(CurrencyEnum::USD, CurrencyEnum::CZK, BigDecimal::of('22.50'), new \DateTimeImmutable());
+        $em->persist($rateCzk);
+
+        // USD -> EUR = 0.85
+        $rateEur = new ExchangeRate(CurrencyEnum::USD, CurrencyEnum::EUR, BigDecimal::of('0.85'), new \DateTimeImmutable());
+        $em->persist($rateEur);
+
+        $em->flush();
+
+        // 3. Volání API endpointu
+        $client->request('GET', '/api/multi-currency-wallet/reference-rates');
+
+        self::assertResponseIsSuccessful();
+        $data = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+
+        $this->assertTrue($data['success']);
+        $this->assertIsArray($data['rates']);
+
+        // Očekáváme, že v odpovědi bude pár USD -> CZK
+        // ReferenceRateService vrací pole s klíči 'source_amount', 'source_currency', 'target_amount', 'target_currency', 'rate'
+        $czkFound = false;
+
+        foreach ($data['rates'] as $row) {
+            if ($row['source_currency'] === 'USD' && $row['target_currency'] === 'CZK') {
+                $czkFound = true;
+                // Smart Amount pro USD je 1.00
+                $this->assertEquals('1.00', $row['source_amount']);
+
+                // Kurz: 22.50
+                $this->assertEqualsWithDelta(22.5, (float) $row['rate'], 0.0001);
+
+                // Cílová částka: 1 * 22.50 = 22.50
+                $this->assertEqualsWithDelta(22.5, (float) $row['target_amount'], 0.0001);
+            }
+        }
+
+        $this->assertTrue($czkFound, 'Referenční kurz USD -> CZK nebyl nalezen');
+    }
+}
