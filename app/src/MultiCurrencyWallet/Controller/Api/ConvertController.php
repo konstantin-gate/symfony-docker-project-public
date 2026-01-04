@@ -51,7 +51,7 @@ class ConvertController extends AbstractController
             $latestRate = $this->exchangeRateRepository->findLatestUpdate();
             $updatedAt = $latestRate?->getFetchedAt()
                 ->setTimezone(new \DateTimeZone('Europe/Prague'))
-                ->format('d M Y H:i');
+                ->format(\DateTimeInterface::ATOM);
 
             return $this->json([
                 'success' => true,

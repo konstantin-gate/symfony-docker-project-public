@@ -38,10 +38,11 @@ quick_tips:
     supported_tip: Jsou podporovány všechny hlavní fiat měny a Bitcoin
 
 rates:
-    title: Historie směnných kurzů
-    pair: Měnový pár
+    title: Referenční směnné kurzy
+    source: Zdrojová částka
+    target: Výsledek
     rate: Kurz
-    updated: Naposledy aktualizováno
+    updated: Aktualizováno
 
 settings:
     title: Nastavení

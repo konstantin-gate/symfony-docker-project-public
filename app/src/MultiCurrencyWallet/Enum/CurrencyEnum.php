@@ -19,6 +19,9 @@ enum CurrencyEnum: string
     case BTC = 'BTC';
     case JPY = 'JPY';
 
+    /**
+     * Vrátí symbol měny.
+     */
     public function getSymbol(): string
     {
         return match ($this) {
@@ -31,6 +34,9 @@ enum CurrencyEnum: string
         };
     }
 
+    /**
+     * Vrátí ikonu (emoji vlajky nebo symbol) měny.
+     */
     public function getIcon(): string
     {
         return match ($this) {
@@ -43,11 +49,17 @@ enum CurrencyEnum: string
         };
     }
 
+    /**
+     * Vrátí klíč pro překlad názvu měny.
+     */
     public function getTranslationKey(): string
     {
         return 'card.' . strtolower($this->value);
     }
 
+    /**
+     * Vrátí počet desetinných míst používaných pro danou měnu.
+     */
     public function getDecimals(): int
     {
         return match ($this) {
@@ -57,6 +69,12 @@ enum CurrencyEnum: string
         };
     }
 
+    /**
+     * Převede hodnotu výčtu na objekt měny z knihovny brick/money.
+     * Zajišťuje podporu i pro ne-ISO měny (např. Bitcoin), které knihovna standardně nezná.
+     *
+     * @throws UnknownCurrencyException
+     */
     public function toBrickCurrency(): Currency
     {
         try {

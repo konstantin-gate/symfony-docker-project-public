@@ -38,8 +38,9 @@ quick_tips:
     supported_tip: All major fiat currencies and Bitcoin are supported
 
 rates:
-    title: Exchange Rates History
-    pair: Currency Pair
+    title: Reference Exchange Rates
+    source: Source Amount
+    target: Result
     rate: Rate
     updated: Last Updated
 

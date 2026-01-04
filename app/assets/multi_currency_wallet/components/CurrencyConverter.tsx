@@ -14,7 +14,7 @@ import { useAppConfig } from "@/context/AppConfigContext";
 import { toast } from "sonner";
 
 export function CurrencyConverter() {
-  const { translations, initialBalances } = useAppConfig();
+  const { translations, initialBalances, locale } = useAppConfig();
   const [amount, setAmount] = useState<string>("100");
   const [fromCurrency, setFromCurrency] = useState("USD");
   const [toCurrency, setToCurrency] = useState("EUR");
@@ -66,6 +66,21 @@ export function CurrencyConverter() {
       minimumFractionDigits: decimals, 
       maximumFractionDigits: decimals 
     });
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat(locale, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(date);
+    } catch (e) {
+      return dateString;
+    }
   };
 
   return (
@@ -156,7 +171,7 @@ export function CurrencyConverter() {
             </p>
             {result.updatedAt && (
               <p className="text-sm text-muted-foreground mt-2">
-                {translations.converter_rate_updated || "Rate updated:"} {result.updatedAt}
+                {translations.converter_rate_updated || "Rate updated:"} {formatDate(result.updatedAt)}
               </p>
             )}
           </div>
