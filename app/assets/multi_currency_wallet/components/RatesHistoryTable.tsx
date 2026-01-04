@@ -1,4 +1,4 @@
-import { TrendingUp, Loader2 } from "lucide-react";
+import { TrendingUp, Loader2, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -9,6 +9,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAppConfig } from "@/context/AppConfigContext";
 
 interface ReferenceRate {
@@ -23,12 +30,40 @@ interface ReferenceRate {
 export function RatesHistoryTable() {
   const { translations, initialBalances, locale } = useAppConfig();
   const [rates, setRates] = useState<ReferenceRate[]>([]);
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>("latest");
   const [isLoading, setIsLoading] = useState(true);
+  const [isRatesLoading, setIsRatesLoading] = useState(false);
 
+  // Načtení dostupných dat při montování
+  useEffect(() => {
+    const fetchDates = async () => {
+      try {
+        const response = await fetch('/api/multi-currency-wallet/available-dates');
+        const data = await response.json();
+        if (data.success && data.dates.length > 0) {
+          setAvailableDates(data.dates);
+        }
+      } catch (error) {
+        console.error('Error fetching available dates:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDates();
+  }, []);
+
+  // Načtení kurzů při změně vybraného data
   useEffect(() => {
     const fetchRates = async () => {
+      setIsRatesLoading(true);
       try {
-        const response = await fetch('/api/multi-currency-wallet/reference-rates');
+        const url = selectedDate && selectedDate !== "latest" 
+          ? `/api/multi-currency-wallet/reference-rates?date=${selectedDate}`
+          : '/api/multi-currency-wallet/reference-rates';
+          
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error('Failed to fetch rates');
         }
@@ -39,16 +74,18 @@ export function RatesHistoryTable() {
       } catch (error) {
         console.error('Error fetching reference rates:', error);
       } finally {
-        setIsLoading(false);
+        setIsRatesLoading(false);
       }
     };
 
-    fetchRates();
-  }, []);
+    if (!isLoading) {
+      fetchRates();
+    }
+  }, [selectedDate, isLoading]);
 
   const formatAmount = (amount: string, currencyCode: string, isSource: boolean = false) => {
     const value = parseFloat(amount);
-    
+
     // Pro zdrojovou částku: pokud je to celé číslo, zobrazíme ho bez desetinných míst
     if (isSource && Number.isInteger(value)) {
       return value.toString();
@@ -82,16 +119,62 @@ export function RatesHistoryTable() {
     }
   };
 
+  const formatShortDate = (dateString: string) => {
+    if (dateString === "latest") return translations.rates_latest || "Latest";
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat(locale, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }).format(date);
+    } catch (e) {
+      return dateString;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Card className="bg-card border border-border">
+        <CardContent className="h-64 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="bg-card border border-border">
-      <CardHeader>
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <CardTitle className="text-xl font-semibold text-foreground flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-accent" />
           {translations.rates_title || "Reference Exchange Rates"}
         </CardTitle>
+
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Calendar className="w-4 h-4 text-muted-foreground" />
+          <Select value={selectedDate} onValueChange={setSelectedDate}>
+            <SelectTrigger className="w-full sm:w-[200px] bg-background">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-card border border-border">
+              <SelectItem value="latest">{translations.rates_latest || "Latest"}</SelectItem>
+              {availableDates.map((date) => (
+                <SelectItem key={date} value={date}>
+                  {formatShortDate(date)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="rounded-lg border border-border overflow-hidden">
+        <div className="rounded-lg border border-border overflow-hidden relative">
+          {isRatesLoading && (
+            <div className="absolute inset-0 bg-background/50 backdrop-blur-[1px] flex items-center justify-center z-10">
+              <Loader2 className="w-8 h-8 animate-spin text-accent" />
+            </div>
+          )}
           <Table>
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
@@ -102,16 +185,7 @@ export function RatesHistoryTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
-                    <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>Loading rates...</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : rates.length > 0 ? (
+              {rates.length > 0 ? (
                 rates.map((row, index) => (
                   <TableRow key={index} className="hover:bg-secondary/50">
                     <TableCell className="font-medium text-foreground">

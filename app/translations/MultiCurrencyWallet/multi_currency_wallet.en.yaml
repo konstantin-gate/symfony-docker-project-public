@@ -43,6 +43,7 @@ rates:
     target: Result
     rate: Rate
     updated: Last Updated
+    latest: Latest
 
 settings:
     title: Settings

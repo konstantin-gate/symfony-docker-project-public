@@ -51,4 +51,42 @@ class ExchangeRateRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * Vrátí seznam všech unikátních dnů, ve kterých proběhla aktualizace kurzů.
+     * Využívá vlastní DQL funkci PG_DATE, která v PostgreSQL provádí přetypování (CAST)
+     * timestampu na DATE, což umožňuje získat unikátní kalendářní dny přímo v SQL dotazu.
+     *
+     * @return array<string> Seznam unikátních dat ve formátu Y-m-d
+     */
+    public function getAvailableUpdateDates(): array
+    {
+        $results = $this->createQueryBuilder('e')
+            ->select('DISTINCT PG_DATE(e.fetchedAt) as date')
+            ->orderBy('date', 'DESC')
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_column($results, 'date');
+    }
+
+    /**
+     * Vyhledá směnný kurz pro daný pár měn k určitému datu (poslední známý k danému dni).
+     */
+    public function findExchangeRateAtDate(CurrencyEnum $currencyA, CurrencyEnum $currencyB, \DateTimeInterface $date): ?ExchangeRate
+    {
+        // Nastavíme konec dne pro vyhledávání
+        $endOfDay = \DateTimeImmutable::createFromInterface($date)->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('e')
+            ->where('((e.baseCurrency = :currencyA AND e.targetCurrency = :currencyB) OR (e.baseCurrency = :currencyB AND e.targetCurrency = :currencyA))')
+            ->andWhere('e.fetchedAt <= :date')
+            ->setParameter('currencyA', $currencyA)
+            ->setParameter('currencyB', $currencyB)
+            ->setParameter('date', $endOfDay)
+            ->orderBy('e.fetchedAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

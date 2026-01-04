@@ -43,6 +43,7 @@ rates:
     target: Výsledek
     rate: Kurz
     updated: Aktualizováno
+    latest: Nejaktuálnější
 
 settings:
     title: Nastavení

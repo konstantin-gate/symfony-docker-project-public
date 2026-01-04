@@ -43,6 +43,7 @@ rates:
     target: Результат
     rate: Курс
     updated: Обновлено
+    latest: Самые актуальные
 
 settings:
     title: Настройки

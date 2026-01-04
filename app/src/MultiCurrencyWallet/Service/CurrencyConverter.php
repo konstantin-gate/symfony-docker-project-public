@@ -35,7 +35,7 @@ readonly class CurrencyConverter
      *
      * @throws UnknownCurrencyException
      */
-    public function convert(Money $amount, CurrencyEnum $targetCurrency): Money
+    public function convert(Money $amount, CurrencyEnum $targetCurrency, ?\DateTimeInterface $atDate = null): Money
     {
         if ($amount->getCurrency()->getCurrencyCode() === $targetCurrency->value) {
             return $amount;
@@ -44,7 +44,7 @@ readonly class CurrencyConverter
         $sourceCurrency = CurrencyEnum::from($amount->getCurrency()->getCurrencyCode());
 
         // Zkusíme najít kurz (přímo nebo přes USD)
-        $rate = $this->getExchangeRate($sourceCurrency, $targetCurrency);
+        $rate = $this->getExchangeRate($sourceCurrency, $targetCurrency, $atDate);
 
         if (!$rate) {
             throw new \RuntimeException(\sprintf('Nenalezen směnný kurz pro převod %s -> %s', $sourceCurrency->value, $targetCurrency->value));
@@ -60,10 +60,10 @@ readonly class CurrencyConverter
      * 1. Hledá přímý pár (nebo inverzní) v DB.
      * 2. Pokud nenajde, zkusí převod přes referenční měnu (USD).
      */
-    private function getExchangeRate(CurrencyEnum $source, CurrencyEnum $target): ?BigDecimal
+    private function getExchangeRate(CurrencyEnum $source, CurrencyEnum $target, ?\DateTimeInterface $atDate = null): ?BigDecimal
     {
         // 1. Přímý (nebo inverzní) kurz z DB
-        $directRate = $this->findRateInDb($source, $target);
+        $directRate = $this->findRateInDb($source, $target, $atDate);
 
         if ($directRate) {
             return $directRate;
@@ -71,8 +71,8 @@ readonly class CurrencyConverter
 
         // 2. Pokud se nejedná o převod s USD, zkusíme pivot přes USD
         if ($source !== CurrencyEnum::USD && $target !== CurrencyEnum::USD) {
-            $sourceToUsd = $this->findRateInDb($source, CurrencyEnum::USD);
-            $usdToTarget = $this->findRateInDb(CurrencyEnum::USD, $target);
+            $sourceToUsd = $this->findRateInDb($source, CurrencyEnum::USD, $atDate);
+            $usdToTarget = $this->findRateInDb(CurrencyEnum::USD, $target, $atDate);
 
             if ($sourceToUsd && $usdToTarget) {
                 // Rate = (Source->USD) * (USD->Target)
@@ -86,9 +86,11 @@ readonly class CurrencyConverter
     /**
      * Helper pro nalezení kurzu v DB s ohledem na směr (Base/Target).
      */
-    private function findRateInDb(CurrencyEnum $source, CurrencyEnum $target): ?BigDecimal
+    private function findRateInDb(CurrencyEnum $source, CurrencyEnum $target, ?\DateTimeInterface $atDate = null): ?BigDecimal
     {
-        $record = $this->exchangeRateRepository->findLatestExchangeRate($source, $target);
+        $record = $atDate
+            ? $this->exchangeRateRepository->findExchangeRateAtDate($source, $target, $atDate)
+            : $this->exchangeRateRepository->findLatestExchangeRate($source, $target);
 
         if (!$record) {
             return null;

@@ -12,6 +12,9 @@ doctrine:
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         identity_generation_preferences:
             Doctrine\DBAL\Platforms\PostgreSQLPlatform: identity
+        dql:
+            string_functions:
+                PG_DATE: App\MultiCurrencyWallet\DQL\CastDate
         mappings:
             App:
                 type: attribute
