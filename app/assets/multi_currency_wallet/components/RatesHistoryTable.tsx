@@ -178,27 +178,27 @@ export function RatesHistoryTable() {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
-                <TableHead className="font-semibold text-foreground">{translations.rates_source || "Source Amount"}</TableHead>
-                <TableHead className="font-semibold text-foreground">{translations.rates_target || "Result"}</TableHead>
-                <TableHead className="font-semibold text-foreground">{translations.rates_rate || "Rate"}</TableHead>
-                <TableHead className="font-semibold text-foreground">{translations.rates_updated || "Last Updated"}</TableHead>
+                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground">{translations.rates_source || "Source Amount"}</TableHead>
+                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground">{translations.rates_target || "Result"}</TableHead>
+                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground">{translations.rates_rate || "Rate"}</TableHead>
+                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground">{translations.rates_updated || "Last Updated"}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rates.length > 0 ? (
                 rates.map((row, index) => (
                   <TableRow key={index} className="hover:bg-secondary/50">
-                    <TableCell className="font-medium text-foreground">
+                    <TableCell className="py-2 px-4 font-medium text-foreground">
                       {formatAmount(row.source_amount, row.source_currency, true)} {row.source_currency}
                     </TableCell>
-                    <TableCell className="text-foreground font-semibold">
+                    <TableCell className="py-2 px-4 text-foreground font-semibold">
                       {getSymbol(row.target_currency)} {formatAmount(row.target_amount, row.target_currency)} {row.target_currency}
                     </TableCell>
-                    <TableCell className="text-foreground">
+                    <TableCell className="py-2 px-4 text-foreground">
                       <span className="text-xs text-muted-foreground mr-1">1 {row.source_currency} =</span>
                       {row.rate} {row.target_currency}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="py-2 px-4 text-muted-foreground">
                       {formatDate(row.updated_at)}
                     </TableCell>
                   </TableRow>
