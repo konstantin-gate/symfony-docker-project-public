@@ -88,21 +88,37 @@ class BalanceTest extends TestCase
     }
 
     /**
-     * Testuje chování při záporné částce.
-     * I když aktuální implementace záporné částky v entitě neblokuje (není tam validace),
-     * je důležité ověřit, jak se k nim chová integrace s brick/money.
+     * Testuje, že entita vyhodí výjimku při pokusu o nastavení záporné částky.
      */
-    public function testNegativeAmount(): void
+    public function testNegativeAmountThrowsException(): void
     {
-        $balance = new Balance(CurrencyEnum::USD, '-10.00');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Balance amount cannot be negative.');
 
-        $this->assertSame('-10.00', $balance->getAmount());
-        $this->assertSame('-10.00', (string) $balance->getMoney()->getAmount());
+        new Balance(CurrencyEnum::USD, '-10.00');
+    }
+
+    /**
+     * Testuje, že metoda setMoney vyhodí výjimku při pokusu o nastavení záporné částky.
+     *
+     * @throws UnknownCurrencyException
+     */
+    public function testSetMoneyThrowsExceptionOnNegativeAmount(): void
+    {
+        $balance = new Balance(CurrencyEnum::USD, '10.00');
+        $negativeMoney = Money::of('-5.00', 'USD');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Balance amount cannot be negative.');
+
+        $balance->setMoney($negativeMoney);
     }
 
     /**
      * Testuje přesnost pro velmi velké částky (např. 1 bilion JPY nebo RUB).
      * Ověřuje, že uložení jako řetězec nezpůsobuje ztrátu přesnosti.
+     *
+     * @throws UnknownCurrencyException
      */
     public function testLargeNumbersPrecision(): void
     {

@@ -6,6 +6,7 @@ namespace App\MultiCurrencyWallet\Entity;
 
 use App\MultiCurrencyWallet\Enum\CurrencyEnum;
 use App\MultiCurrencyWallet\Repository\BalanceRepository;
+use Brick\Math\BigDecimal;
 use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
 use Doctrine\ORM\Mapping as ORM;
@@ -43,6 +44,10 @@ class Balance
 
     public function __construct(CurrencyEnum $currency, string $amount = '0')
     {
+        if (BigDecimal::of($amount)->isNegative()) {
+            throw new \InvalidArgumentException('Balance amount cannot be negative.');
+        }
+
         $this->currency = $currency;
         $this->amount = $amount;
     }
@@ -87,6 +92,10 @@ class Balance
     {
         if ($money->getCurrency()->getCurrencyCode() !== $this->currency->value) {
             throw new \InvalidArgumentException(\sprintf('Měna %s neodpovídá měně účtu %s', $money->getCurrency()->getCurrencyCode(), $this->currency->value));
+        }
+
+        if ($money->isNegative()) {
+            throw new \InvalidArgumentException('Balance amount cannot be negative.');
         }
 
         $this->amount = (string) $money->getAmount();
