@@ -39,3 +39,20 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    # --- MultiCurrency Wallet Rate Providers ---
+    App\MultiCurrencyWallet\Service\RateProvider\ExchangerateHostProvider:
+        arguments:
+            $apiKey: '%env(EXCHANGERATE_HOST_KEY)%'
+        tags:
+            - { name: 'app.rate_provider', priority: 10 }
+
+    App\MultiCurrencyWallet\Service\RateProvider\CurrencyFreaksProvider:
+        arguments:
+            $apiKey: '%env(CURRENCYFREAKS_KEY)%'
+        tags:
+            - { name: 'app.rate_provider', priority: 5 }
+
+    App\MultiCurrencyWallet\Service\RateUpdateService:
+        arguments:
+            $providers: !tagged_iterator app.rate_provider

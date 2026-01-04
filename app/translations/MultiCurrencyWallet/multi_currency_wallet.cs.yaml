@@ -1,0 +1,74 @@
+index:
+    title: Multiměnová peněženka
+    description: Modul pro finanční výpočty
+    open_tooltip: Přejít na modul
+
+dashboard:
+    title: Multiměnová peněženka
+    back_to_home: Na hlavní stránku
+
+menu:
+    wallet: Peněženka
+    converter: Převodník
+    rates_history: Historie kurzů
+    settings: Nastavení
+    update_rates: Aktualizovat kurzy
+    updating: Aktualizuji...
+    rates_updated_title: Kurzy aktualizovány
+    rates_updated_desc: Směnné kurzy byly úspěšně aktualizovány.
+    rates_error_title: Aktualizace selhala
+    rates_error_desc: Nepodařilo se aktualizovat směnné kurzy. Zkuste to prosím později.
+    rates_skipped_title: Kurzy jsou aktuální
+    rates_skipped_desc: Směnné kurzy byly aktualizovány před méně než hodinou.
+
+converter:
+    title: Převodník měn
+    amount: Částka
+    enter_amount: Zadejte částku
+    from: Z
+    to: Na
+    convert: Převést
+    rate_updated: 'Kurz aktualizován:'
+
+quick_tips:
+    title: Rychlé tipy
+    swap_tip: Použijte tlačítko pro prohození (↔) pro rychlou změnu směru převodu
+    update_tip: 'Kurzy se pravidelně aktualizují - pro čerstvá data klikněte na "Aktualizovat kurzy" v hlavičce'
+    btc_tip: Převody Bitcoinu se zobrazují s přesností na 8 desetinných míst
+    supported_tip: Jsou podporovány všechny hlavní fiat měny a Bitcoin
+
+rates:
+    title: Referenční směnné kurzy
+    source: Zdrojová částka
+    target: Výsledek
+    rate: Kurz
+    updated: Aktualizováno
+    latest: Nejaktuálnější
+
+settings:
+    title: Nastavení
+    preferences: Předvolby
+    default_currency: Výchozí měna peněženky
+    default_currency_desc: Tato měna bude použita jako výchozí pro výpočty celkového zůstatku.
+    auto_update: Automatická denní aktualizace kurzů
+    auto_update_desc: Automaticky načíst nové směnné kurzy jednou denně.
+    save: Uložit nastavení
+    saved_title: Nastavení uloženo
+    saved_desc: Vaše předvolby byly úspěšně aktualizovány.
+
+card:
+    edit: Upravit
+    save: Uložit
+    cancel: Zrušit
+    czk: česká koruna
+    eur: euro
+    usd: americký dolar
+    rub: ruský rubl
+    jpy: japonský jen
+    btc: bitcoin
+
+total_balance:
+    title: Celková hodnota peněženky
+    target_currency: Cílová měna
+    calculate: Vypočítat celkem
+    result_label: Celkový zůstatek

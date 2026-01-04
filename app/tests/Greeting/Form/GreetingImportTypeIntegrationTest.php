@@ -506,7 +506,7 @@ class GreetingImportTypeIntegrationTest extends KernelTestCase
 
         $attr = $submitConfig->getOption('attr');
         $this->assertArrayHasKey('class', $attr);
-        $this->assertEquals('btn btn-primary w-100', $attr['class']);
+        $this->assertEquals('btn btn-greeting-import w-100', $attr['class']);
     }
 
     /**

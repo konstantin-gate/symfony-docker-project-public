@@ -1,169 +1,146 @@
-# Symfony Greeting App
+# Symfony Modular Suite
 
-Tato aplikace je založena na Symfony 8.0 a je určena pro správu seznamu kontaktů a rozesílání pozdravných zpráv (například k Vánocům a Novému roku). Projekt je plně dockerizován a obsahuje nástroje pro vývoj, testování a sestavení.
+**Symfony Modular Suite** je moderní webová aplikace postavená na Symfony 8.0 s modulární architekturou. Projekt demonstruje integraci klasického server-side renderingu (Twig) s moderními SPA technologiemi (React) v rámci jednoho monolitu.
 
-## Funkce
+Projekt je plně dockerizován a připraven k nasazení.
 
-*   **Správa kontaktů:** Import seznamu e-mailových adres prostřednictvím textového pole nebo **nahráním souboru XML**.
-*   **Dashboard:** Ovládací panel (`/greeting/dashboard`) pro prohlížení kontaktů, filtrování podle stavu (nové, odeslané) a jazyka.
-*   **Vícejazyčnost:** Plná lokalizace rozhraní (čeština, angličtina, ruština).
-*   **Rozesílání:** Asynchronní fronta pro odesílání e-mailů s podporou prodlevy (Delay) pro ochranu reputace odesílatele.
-*   **Parsování e-mailů:** Vyhrazené služby `GreetingEmailParser` a `GreetingXmlParser` pro spolehlivé zpracování seznamů adres.
-*   **Technologický stack:**
-    *   **Backend:** Symfony 8.0, PHP 8.4, Doctrine ORM, Symfony Messenger.
-    *   **Databáze:** PostgreSQL 16.
-    *   **Frontend:** Webpack Encore, Bootstrap 5, Bootstrap Icons, DataTables (+ Select extension).
-    *   **Infrastruktura:** Docker (Nginx, PHP-FPM, Postgres, Node.js helper).
+---
 
-## Požadavky
+## 📦 Moduly
 
-*   Docker
-*   Docker Compose
+Aplikace se skládá ze dvou nezávislých funkčních modulů:
 
-## Instalace a první spuštění
+### 1. Greeting Module (Rozesílání)
+Klasický Symfony modul (MVC) pro správu kontaktů a hromadné rozesílání pozdravů.
 
-Pro inicializaci projektu od nuly proveďte následující kroky:
+*   **Funkcionalita:**
+    *   Import kontaktů (XML, Text).
+    *   Asynchronní odesílání e-mailů přes frontu (Symfony Messenger) s nastavitelnou prodlevou.
+    *   Vícejazyčný dashboard a e-mailové šablony.
+    *   Validace e-mailových adres.
 
-### 1. Spuštění kontejnerů
-Sestavte a spusťte Docker kontejnery:
+### 2. Multi-Currency Wallet (Multiměnová peněženka)
+Modul pro správu financí implementovaný jako **React SPA** (Single Page Application) vložený do Symfony.
 
+*   **Funkcionalita:**
+    *   Evidence zůstatků v různých měnách (CZK, USD, EUR, JPY, BTC a další).
+    *   **Přesnost výpočtů:** Použití knihovny `brick/money` pro eliminaci chyb s plovoucí desetinnou čárkou.
+    *   **Historie kurzů:** Dynamická tabulka křížových kurzů závislá na zvolené hlavní měně.
+    *   **Převodník měn:** Okamžitý přepočet podle aktuálních kurzů.
+    *   **Automatická aktualizace:** Integrace s externími API (Exchangerate.host, CurrencyFreaks) s logikou Failover (přepnutí na záložního poskytovatele při výpadku).
+
+---
+
+## 🛠 Technologický stack
+
+### Backend
+*   **Framework:** Symfony 8.0 (PHP 8.4)
+*   **Databáze:** PostgreSQL 16
+*   **ORM:** Doctrine ORM
+*   **Fronta:** Symfony Messenger (Doctrine transport)
+*   **Matematika:** `brick/money`, `brick/math` (pro finanční operace)
+
+### Frontend
+*   **Build Tool:** Webpack Encore
+*   **Jádro:**
+    *   *Greeting:* Bootstrap 5, Twig, Native JS.
+    *   *Wallet:* **React 18**, TypeScript, Tailwind CSS, Shadcn UI.
+
+### Infrastruktura
+*   **Docker:** Nginx, PHP-FPM, Postgres, Node.js (pro sestavení assetů).
+
+---
+
+## 🚀 Instalace a spuštění
+
+### Požadavky
+*   Docker a Docker Compose
+
+### Krok 1: Spuštění kontejnerů
+Sestavte a spusťte prostředí:
 ```bash
 docker compose up --build -d
 ```
 
-### 2. Instalace závislostí PHP
-Nainstalujte potřebné balíčky přes Composer (provádí se uvnitř kontejneru `php`):
+### Krok 2: Instalace závislostí
+Nainstalujte PHP a Node.js závislosti:
 
 ```bash
+# PHP balíčky
 docker compose exec php composer install
-```
 
-### 3. Příprava databáze
-Aplikujte migrace pro vytvoření potřebných tabulek (`greeting_contact`, `greeting_log`, `messenger_messages`):
-
-```bash
-docker compose exec php bin/console doctrine:migrations:migrate
-```
-
-### 4. Sestavení frontendu
-Projekt využívá Webpack Encore. Pro instalaci závislostí a sestavení assetů se používá samostatný kontejner `node`.
-
-Instalace NPM balíčků:
-```bash
+# Frontend balíčky
 docker compose run --rm node npm install
 ```
 
-Sestavení assetů pro vývoj (včetně source maps):
+### Krok 3: Nastavení prostředí (.env.local)
+Vytvořte soubor `app/.env.local` pro konfiguraci API klíčů a pošty. Toto je kritické pro modul Wallet a odesílání e-mailů.
+
+```dotenv
+# --- Nastavení pošty (Greeting Module) ---
+MAILER_SENDER_EMAIL=hello@example.com
+MAILER_SENDER_NAME="Moje Firma"
+# Režim doručení: 'file' (do složky var/mails) nebo 'smtp'
+EMAIL_DELIVERY_MODE=file
+# Prodleva mezi e-maily (sekundy)
+EMAIL_SEQUENCE_DELAY=2
+
+# --- API klíče pro směnné kurzy (Wallet Module) ---
+# Získejte bezplatné klíče u příslušných služeb
+EXCHANGERATE_HOST_KEY=vas_klic_zde
+CURRENCYFREAKS_KEY=vas_klic_zde
+```
+
+### Krok 4: Inicializace DB a Sestavení
+Spusťte skript pro kompletní inicializaci. Vytvoří databázi, provede migrace a **nahraje fixtures** (testovací data pro peněženku a kurzy).
+
 ```bash
+# Inicializace DB (Migrace + Fixtures)
+docker compose exec php composer db-init
+
+# Sestavení frontendu (Dev režim s watch)
 docker compose run --rm node npm run dev
 ```
 
-*(Pro produkční sestavení použijte `npm run build`)*
+---
+
+## 🖥 Použití
+
+Po spuštění je aplikace dostupná na adrese: **[http://localhost](http://localhost)**
+
+### Hlavní sekce
+*   **Greeting Dashboard:** `/greeting/dashboard`
+*   **Multi-Currency Wallet:** `/multi-currency-wallet`
+
+### Konzolové příkazy
+*   **Worker fronty (odesílání e-mailů):**
+    ```bash
+    docker compose exec php bin/console messenger:consume async -v
+    ```
+*   **Kontrola stavu služeb:**
+    ```bash
+    docker compose exec php bin/console app:status:list
+    ```
 
 ---
 
-## Použití
+## 🧪 Vývoj a QA
 
-Po úspěšné instalaci bude aplikace dostupná na adrese:
-**[http://localhost](http://localhost)**
-
-### Hlavní URL
-*   **Domovská stránka:** `http://localhost/`
-*   **Ovládací panel (Dashboard):** `http://localhost/greeting/dashboard` (s přesměrováním na lokalizaci, např. `/cs/greeting/dashboard`).
-
-### Import kontaktů
-Kontakty můžete importovat dvěma způsoby:
-1.  **Textové pole:** Zadejte e-mailové adresy oddělené čárkou, mezerou nebo novým řádkem.
-2.  **XML soubor:** Nahrajte soubor s příponou `.xml`. Struktura souboru musí být následující:
-    ```xml
-    <contacts>
-        <email>user1@example.com</email>
-        <email>user2@example.com</email>
-    </contacts>
-    ```
-
-## Konfigurace fronty pro odesílání (Messenger)
-
-Odesílání e-mailů probíhá prostřednictvím asynchronní fronty **Symfony Messenger** s podporou prodlevy mezi zprávami. To umožňuje odesílat velké objemy e-mailů bez blokování rozhraní a přetížení SMTP serveru.
-
-### 1. Spuštění workeru
-Aby se e-maily přidané do fronty začaly odesílat, je nutné spustit proces na pozadí (worker).
-
-**V konzoli (pro vývoj):**
-```bash
-docker compose exec php bin/console messenger:consume async -v
-```
-Přidejte parametr `--limit=10` pro zpracování pouze 10 zpráv nebo `--time-limit=3600` pro běh po dobu jedné hodiny.
-
-**V produkci:**
-Doporučuje se použít Supervisor nebo Systemd pro trvalý běh příkazu `messenger:consume async`.
-
-### 2. Nastavení prodlevy (Delay)
-Můžete nastavit interval prodlevy mezi odesíláním e-mailů (v sekundách). To je užitečné pro dodržení limitů poskytovatele (Rate Limiting).
-
-Vytvořte nebo upravte soubor `app/.env.local` a přidejte proměnnou:
-
-```dotenv
-# Prodleva v sekundách mezi e-maily (výchozí 1 sekunda)
-EMAIL_SEQUENCE_DELAY=5
-```
-
-### 3. Nastavení odesílatele
-Údaje odesílatele se také nastavují pomocí proměnných prostředí v `app/.env.local`:
-
-```dotenv
-MAILER_SENDER_EMAIL=hello@mycompany.com
-MAILER_SENDER_NAME="My Company Greeting"
-```
-
-### 4. Režimy doručování e-mailů
-Aplikace podporuje dva režimy doručování zpráv: prostřednictvím skutečného SMTP serveru nebo ukládáním do lokálních souborů (vhodné pro vývoj).
-
-Pro přepnutí změňte proměnnou v `app/.env.local`:
-
-```dotenv
-# Dostupné hodnoty: 'smtp' nebo 'file'
-EMAIL_DELIVERY_MODE=file
-```
-
-*   **file:** E-maily se budou ukládat do adresáře `app/var/mails/` ve formátu `.eml`.
-*   **smtp:** E-maily se budou odesílat přes nastavené MAILER_DSN.
-
-### Konzolové příkazy
-V projektu je vlastní příkaz pro zobrazení seznamu statusů:
+### Testování
+Pro spuštění Unit a Integračních testů (používá samostatnou testovací databázi):
 
 ```bash
-docker compose exec php bin/console app:status:list
-```
-
-## Vývoj a testování
-
-### Příprava testovací databáze
-Před prvním spuštěním testů (nebo pokud testovací databáze neexistuje), spusťte inicializační skript z kořenového adresáře projektu:
-
-```bash
+# Příprava testovací DB (jednou)
 ./bin/setup-test-db
-```
 
-Tento skript automaticky vytvoří databázi `symfony_db_test` a provede všechny potřebné migrace.
-
-### Spuštění testů
-Pro spuštění unit a integračních testů (PHPUnit):
-
-```bash
+# Spuštění testů
 docker compose exec php bin/phpunit
 ```
 
-### Kontrola kvality kódu
-V `composer.json` jsou nastaveny skripty pro kontrolu stylu kódu (PHP CS Fixer) a statickou analýzu (PHPStan):
+### Kvalita kódu
+Projekt je nastaven na přísné standardy kvality:
 
 ```bash
-# Spustit vše najednou
+# Spustit kompletní QA cyklus (CS Fixer + PHPStan)
 docker compose exec php composer qa
-
-# Pouze oprava stylu kódu
-docker compose exec php composer cs-fix
-
-# Pouze statická analýza
-docker compose exec php composer phpstan
 ```

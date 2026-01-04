@@ -1,3 +1,10 @@
+:root {
+    --greeting-accent: hsl(173, 58%, 39%);
+    --greeting-accent-hover: hsl(173, 58%, 32%);
+    --greeting-highlight: #ABBCCC;
+    --greeting-import: #2B869E;
+}
+
 /* Zmenšujeme velikost a umístění tlačítka pro zavření */
 .alert-wrapper .btn-close {
     padding: 1.2rem 1rem;
@@ -42,8 +49,8 @@
 }
 
 .card-body .pagination .page-item.active .page-link {
-    background-color: #ABBCCC !important;
-    border-color: #ABBCCC !important;
+    background-color: var(--greeting-highlight) !important;
+    border-color: var(--greeting-highlight) !important;
     color: white !important;
 }
 
@@ -67,7 +74,7 @@
 
 /* Override DataTables Select Blue Color */
 #myTabContent .greeting-table tbody > tr > td.selected {
-    background-color: #ABBCCC !important; /* Dark Gray */
+    background-color: var(--greeting-highlight) !important; /* Dark Gray */
     color: white !important;
 }
 
@@ -124,4 +131,37 @@
     filter: drop-shadow(1px 0 0 #000) drop-shadow(-1px 0 0 #000) drop-shadow(0 -1px 0 #000); /* Removed 0 1px 0 */
     margin-top: 1px;
     z-index: 2; /* Ensure it sits on top of the .tooltip-inner border */
+}
+
+/* Accent Color from Multi-Currency Wallet */
+.bg-greeting-accent {
+    background-color: var(--greeting-accent) !important;
+}
+
+.btn-greeting-accent {
+    background-color: var(--greeting-accent);
+    border-color: var(--greeting-accent);
+    color: white;
+}
+
+.btn-greeting-accent:hover {
+    background-color: var(--greeting-accent-hover); /* Slightly darker for hover effect */
+    border-color: var(--greeting-accent-hover);
+    color: white;
+}
+
+.bg-greeting-import {
+    background-color: var(--greeting-import) !important;
+}
+
+.btn-greeting-import {
+    background-color: var(--greeting-import);
+    border-color: var(--greeting-import);
+    color: white;
+}
+
+.btn-greeting-import:hover {
+    background-color: #247185; /* Slightly darker for hover */
+    border-color: #247185;
+    color: white;
 }

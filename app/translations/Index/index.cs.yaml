@@ -1,7 +1,4 @@
 index:
     title: "Úvodní stránka"
     connected_modules: "Propojené moduly"
-    greeting_module:
-        title: "Modul Pozdravy"
-        description: "Spravujte kontakty pro pozdravy a posílejte personalizované pozdravy."
-        dashboard_button: "Přejít na přehled"
+

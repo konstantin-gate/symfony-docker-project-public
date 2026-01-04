@@ -1,0 +1,74 @@
+index:
+    title: Multi-Currency Wallet
+    description: Financial calculation module
+    open_tooltip: Go to module
+
+dashboard:
+    title: Multi-Currency Wallet
+    back_to_home: Back to Home
+
+menu:
+    wallet: Wallet
+    converter: Converter
+    rates_history: Rates History
+    settings: Settings
+    update_rates: Update rates
+    updating: Updating...
+    rates_updated_title: Rates Updated
+    rates_updated_desc: Exchange rates have been refreshed successfully.
+    rates_error_title: Update Failed
+    rates_error_desc: Could not update exchange rates. Please try again later.
+    rates_skipped_title: Rates Up to Date
+    rates_skipped_desc: Exchange rates were updated less than an hour ago.
+
+converter:
+    title: Currency Converter
+    amount: Amount
+    enter_amount: Enter amount
+    from: From
+    to: To
+    convert: Convert
+    rate_updated: 'Rate updated:'
+
+quick_tips:
+    title: Quick Tips
+    swap_tip: Use the swap button (↔) to quickly reverse the conversion direction
+    update_tip: Rates are updated periodically - click "Update rates" in the header for fresh data
+    btc_tip: Bitcoin conversions show up to 8 decimal places for precision
+    supported_tip: All major fiat currencies and Bitcoin are supported
+
+rates:
+    title: Reference Exchange Rates
+    source: Source Amount
+    target: Result
+    rate: Rate
+    updated: Last Updated
+    latest: Latest
+
+settings:
+    title: Settings
+    preferences: Preferences
+    default_currency: Default Wallet Currency
+    default_currency_desc: This currency will be used as the default for total balance calculations.
+    auto_update: Automatic Daily Rate Update
+    auto_update_desc: Automatically fetch new exchange rates once per day.
+    save: Save Settings
+    saved_title: Settings Saved
+    saved_desc: Your preferences have been updated successfully.
+
+card:
+    edit: Edit
+    save: Save
+    cancel: Cancel
+    czk: Czech Koruna
+    eur: Euro
+    usd: US Dollar
+    rub: Russian Ruble
+    jpy: Japanese Yen
+    btc: Bitcoin
+
+total_balance:
+    title: Total Wallet Value
+    target_currency: Target Currency
+    calculate: Calculate Total
+    result_label: Total Balance
