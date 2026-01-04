@@ -67,6 +67,37 @@ class WalletApiTest extends WebTestCase
     }
 
     /**
+     * Testuje pokus o aktualizaci neexistujícího záznamu.
+     * Očekáváme 404 Not Found.
+     *
+     * @throws \JsonException
+     */
+    public function testUpdateBalanceNotFound(): void
+    {
+        $client = self::createClient();
+        $container = $client->getContainer();
+        /** @var EntityManagerInterface $em */
+        $em = $container->get(EntityManagerInterface::class);
+
+        // Vyčištění tabulky zůstatků
+        $em->createQuery('DELETE FROM App\MultiCurrencyWallet\Entity\Balance')->execute();
+
+        // Volání API pro aktualizaci neexistujícího zůstatku
+        $client->request(
+            'POST',
+            '/api/multi-currency-wallet/update-balance',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['currency' => 'EUR', 'amount' => 100], \JSON_THROW_ON_ERROR)
+        );
+
+        self::assertResponseStatusCodeSame(404);
+        $responseData = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        $this->assertEquals('Balance record not found', $responseData['error']);
+    }
+
+    /**
      * Testuje validaci neplatné měny při aktualizaci zůstatku.
      *
      * @throws \JsonException
