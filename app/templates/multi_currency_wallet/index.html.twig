@@ -14,17 +14,15 @@
 {% endblock %}
 
 {% block body %}
-    <div id="root" 
-         data-basename="{{ path('multi_currency_wallet_dashboard', {'_locale': app.request.locale}) }}"
+    <div id="multi-currency-wallet-root"
+         data-balances="{{ initial_balances|json_encode|e('html_attr') }}"
+         data-config="{{ wallet_config|json_encode|e('html_attr') }}"
          data-locale="{{ app.request.locale }}"
-         data-home-url="{{ path('index_default', {'_locale': app.request.locale}) }}"
-         data-title="{{ 'dashboard.title'|trans }}"
-         data-back-text="{{ 'dashboard.back_to_home'|trans }}"
-         data-icon-url="{{ asset('images/icon_multi_currency_wallet.png') }}"
-         data-initial-balances="{{ initial_balances|json_encode|e('html_attr') }}"
          data-auto-update-needed="{{ auto_update_needed ? 'true' : 'false' }}"
          data-translations="{{ {
+             'dashboard_title': 'dashboard.title'|trans,
              'menu_wallet': 'menu.wallet'|trans,
+             'dashboard_back_to_home': 'dashboard.back_to_home'|trans,
              'menu_converter': 'menu.converter'|trans,
              'menu_rates_history': 'menu.rates_history'|trans,
              'menu_settings': 'menu.settings'|trans,

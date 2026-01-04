@@ -1,18 +1,25 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import { AppConfig, WalletSettings } from "./context/AppConfigContext";
 
-const rootElement = document.getElementById("root");
-const basename = rootElement?.getAttribute("data-basename") || "/";
-const locale = rootElement?.getAttribute("data-locale") || "en";
-const homeUrl = rootElement?.getAttribute("data-home-url") || "/";
-const title = rootElement?.getAttribute("data-title") || "Multi Currency Wallet";
-const backText = rootElement?.getAttribute("data-back-text") || "Back to home";
-const iconUrl = rootElement?.getAttribute("data-icon-url") || "";
+const rootElement = document.getElementById("multi-currency-wallet-root");
 
-let translations = {};
+if (!rootElement) {
+  throw new Error("Failed to find multi-currency-wallet-root element");
+}
+
+const currentUrl = new URL(window.location.href);
+const pathSegments = currentUrl.pathname.split('/');
+// Expecting /.../multi-currency-wallet/...
+const walletIndex = pathSegments.indexOf('multi-currency-wallet');
+const basename = pathSegments.slice(0, walletIndex + 1).join('/');
+
+const locale = rootElement.getAttribute("data-locale") || "en";
+
+let translations: Record<string, string> = {};
 try {
-  const translationsAttr = rootElement?.getAttribute("data-translations");
+  const translationsAttr = rootElement.getAttribute("data-translations");
   if (translationsAttr) {
     translations = JSON.parse(translationsAttr);
   }
@@ -20,16 +27,9 @@ try {
   console.error("Failed to parse translations", e);
 }
 
-let initialBalances: Array<{
-  code: string;
-  amount: number;
-  symbol: string;
-  icon: string;
-  label: string;
-  decimals: number;
-}> = [];
+let initialBalances: any[] = [];
 try {
-  const balancesAttr = rootElement?.getAttribute("data-initial-balances");
+  const balancesAttr = rootElement.getAttribute("data-balances");
   if (balancesAttr) {
     initialBalances = JSON.parse(balancesAttr);
   }
@@ -37,18 +37,32 @@ try {
   console.error("Failed to parse initial balances", e);
 }
 
-const autoUpdateNeeded = rootElement?.getAttribute("data-auto-update-needed") === "true";
+let initialSettings: WalletSettings = {
+  mainCurrency: "CZK",
+  autoUpdateEnabled: true,
+};
+try {
+  const configAttr = rootElement.getAttribute("data-config");
+  if (configAttr) {
+    initialSettings = JSON.parse(configAttr);
+  }
+} catch (e) {
+  console.error("Failed to parse initial configuration", e);
+}
 
-const config = {
+const autoUpdateNeeded = rootElement.getAttribute("data-auto-update-needed") === "true";
+
+const config: AppConfig = {
   basename,
   locale,
-  homeUrl,
-  title,
-  backText,
-  iconUrl,
+  homeUrl: `/${locale}`, 
+  title: translations['dashboard_title'] || translations['menu_wallet'] || "Multi Currency Wallet",
+  backText: translations['dashboard_back_to_home'] || "Back", 
+  iconUrl: "/images/icon_multi_currency_wallet.png",
   translations,
   initialBalances,
   autoUpdateNeeded,
+  initialSettings,
 };
 
-createRoot(rootElement!).render(<App config={config} />);
+createRoot(rootElement).render(<App config={config} />);

@@ -7,6 +7,7 @@ namespace App\MultiCurrencyWallet\Controller;
 use App\MultiCurrencyWallet\Entity\Balance;
 use App\MultiCurrencyWallet\Repository\BalanceRepository;
 use App\MultiCurrencyWallet\Repository\ExchangeRateRepository;
+use App\MultiCurrencyWallet\Repository\WalletConfigurationRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -22,6 +23,7 @@ class MultiCurrencyWalletController extends AbstractController
     public function __construct(
         private readonly BalanceRepository $balanceRepository,
         private readonly ExchangeRateRepository $exchangeRateRepository,
+        private readonly WalletConfigurationRepository $configurationRepository,
         private readonly TranslatorInterface $translator,
     ) {
     }
@@ -36,6 +38,7 @@ class MultiCurrencyWalletController extends AbstractController
     public function index(): Response
     {
         $balances = $this->balanceRepository->findBy([], ['displayOrder' => 'ASC']);
+        $config = $this->configurationRepository->getConfiguration();
 
         $balancesData = array_map(fn (Balance $balance) => [
             'code' => $balance->getCurrency()->value,
@@ -47,28 +50,35 @@ class MultiCurrencyWalletController extends AbstractController
         ], $balances);
 
         // Logika automatické aktualizace:
-        // Zkontrolujeme, zda je po 9:00 ráno (Praha) a kurzy od té doby nebyly aktualizovány.
+        // Zkontrolujeme, zda je auto-update povolen v nastavení,
+        // zda je po 9:00 ráno (Praha) a kurzy od té doby nebyly aktualizovány.
         $autoUpdateNeeded = false;
 
-        try {
-            $pragueTz = new \DateTimeZone('Europe/Prague');
-            $now = new \DateTimeImmutable('now', $pragueTz);
-            $today9am = $now->setTime(9, 0, 0);
+        if ($config->isAutoUpdateEnabled()) {
+            try {
+                $pragueTz = new \DateTimeZone('Europe/Prague');
+                $now = new \DateTimeImmutable('now', $pragueTz);
+                $today9am = $now->setTime(9, 0, 0);
 
-            if ($now >= $today9am) {
-                $latestRate = $this->exchangeRateRepository->findLatestUpdate();
+                if ($now >= $today9am) {
+                    $latestRate = $this->exchangeRateRepository->findLatestUpdate();
 
-                if (!$latestRate || $latestRate->getFetchedAt() < $today9am) {
-                    $autoUpdateNeeded = true;
+                    if (!$latestRate || $latestRate->getFetchedAt() < $today9am) {
+                        $autoUpdateNeeded = true;
+                    }
                 }
+            } catch (\Exception $e) {
+                // V případě chyby tiše ignorujeme kontrolu automatické aktualizace.
             }
-        } catch (\Exception $e) {
-            // V případě chyby tiše ignorujeme kontrolu automatické aktualizace.
         }
 
         return $this->render('multi_currency_wallet/index.html.twig', [
             'initial_balances' => $balancesData,
             'auto_update_needed' => $autoUpdateNeeded,
+            'wallet_config' => [
+                'mainCurrency' => $config->getMainCurrency()->value,
+                'autoUpdateEnabled' => $config->isAutoUpdateEnabled(),
+            ],
         ]);
     }
 }

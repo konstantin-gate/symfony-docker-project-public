@@ -1,4 +1,9 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useState } from 'react';
+
+export interface WalletSettings {
+  mainCurrency: string;
+  autoUpdateEnabled: boolean;
+}
 
 export interface AppConfig {
   basename: string;
@@ -17,9 +22,15 @@ export interface AppConfig {
     decimals: number;
   }>;
   autoUpdateNeeded: boolean;
+  initialSettings: WalletSettings;
 }
 
-const AppConfigContext = createContext<AppConfig | undefined>(undefined);
+interface AppConfigContextValue extends AppConfig {
+  walletSettings: WalletSettings;
+  setWalletSettings: (settings: WalletSettings) => void;
+}
+
+const AppConfigContext = createContext<AppConfigContextValue | undefined>(undefined);
 
 export const useAppConfig = () => {
   const context = useContext(AppConfigContext);
@@ -34,8 +45,12 @@ interface AppConfigProviderProps {
   children: ReactNode;
 }
 
-export const AppConfigProvider = ({ config, children }: AppConfigProviderProps) => (
-  <AppConfigContext.Provider value={config}>
-    {children}
-  </AppConfigContext.Provider>
-);
+export const AppConfigProvider = ({ config, children }: AppConfigProviderProps) => {
+  const [walletSettings, setWalletSettings] = useState<WalletSettings>(config.initialSettings);
+
+  return (
+    <AppConfigContext.Provider value={{ ...config, walletSettings, setWalletSettings }}>
+      {children}
+    </AppConfigContext.Provider>
+  );
+};

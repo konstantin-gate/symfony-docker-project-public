@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Settings as SettingsIcon, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,15 +26,56 @@ const currencies = [
 ];
 
 const Settings = () => {
-  const { translations } = useAppConfig();
-  const [defaultCurrency, setDefaultCurrency] = useState("CZK");
-  const [autoUpdate, setAutoUpdate] = useState(true);
+  const { translations, walletSettings, setWalletSettings } = useAppConfig();
+  const [mainCurrency, setMainCurrency] = useState(walletSettings.mainCurrency);
+  const [autoUpdate, setAutoUpdate] = useState(walletSettings.autoUpdateEnabled);
+  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = () => {
-    toast({
-      title: translations.settings_saved_title || "Settings Saved",
-      description: translations.settings_saved_desc || "Your preferences have been updated successfully.",
-    });
+  // Sync local state if context changes (e.g. on initial load)
+  useEffect(() => {
+    setMainCurrency(walletSettings.mainCurrency);
+    setAutoUpdate(walletSettings.autoUpdateEnabled);
+  }, [walletSettings]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const response = await fetch("/api/multi-currency-wallet/settings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          mainCurrency: mainCurrency,
+          autoUpdateEnabled: autoUpdate,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save settings");
+      }
+
+      const data = await response.json();
+      
+      // Update global context
+      setWalletSettings({
+        mainCurrency: data.mainCurrency,
+        autoUpdateEnabled: data.autoUpdateEnabled,
+      });
+
+      toast({
+        title: translations.settings_saved_title || "Settings Saved",
+        description: translations.settings_saved_desc || "Your preferences have been updated successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Could not save settings to the server.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -59,11 +100,11 @@ const Settings = () => {
               <CardTitle className="text-lg">{translations.settings_preferences || "Preferences"}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Default Currency */}
+              {/* Main Currency (formerly Default) */}
               <div className="space-y-2">
-                <Label htmlFor="default-currency">{translations.settings_default_currency || "Default Wallet Currency"}</Label>
-                <Select value={defaultCurrency} onValueChange={setDefaultCurrency}>
-                  <SelectTrigger id="default-currency">
+                <Label htmlFor="main-currency">{translations.settings_default_currency || "Main Wallet Currency"}</Label>
+                <Select value={mainCurrency} onValueChange={setMainCurrency}>
+                  <SelectTrigger id="main-currency">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-card border border-border">
@@ -97,10 +138,11 @@ const Settings = () => {
               {/* Save Button */}
               <Button
                 onClick={handleSave}
+                disabled={isSaving}
                 className="w-full gradient-accent text-accent-foreground border-0"
               >
                 <Save className="w-4 h-4 mr-2" />
-                {translations.settings_save || "Save Settings"}
+                {isSaving ? "Saving..." : (translations.settings_save || "Save Settings")}
               </Button>
             </CardContent>
           </Card>
