@@ -37,6 +37,7 @@ readonly class ReferenceRateService
 
         // 1. Generování párů: Základní měna -> Všechny ostatní
         $smartAmount = $this->getSmartAmount($baseCurrency);
+
         foreach (CurrencyEnum::cases() as $currency) {
             if ($currency === $baseCurrency) {
                 continue;
