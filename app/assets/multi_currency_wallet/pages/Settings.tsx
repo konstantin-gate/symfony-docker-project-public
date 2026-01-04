@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Settings as SettingsIcon, Save } from "lucide-react";
+import { Settings as SettingsIcon, Save, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -101,7 +101,10 @@ const Settings = () => {
 
           <Card className="bg-card border border-border">
             <CardHeader>
-              <CardTitle className="text-lg">{translations.settings_preferences || "Preferences"}</CardTitle>
+              <CardTitle className="text-xl font-semibold flex items-center gap-2">
+                <SlidersHorizontal className="w-5 h-5 text-accent" />
+                {translations.settings_preferences || "Preferences"}
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Main Currency (formerly Default) */}

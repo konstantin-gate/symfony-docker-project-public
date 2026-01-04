@@ -20,7 +20,7 @@ readonly class ReferenceRateService
     /**
      * Vygeneruje seznam referenčních směnných kurzů pro definované páry měn.
      * Umožňuje získat kurzy k určitému datu (pokud je zadáno) nebo nejaktuálnější dostupné.
-     * Pro vybrané páry (např. CZK -> EUR) používá specifické základní částky pro lepší přehlednost.
+     * Automaticky generuje páry "Základní měna -> Ostatní měny" a přidává doplňkové populární páry.
      *
      * @return array<int, array{
      *     source_amount: string,
@@ -31,21 +31,37 @@ readonly class ReferenceRateService
      *     updated_at: string|null
      * }>
      */
-    public function getReferenceRates(?\DateTimeInterface $atDate = null): array
+    public function getReferenceRates(?\DateTimeInterface $atDate = null, CurrencyEnum $baseCurrency = CurrencyEnum::CZK): array
     {
-        $pairs = [
-            // CZK páry s specifickými částkami
-            ['source' => CurrencyEnum::CZK, 'target' => CurrencyEnum::EUR, 'amount' => '100'],
-            ['source' => CurrencyEnum::CZK, 'target' => CurrencyEnum::USD, 'amount' => '100'],
-            ['source' => CurrencyEnum::CZK, 'target' => CurrencyEnum::RUB, 'amount' => '100'],
-            ['source' => CurrencyEnum::CZK, 'target' => CurrencyEnum::JPY, 'amount' => '1000'],
-            ['source' => CurrencyEnum::CZK, 'target' => CurrencyEnum::BTC, 'amount' => '10000'],
+        $pairs = [];
 
-            // Doplňkové páry
+        // 1. Generování párů: Základní měna -> Všechny ostatní
+        $smartAmount = $this->getSmartAmount($baseCurrency);
+        foreach (CurrencyEnum::cases() as $currency) {
+            if ($currency === $baseCurrency) {
+                continue;
+            }
+            $pairs[] = [
+                'source' => $baseCurrency,
+                'target' => $currency,
+                'amount' => $smartAmount,
+            ];
+        }
+
+        // 2. Doplňkové populární páry (pokud již nejsou zahrnuty)
+        $supplementalPairs = [
             ['source' => CurrencyEnum::USD, 'target' => CurrencyEnum::EUR, 'amount' => '1'],
             ['source' => CurrencyEnum::EUR, 'target' => CurrencyEnum::USD, 'amount' => '1'],
             ['source' => CurrencyEnum::BTC, 'target' => CurrencyEnum::USD, 'amount' => '1'],
         ];
+
+        foreach ($supplementalPairs as $pair) {
+            // Pokud je základní měna součástí páru, přeskočíme ho (již je v hlavním seznamu, nebo by to byla duplicita)
+            if ($pair['source'] === $baseCurrency || $pair['target'] === $baseCurrency) {
+                continue;
+            }
+            $pairs[] = $pair;
+        }
 
         $results = [];
 
@@ -77,5 +93,18 @@ readonly class ReferenceRateService
         }
 
         return $results;
+    }
+
+    /**
+     * Určí "pěknou" částku pro převod na základě měny.
+     * Pro "levnější" měny (CZK, JPY) vrací vyšší částky (100, 1000), pro ostatní 1.
+     */
+    private function getSmartAmount(CurrencyEnum $currency): string
+    {
+        return match ($currency) {
+            CurrencyEnum::CZK, CurrencyEnum::RUB => '100',
+            CurrencyEnum::JPY => '1000',
+            default => '1',
+        };
     }
 }

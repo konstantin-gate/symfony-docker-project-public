@@ -6,6 +6,7 @@ namespace App\MultiCurrencyWallet\Controller\Api;
 
 use App\MultiCurrencyWallet\Enum\CurrencyEnum;
 use App\MultiCurrencyWallet\Repository\ExchangeRateRepository;
+use App\MultiCurrencyWallet\Repository\WalletConfigurationRepository;
 use App\MultiCurrencyWallet\Service\ReferenceRateService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,6 +21,7 @@ class GetReferenceRatesController extends AbstractController
     public function __construct(
         private readonly ReferenceRateService $referenceRateService,
         private readonly ExchangeRateRepository $exchangeRateRepository,
+        private readonly WalletConfigurationRepository $configurationRepository,
     ) {
     }
 
@@ -31,6 +33,9 @@ class GetReferenceRatesController extends AbstractController
     public function __invoke(Request $request): JsonResponse
     {
         try {
+            $config = $this->configurationRepository->getConfiguration();
+            $mainCurrency = $config->getMainCurrency();
+
             $dateStr = $request->query->get('date');
             $atDate = null;
 
@@ -38,11 +43,14 @@ class GetReferenceRatesController extends AbstractController
                 $atDate = new \DateTimeImmutable($dateStr, new \DateTimeZone('Europe/Prague'));
             }
 
-            $rates = $this->referenceRateService->getReferenceRates($atDate);
+            $rates = $this->referenceRateService->getReferenceRates($atDate, $mainCurrency);
 
             // Získáme informaci o čase poslední aktualizace kurzu (pro daný den nebo globálně)
+            // Pokud je hlavní měna USD, kontrolujeme vůči EUR, jinak vůči USD (tyto páry by měly vždy existovat)
+            $checkCurrency = ($mainCurrency === CurrencyEnum::USD) ? CurrencyEnum::EUR : CurrencyEnum::USD;
+
             $latestRate = $atDate
-                ? $this->exchangeRateRepository->findExchangeRateAtDate(CurrencyEnum::USD, CurrencyEnum::CZK, $atDate)
+                ? $this->exchangeRateRepository->findExchangeRateAtDate($mainCurrency, $checkCurrency, $atDate)
                 : $this->exchangeRateRepository->findLatestUpdate();
 
             $updatedAt = $latestRate?->getFetchedAt()
