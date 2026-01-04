@@ -107,6 +107,26 @@ class WalletApiTest extends WebTestCase
     }
 
     /**
+     * Testuje validaci nečíselné částky.
+     *
+     * @throws \JsonException
+     */
+    public function testUpdateBalanceNonNumericAmount(): void
+    {
+        $client = self::createClient();
+        $client->request(
+            'POST',
+            '/api/multi-currency-wallet/update-balance',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['currency' => 'USD', 'amount' => 'invalid'], \JSON_THROW_ON_ERROR)
+        );
+
+        self::assertResponseStatusCodeSame(400);
+    }
+
+    /**
      * Testuje výpočet celkové hodnoty peněženky v cílové měně.
      *
      * @throws UnknownCurrencyException
@@ -159,5 +179,59 @@ class WalletApiTest extends WebTestCase
 
         $this->assertEquals('USD', $data['currency']);
         $this->assertEqualsWithDelta(217.65, (float) $data['total'], 0.01);
+    }
+
+    /**
+     * Testuje validaci neplatné cílové měny při výpočtu celku.
+     *
+     * @throws \JsonException
+     */
+    public function testCalculateTotalInvalidCurrency(): void
+    {
+        $client = self::createClient();
+        $client->request(
+            'POST',
+            '/api/multi-currency-wallet/calculate-total',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['targetCurrency' => 'XXX'], \JSON_THROW_ON_ERROR)
+        );
+
+        self::assertResponseStatusCodeSame(400);
+    }
+
+    /**
+     * Testuje přesnost výpočtu pro velmi velké částky.
+     *
+     * @throws \JsonException
+     */
+    public function testCalculateTotalLargeAmounts(): void
+    {
+        $client = self::createClient();
+        $container = $client->getContainer();
+        /** @var EntityManagerInterface $em */
+        $em = $container->get(EntityManagerInterface::class);
+
+        $em->createQuery('DELETE FROM App\MultiCurrencyWallet\Entity\Balance')->execute();
+
+        // 1 bilion JPY
+        $largeJpy = new Balance(CurrencyEnum::JPY, '1000000000000');
+        $em->persist($largeJpy);
+        $em->flush();
+
+        $client->request(
+            'POST',
+            '/api/multi-currency-wallet/calculate-total',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['targetCurrency' => 'JPY'], \JSON_THROW_ON_ERROR)
+        );
+
+        self::assertResponseIsSuccessful();
+        $data = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+
+        $this->assertEquals('1000000000000', $data['total']);
     }
 }

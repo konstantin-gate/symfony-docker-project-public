@@ -93,4 +93,41 @@ class ExchangerateHostProviderTest extends TestCase
 
         $this->provider->fetchRates();
     }
+
+    /**
+     * Testuje reakci na chybu transportu (např. timeout).
+     *
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    public function testFetchRatesHttpError(): void
+    {
+        $this->httpClient->method('request')->willThrowException($this->createMock(TransportExceptionInterface::class));
+
+        $this->expectException(TransportExceptionInterface::class);
+        $this->provider->fetchRates();
+    }
+
+    /**
+     * Testuje reakci на nevalidní JSON.
+     *
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    public function testFetchRatesDecodingError(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('toArray')->willThrowException($this->createMock(DecodingExceptionInterface::class));
+
+        $this->httpClient->method('request')->willReturn($response);
+
+        $this->expectException(DecodingExceptionInterface::class);
+        $this->provider->fetchRates();
+    }
 }

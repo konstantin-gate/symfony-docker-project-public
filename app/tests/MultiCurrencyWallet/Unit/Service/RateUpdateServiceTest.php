@@ -155,4 +155,73 @@ class RateUpdateServiceTest extends TestCase
 
         $service->updateRates();
     }
+
+    /**
+     * Ověřuje, že pokud poskytovatel vrátí prázdné pole kurzů, služba to považuje za selhání
+     * a zkusí dalšího poskytovatele.
+     */
+    public function testEmptyResultsFailover(): void
+    {
+        $this->exchangeRateRepository->method('findLatestUpdate')->willReturn(null);
+
+        $primary = $this->createMock(ExchangeRateProviderInterface::class);
+        $primary->method('getName')->willReturn('EmptyProvider');
+        $primary->method('fetchRates')->willReturn([]); // Prázdné výsledky
+
+        $secondary = $this->createMock(ExchangeRateProviderInterface::class);
+        $secondary->method('getName')->willReturn('SuccessProvider');
+        $secondary->method('fetchRates')->willReturn([
+            new RateDto('USD', 'EUR', '0.85'),
+        ]);
+
+        $service = new RateUpdateService(
+            new \ArrayIterator([$primary, $secondary]),
+            $this->entityManager,
+            $this->exchangeRateRepository,
+            $this->logger
+        );
+
+        $result = $service->updateRates();
+
+        $this->assertEquals('SuccessProvider', $result);
+    }
+
+    /**
+     * Testuje hranici throttling mechanismu (přesně 3600 sekund).
+     */
+    public function testThrottlingBoundary(): void
+    {
+        // 1. Přesně 3600 sekund (mělo by už povolit aktualizaci)
+        $lastRate = $this->createMock(ExchangeRate::class);
+        $lastRate->method('getFetchedAt')->willReturn(new \DateTimeImmutable('-3600 seconds'));
+        $this->exchangeRateRepository->method('findLatestUpdate')->willReturn($lastRate);
+
+        $provider = $this->createMock(ExchangeRateProviderInterface::class);
+        $provider->method('getName')->willReturn('Provider');
+        $provider->method('fetchRates')->willReturn([new RateDto('USD', 'EUR', '0.85')]);
+
+        $service = new RateUpdateService(
+            new \ArrayIterator([$provider]),
+            $this->entityManager,
+            $this->exchangeRateRepository,
+            $this->logger
+        );
+
+        $this->assertEquals('Provider', $service->updateRates());
+
+        // 2. Těsně pod 3600 (3599 sekund) - měло бы přeskočit
+        $lastRate2 = $this->createMock(ExchangeRate::class);
+        $lastRate2->method('getFetchedAt')->willReturn(new \DateTimeImmutable('-3599 seconds'));
+        $this->exchangeRateRepository = $this->createMock(ExchangeRateRepository::class);
+        $this->exchangeRateRepository->method('findLatestUpdate')->willReturn($lastRate2);
+
+        $service2 = new RateUpdateService(
+            new \ArrayIterator([$provider]),
+            $this->entityManager,
+            $this->exchangeRateRepository,
+            $this->logger
+        );
+
+        $this->assertEquals('skipped', $service2->updateRates());
+    }
 }

@@ -98,4 +98,32 @@ class UpdateRatesCommandTest extends KernelTestCase
 
         $this->assertStringContainsString('Aktualizace byla přeskočena', $output);
     }
+
+    /**
+     * Testuje chování příkazu v případě chyby ve službě (např. selhání všech poskytovatelů).
+     */
+    public function testExecuteFailure(): void
+    {
+        $kernel = self::$kernel;
+
+        if (null === $kernel) {
+            $this->fail('Kernel is not booted.');
+        }
+
+        $application = new Application($kernel);
+
+        $rateUpdateService = $this->createMock(RateUpdateService::class);
+        $rateUpdateService->method('updateRates')->willThrowException(new \RuntimeException('Connection failed'));
+
+        self::getContainer()->set(RateUpdateService::class, $rateUpdateService);
+
+        $command = $application->find('app:wallet:update-rates');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+
+        $this->assertEquals(1, $commandTester->getStatusCode());
+        $output = $commandTester->getDisplay();
+
+        $this->assertStringContainsString('Při aktualizaci kurzů došlo k chybě: Connection failed', $output);
+    }
 }

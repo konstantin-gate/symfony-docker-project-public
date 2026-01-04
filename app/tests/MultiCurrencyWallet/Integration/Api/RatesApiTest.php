@@ -116,4 +116,56 @@ class RatesApiTest extends WebTestCase
 
         $this->assertTrue($czkFound, 'Referenční kurz USD -> CZK nebyl nalezen');
     }
+
+    /**
+     * Testuje dynamickou volbu "hezké částky" (smart amount) na základě hlavní měny.
+     *
+     * @throws \JsonException
+     */
+    public function testSmartAmountSelection(): void
+    {
+        $client = self::createClient();
+        $container = $client->getContainer();
+        /** @var EntityManagerInterface $em */
+        $em = $container->get(EntityManagerInterface::class);
+
+        $em->createQuery('DELETE FROM App\MultiCurrencyWallet\Entity\ExchangeRate')->execute();
+        $em->createQuery('DELETE FROM App\MultiCurrencyWallet\Entity\WalletConfiguration')->execute();
+
+        // 1. CZK -> 100
+        $config = new WalletConfiguration();
+        $config->setMainCurrency(CurrencyEnum::CZK);
+        $em->persist($config);
+        $em->persist(new ExchangeRate(CurrencyEnum::CZK, CurrencyEnum::USD, BigDecimal::of('0.04'), new \DateTimeImmutable()));
+        $em->flush();
+
+        $client->request('GET', '/api/multi-currency-wallet/reference-rates');
+        $data = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+
+        $this->assertEquals('100.00', $data['rates'][0]['source_amount']);
+
+        // 2. JPY -> 1000
+        $em->createQuery('DELETE FROM App\MultiCurrencyWallet\Entity\WalletConfiguration')->execute();
+        $configJpy = new WalletConfiguration();
+        $configJpy->setMainCurrency(CurrencyEnum::JPY);
+        $em->persist($configJpy);
+        // Musíme přidat alespoň jeden kurz pro JPY, aby ReferenceRateService mohl vygenerovat páry
+        $em->persist(new ExchangeRate(CurrencyEnum::JPY, CurrencyEnum::USD, BigDecimal::of('0.007'), new \DateTimeImmutable()));
+        $em->flush();
+
+        $client->request('GET', '/api/multi-currency-wallet/reference-rates');
+        $dataJpy = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+
+        // Najdeme první, který začíná na JPY
+        $jpyRate = null;
+
+        foreach ($dataJpy['rates'] as $r) {
+            if ($r['source_currency'] === 'JPY') {
+                $jpyRate = $r;
+                break;
+            }
+        }
+        $this->assertNotNull($jpyRate);
+        $this->assertEquals('1000', $jpyRate['source_amount']);
+    }
 }

@@ -64,6 +64,11 @@ readonly class RateUpdateService
                 $this->logger->info(\sprintf('Starting rate update via %s', $provider->getName()));
 
                 $rates = $provider->fetchRates();
+
+                if (empty($rates)) {
+                    throw new \RuntimeException(\sprintf('Provider %s returned no rates', $provider->getName()));
+                }
+
                 $this->persistRates($rates);
 
                 $this->logger->info(\sprintf('Successfully updated rates via %s', $provider->getName()));

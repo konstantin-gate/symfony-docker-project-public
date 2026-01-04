@@ -86,4 +86,30 @@ class BalanceTest extends TestCase
 
         $this->assertSame(5, $balance->getDisplayOrder());
     }
+
+    /**
+     * Testuje chování při záporné částce.
+     * I když aktuální implementace záporné částky v entitě neblokuje (není tam validace),
+     * je důležité ověřit, jak se k nim chová integrace s brick/money.
+     */
+    public function testNegativeAmount(): void
+    {
+        $balance = new Balance(CurrencyEnum::USD, '-10.00');
+
+        $this->assertSame('-10.00', $balance->getAmount());
+        $this->assertSame('-10.00', (string) $balance->getMoney()->getAmount());
+    }
+
+    /**
+     * Testuje přesnost pro velmi velké částky (např. 1 bilion JPY nebo RUB).
+     * Ověřuje, že uložení jako řetězec nezpůsobuje ztrátu přesnosti.
+     */
+    public function testLargeNumbersPrecision(): void
+    {
+        $largeAmount = '1000000000000.12345678'; // 1 bilion + 8 desetinných míst
+        $balance = new Balance(CurrencyEnum::BTC, $largeAmount);
+
+        $this->assertSame($largeAmount, $balance->getAmount());
+        $this->assertSame($largeAmount, (string) $balance->getMoney()->getAmount());
+    }
 }

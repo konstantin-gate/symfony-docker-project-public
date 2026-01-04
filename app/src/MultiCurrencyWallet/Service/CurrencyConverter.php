@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\MultiCurrencyWallet\Service;
 
 use App\MultiCurrencyWallet\Enum\CurrencyEnum;
+use App\MultiCurrencyWallet\Exception\RateNotFoundException;
 use App\MultiCurrencyWallet\Repository\ExchangeRateRepository;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
@@ -52,7 +53,7 @@ readonly class CurrencyConverter
         $rate = $this->getExchangeRate($sourceCurrency, $targetCurrency, $atDate);
 
         if (!$rate) {
-            throw new \RuntimeException(\sprintf('Nenalezen směnný kurz pro převod %s -> %s', $sourceCurrency->value, $targetCurrency->value));
+            throw new RateNotFoundException(\sprintf('Nenalezen směnný kurz pro převod %s -> %s', $sourceCurrency->value, $targetCurrency->value));
         }
 
         $convertedAmount = $amount->getAmount()->multipliedBy($rate);

@@ -34,7 +34,7 @@ class BalanceRepositoryTest extends KernelTestCase
         $this->repository = $this->entityManager->getRepository(Balance::class);
 
         // Vyčištění tabulky před začátkem testu
-        $this->entityManager->createQuery('DELETE FROM App\MultiCurrencyWallet\Entity\Balance')->execute();
+        $this->entityManager->createQuery('DELETE FROM App\MultiCurrencyWallet\Entity\Balance e')->execute();
     }
 
     /**
@@ -70,5 +70,36 @@ class BalanceRepositoryTest extends KernelTestCase
         $this->assertNotNull($found, 'Zůstatek nebyl v databázi nalezen.');
         $this->assertEquals($currency, $found->getCurrency(), 'Nalezená měna neodpovídá očekávání.');
         $this->assertEquals('1.23456789', $found->getAmount(), 'Částka zůstatku neodpovídá uložené hodnotě.');
+    }
+
+    /**
+     * Testuje řazení záznamů podle displayOrder.
+     */
+    public function testFindAllSortedByDisplayOrder(): void
+    {
+        // 1. Příprava dat s různým pořadím
+        $b1 = new Balance(CurrencyEnum::CZK);
+        $b1->setDisplayOrder(10);
+
+        $b2 = new Balance(CurrencyEnum::USD);
+        $b2->setDisplayOrder(5);
+
+        $b3 = new Balance(CurrencyEnum::EUR);
+        $b3->setDisplayOrder(20);
+
+        $this->entityManager->persist($b1);
+        $this->entityManager->persist($b2);
+        $this->entityManager->persist($b3);
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
+        // 2. Provedení akce: findBy s řazením
+        $results = $this->repository->findBy([], ['displayOrder' => 'ASC']);
+
+        // 3. Ověření: USD (5), CZK (10), EUR (20)
+        $this->assertCount(3, $results);
+        $this->assertEquals(CurrencyEnum::USD, $results[0]->getCurrency());
+        $this->assertEquals(CurrencyEnum::CZK, $results[1]->getCurrency());
+        $this->assertEquals(CurrencyEnum::EUR, $results[2]->getCurrency());
     }
 }
