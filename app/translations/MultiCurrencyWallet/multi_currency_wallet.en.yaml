@@ -50,9 +50,6 @@ settings:
     preferences: Preferences
     default_currency: Default Wallet Currency
     default_currency_desc: This currency will be used as the default for total balance calculations.
-    api_key: Exchange Rate API Key
-    api_key_placeholder: Enter your API key
-    api_key_desc: Optional. Required for real-time exchange rate updates.
     auto_update: Automatic Daily Rate Update
     auto_update_desc: Automatically fetch new exchange rates once per day.
     save: Save Settings

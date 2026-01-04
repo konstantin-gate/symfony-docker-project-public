@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Settings as SettingsIcon, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -29,7 +28,6 @@ const currencies = [
 const Settings = () => {
   const { translations } = useAppConfig();
   const [defaultCurrency, setDefaultCurrency] = useState("CZK");
-  const [apiKey, setApiKey] = useState("");
   const [autoUpdate, setAutoUpdate] = useState(true);
 
   const handleSave = () => {
@@ -78,21 +76,6 @@ const Settings = () => {
                 </Select>
                 <p className="text-sm text-muted-foreground">
                   {translations.settings_default_currency_desc || "This currency will be used as the default for total balance calculations."}
-                </p>
-              </div>
-
-              {/* API Key */}
-              <div className="space-y-2">
-                <Label htmlFor="api-key">{translations.settings_api_key || "Exchange Rate API Key"}</Label>
-                <Input
-                  id="api-key"
-                  type="password"
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder={translations.settings_api_key_placeholder || "Enter your API key"}
-                />
-                <p className="text-sm text-muted-foreground">
-                  {translations.settings_api_key_desc || "Optional. Required for real-time exchange rate updates."}
                 </p>
               </div>
 
