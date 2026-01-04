@@ -71,20 +71,23 @@ class ExchangeRateRepository extends ServiceEntityRepository
     }
 
     /**
-     * Vyhledá směnný kurz pro daný pár měn k určitému datu (poslední známý k danému dni).
+     * Vyhledá směnný kurz pro daný pár měn k určitému datu (nejstarší známý v rámci daného dne).
      */
     public function findExchangeRateAtDate(CurrencyEnum $currencyA, CurrencyEnum $currencyB, \DateTimeInterface $date): ?ExchangeRate
     {
-        // Nastavíme konec dne pro vyhledávání
+        // Definujeme časový rozsah pro daný den
+        $startOfDay = \DateTimeImmutable::createFromInterface($date)->setTime(0, 0, 0);
         $endOfDay = \DateTimeImmutable::createFromInterface($date)->setTime(23, 59, 59);
 
         return $this->createQueryBuilder('e')
             ->where('((e.baseCurrency = :currencyA AND e.targetCurrency = :currencyB) OR (e.baseCurrency = :currencyB AND e.targetCurrency = :currencyA))')
-            ->andWhere('e.fetchedAt <= :date')
+            ->andWhere('e.fetchedAt >= :start')
+            ->andWhere('e.fetchedAt <= :end')
             ->setParameter('currencyA', $currencyA)
             ->setParameter('currencyB', $currencyB)
-            ->setParameter('date', $endOfDay)
-            ->orderBy('e.fetchedAt', 'DESC')
+            ->setParameter('start', $startOfDay)
+            ->setParameter('end', $endOfDay)
+            ->orderBy('e.fetchedAt', 'ASC')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
