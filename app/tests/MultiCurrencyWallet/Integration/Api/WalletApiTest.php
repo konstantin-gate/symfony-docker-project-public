@@ -87,6 +87,26 @@ class WalletApiTest extends WebTestCase
     }
 
     /**
+     * Testuje validaci záporné částky.
+     *
+     * @throws \JsonException
+     */
+    public function testUpdateBalanceNegativeAmount(): void
+    {
+        $client = self::createClient();
+        $client->request(
+            'POST',
+            '/api/multi-currency-wallet/update-balance',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['currency' => 'USD', 'amount' => -10], \JSON_THROW_ON_ERROR)
+        );
+
+        self::assertResponseStatusCodeSame(400);
+    }
+
+    /**
      * Testuje výpočet celkové hodnoty peněženky v cílové měně.
      *
      * @throws UnknownCurrencyException
