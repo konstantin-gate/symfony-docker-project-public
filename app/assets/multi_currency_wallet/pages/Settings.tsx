@@ -31,6 +31,10 @@ const Settings = () => {
   const [autoUpdate, setAutoUpdate] = useState(walletSettings.autoUpdateEnabled);
   const [isSaving, setIsSaving] = useState(false);
 
+  const isChanged = 
+    mainCurrency !== walletSettings.mainCurrency || 
+    autoUpdate !== walletSettings.autoUpdateEnabled;
+
   // Sync local state if context changes (e.g. on initial load)
   useEffect(() => {
     setMainCurrency(walletSettings.mainCurrency);
@@ -138,7 +142,7 @@ const Settings = () => {
               {/* Save Button */}
               <Button
                 onClick={handleSave}
-                disabled={isSaving}
+                disabled={isSaving || !isChanged}
                 className="w-full gradient-accent text-accent-foreground border-0"
               >
                 <Save className="w-4 h-4 mr-2" />
