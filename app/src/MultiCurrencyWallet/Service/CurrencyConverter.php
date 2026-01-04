@@ -40,6 +40,7 @@ readonly class CurrencyConverter
      * Výsledný vzorec: AmountTarget = AmountSource * (Rate(USD->Target) / Rate(USD->Source))
      *
      * @throws UnknownCurrencyException
+     * @throws RateNotFoundException
      */
     public function convert(Money $amount, CurrencyEnum $targetCurrency, ?\DateTimeInterface $atDate = null): Money
     {

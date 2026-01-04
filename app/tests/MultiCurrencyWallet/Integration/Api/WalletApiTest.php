@@ -234,4 +234,47 @@ class WalletApiTest extends WebTestCase
 
         $this->assertEquals('1000000000000', $data['total']);
     }
+
+    /**
+     * Testuje chování při chybějícím směnném kurzu.
+     * Očekáváme 400 Bad Request s chybovou hláškou, nikoliv 500 Error.
+     *
+     * @throws \JsonException|UnknownCurrencyException
+     */
+    public function testCalculateTotalMissingRate(): void
+    {
+        $client = self::createClient();
+        $container = $client->getContainer();
+        /** @var EntityManagerInterface $em */
+        $em = $container->get(EntityManagerInterface::class);
+
+        $em->createQuery('DELETE FROM App\MultiCurrencyWallet\Entity\Balance')->execute();
+        $em->createQuery('DELETE FROM App\MultiCurrencyWallet\Entity\ExchangeRate')->execute();
+
+        // 1. Zůstatek 100 CZK
+        $balanceCzk = new Balance(CurrencyEnum::CZK);
+        $balanceCzk->setMoney(Money::of(100, 'CZK'));
+        $em->persist($balanceCzk);
+        $em->flush();
+
+        // 2. Žádný kurz CZK -> USD neexistuje
+
+        // 3. Požadavek na přepočet do USD
+        $client->request(
+            'POST',
+            '/api/multi-currency-wallet/calculate-total',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(['targetCurrency' => 'USD'], \JSON_THROW_ON_ERROR)
+        );
+
+        // Nyní očekáváme 400 (pokud je opraveno) nebo 500 (před opravou)
+        // V TDD fázi "Red" to zde selže (bude 500), po opravě to projde.
+        // Pro účely automatizace rovnou asertujeme správný stav, který chceme docílit.
+        self::assertResponseStatusCodeSame(400);
+
+        $data = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        $this->assertArrayHasKey('error', $data);
+    }
 }

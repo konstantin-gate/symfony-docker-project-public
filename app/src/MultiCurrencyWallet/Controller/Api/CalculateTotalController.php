@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\MultiCurrencyWallet\Controller\Api;
 
 use App\MultiCurrencyWallet\Enum\CurrencyEnum;
+use App\MultiCurrencyWallet\Exception\RateNotFoundException;
 use App\MultiCurrencyWallet\Repository\BalanceRepository;
 use App\MultiCurrencyWallet\Service\CurrencyConverter;
 use Brick\Money\Exception\MoneyMismatchException;
@@ -53,13 +54,17 @@ class CalculateTotalController extends AbstractController
         $total = Money::zero($targetCurrency->toBrickCurrency());
 
         // 3. Projít a sečíst
-        foreach ($balances as $balance) {
-            // Konverze Money objektu z Balance entity
-            $converted = $this->currencyConverter->convert(
-                $balance->getMoney(),
-                $targetCurrency
-            );
-            $total = $total->plus($converted);
+        try {
+            foreach ($balances as $balance) {
+                // Konverze Money objektu z Balance entity
+                $converted = $this->currencyConverter->convert(
+                    $balance->getMoney(),
+                    $targetCurrency
+                );
+                $total = $total->plus($converted);
+            }
+        } catch (RateNotFoundException $e) {
+            return $this->json(['error' => $e->getMessage()], 400);
         }
 
         return $this->json([
