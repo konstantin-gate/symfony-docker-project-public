@@ -83,7 +83,10 @@ export function CurrencyConverter() {
             <Input
               type="number"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => {
+                setAmount(e.target.value);
+                setResult(null);
+              }}
               placeholder={translations.converter_enter_amount || "Enter amount"}
               className="text-lg"
             />
@@ -91,7 +94,10 @@ export function CurrencyConverter() {
 
           <div className="flex-1 w-full">
             <label className="text-sm font-medium text-muted-foreground mb-2 block">{translations.converter_from || "From"}</label>
-            <Select value={fromCurrency} onValueChange={setFromCurrency}>
+            <Select value={fromCurrency} onValueChange={(val) => {
+              setFromCurrency(val);
+              setResult(null);
+            }}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -116,7 +122,10 @@ export function CurrencyConverter() {
 
           <div className="flex-1 w-full">
             <label className="text-sm font-medium text-muted-foreground mb-2 block">{translations.converter_to || "To"}</label>
-            <Select value={toCurrency} onValueChange={setToCurrency}>
+            <Select value={toCurrency} onValueChange={(val) => {
+              setToCurrency(val);
+              setResult(null);
+            }}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>

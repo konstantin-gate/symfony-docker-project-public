@@ -7,6 +7,7 @@ namespace App\MultiCurrencyWallet\Controller\Api;
 use App\MultiCurrencyWallet\Enum\CurrencyEnum;
 use App\MultiCurrencyWallet\Repository\ExchangeRateRepository;
 use App\MultiCurrencyWallet\Service\CurrencyConverter;
+use Brick\Math\RoundingMode;
 use Brick\Money\Money;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -48,13 +49,15 @@ class ConvertController extends AbstractController
 
             // Získáme informaci o čase poslední aktualizace kurzu
             $latestRate = $this->exchangeRateRepository->findLatestUpdate();
-            $updatedAt = $latestRate?->getFetchedAt()->format('d M Y H:i');
+            $updatedAt = $latestRate?->getFetchedAt()
+                ->setTimezone(new \DateTimeZone('Europe/Prague'))
+                ->format('d M Y H:i');
 
             return $this->json([
                 'success' => true,
                 'amount' => (string) $result->getAmount(),
                 'currency' => $to->value,
-                'rate' => (string) $result->getAmount()->dividedBy($money->getAmount(), 12, \Brick\Math\RoundingMode::HALF_UP),
+                'rate' => (string) $result->getAmount()->dividedBy($money->getAmount(), 12, RoundingMode::HALF_UP),
                 'updatedAt' => $updatedAt,
             ]);
         } catch (\Exception $e) {
