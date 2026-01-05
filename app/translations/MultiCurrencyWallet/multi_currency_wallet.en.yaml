@@ -3,6 +3,11 @@ index:
     description: Financial calculation module
     open_tooltip: Go to module
 
+language:
+    Czech: 'čeština'
+    English: 'english'
+    Russian: 'русский'
+
 dashboard:
     title: Multi-Currency Wallet
     back_to_home: Back to Home

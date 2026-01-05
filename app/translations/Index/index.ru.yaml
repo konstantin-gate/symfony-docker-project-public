@@ -2,3 +2,8 @@ index:
     title: "Домашняя страница"
     connected_modules: "Подключенные модули"
 
+language:
+    Czech: 'čeština'
+    English: 'english'
+    Russian: 'русский'
+

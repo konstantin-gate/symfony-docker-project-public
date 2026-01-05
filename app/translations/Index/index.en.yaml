@@ -2,3 +2,8 @@ index:
     title: Homepage
     connected_modules: "Connected Modules"
 
+language:
+    Czech: 'čeština'
+    English: 'english'
+    Russian: 'русский'
+

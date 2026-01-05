@@ -1,4 +1,9 @@
 index:
-    title: "Úvodní stránka"
-    connected_modules: "Propojené moduly"
+    title: 'Připojené moduly'
+    connected_modules: 'Připojené moduly'
+
+language:
+    Czech: 'čeština'
+    English: 'english'
+    Russian: 'русский'
 

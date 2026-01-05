@@ -3,6 +3,11 @@ index:
     description: Modul pro finanční výpočty
     open_tooltip: Přejít na modul
 
+language:
+    Czech: 'čeština'
+    English: 'english'
+    Russian: 'русский'
+
 dashboard:
     title: Multiměnová peněženka
     back_to_home: Na hlavní stránku

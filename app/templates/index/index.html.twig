@@ -4,27 +4,23 @@
 {% block title %}{{ 'index.title'|trans }}{% endblock %}
 
 {% block body %}
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
-    <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div class="flex items-center justify-between mb-12">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 pt-4">
+    <div class="max-w-5xl w-full mx-auto px-0 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between mb-3">
             <div>
                 <h1 class="text-4xl font-bold text-slate-900 mb-2">{{'index.connected_modules'|trans}}</h1>
                 <p class="text-slate-600">Access and manage your active modules</p>
             </div>
 
-            <div class="relative group">
-                <button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all duration-200" id="langDropdown">
-                    <i class="bi bi-globe w-4 h-4 text-slate-600"></i>
-                    <span class="text-slate-700 font-medium">{{ app.request.locale|upper }}</span>
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary btn-sm dropdown-toggle text-uppercase" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="me-1">{{ app.request.locale }}</span>
                 </button>
-                {# Custom Dropdown Content #}
-                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                    <div class="py-1">
-                        <a href="{{ path('index_default', {'_locale': 'cs'}) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900">Čeština</a>
-                        <a href="{{ path('index_default', {'_locale': 'en'}) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900">English</a>
-                        <a href="{{ path('index_default', {'_locale': 'ru'}) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900">Русский</a>
-                    </div>
-                </div>
+                <ul class="dropdown-menu dropdown-menu-end" style="min-width: auto;">
+                    <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'cs'}) }}">{{ 'language.Czech'|trans }}</a></li>
+                    <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'en'}) }}">{{ 'language.English'|trans }}</a></li>
+                    <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'ru'}) }}">{{ 'language.Russian'|trans }}</a></li>
+                </ul>
             </div>
         </div>
 

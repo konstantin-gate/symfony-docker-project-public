@@ -22,9 +22,9 @@ import:
     generate_test_emails_tooltip: 'Vygenerovat a přidat 10 testovacích e-mailů do textového pole'
 
 language:
-    Czech: 'Čeština'
-    English: 'Angličtina'
-    Russian: 'Ruština'
+    Czech: 'čeština'
+    English: 'english'
+    Russian: 'русский'
     cs_speaking: 'Česky mluvící'
     en_speaking: 'Anglicky mluvící'
     ru_speaking: 'Rusky mluvící'
