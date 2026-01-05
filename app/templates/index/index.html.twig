@@ -11,9 +11,14 @@
 <div class="pt-4">
     <div class="max-w-5xl w-full mx-auto px-0 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between mb-3">
-            <div>
-                <h1 class="text-4xl font-bold text-slate-900 mb-2">{{'index.connected_modules'|trans}}</h1>
-                <p class="text-slate-600">{{ 'index.subtitle'|trans }}</p>
+            <div class="flex items-center gap-[1rem]">
+                <img src="{{ asset('images/icon 3D Symfony Modular Suite.png') }}"
+                     alt="Symfony Modular Suite Icon"
+                     class="w-auto h-[7rem] object-contain">
+                <div>
+                    <h1 class="text-4xl font-bold text-slate-900 mb-2">{{'index.connected_modules'|trans}}</h1>
+                    <p class="text-slate-600">{{ 'index.subtitle'|trans }}</p>
+                </div>
             </div>
 
             <div class="dropdown">
