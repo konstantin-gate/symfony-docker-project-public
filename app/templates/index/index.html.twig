@@ -9,7 +9,7 @@
         <div class="flex items-center justify-between mb-3">
             <div>
                 <h1 class="text-4xl font-bold text-slate-900 mb-2">{{'index.connected_modules'|trans}}</h1>
-                <p class="text-slate-600">Access and manage your active modules</p>
+                <p class="text-slate-600">{{ 'index.subtitle'|trans }}</p>
             </div>
 
             <div class="dropdown">
@@ -49,7 +49,7 @@
                         </h3>
 
                         <p class="text-slate-600 leading-relaxed">
-                            {{'index.description'|trans({}, 'greeting')}}
+                            {{'index.description'|trans({}, 'greeting')|raw}}
                         </p>
                     </div>
 
@@ -81,7 +81,7 @@
                         </h3>
 
                         <p class="text-slate-600 leading-relaxed">
-                            {{'index.description'|trans({}, 'multi_currency_wallet')}}
+                            {{'index.description'|trans({}, 'multi_currency_wallet')|raw}}
                         </p>
                     </div>
 

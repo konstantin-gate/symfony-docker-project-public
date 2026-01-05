@@ -1,6 +1,7 @@
 index:
-    title: 'Připojené moduly'
-    connected_modules: 'Připojené moduly'
+    title: 'Symfony Modular Suite'
+    connected_modules: 'Symfony Modular Suite'
+    subtitle: 'Přístup a správa vašich aktivních modulů'
 
 language:
     Czech: 'čeština'

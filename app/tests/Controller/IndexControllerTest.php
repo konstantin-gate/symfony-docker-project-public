@@ -41,7 +41,10 @@ final class IndexControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
 
         // 1. Ověření nadpisu sekce
-        self::assertAnySelectorTextContains('h2', 'Connected Modules');
+        // Check that the H2 contains the translated text "Symfony Modular Suite"
+        // (Assuming the default locale or the test environment locale is English,
+        //  and 'index.connected_modules' translates to that.)
+        self::assertAnySelectorTextContains('h2', 'Symfony Modular Suite');
 
         // 2. Ověření Karty "Greeting Module"
         // Hledáme kartu, která obsahuje text "Greeting Module"

@@ -1,6 +1,6 @@
 index:
     title: Multi-Currency Wallet
-    description: Financial calculation module
+    description: Balance management, currency conversion, and live exchange rates
     open_tooltip: Go to module
 
 language:
