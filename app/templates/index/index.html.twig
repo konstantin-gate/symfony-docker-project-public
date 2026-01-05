@@ -4,55 +4,94 @@
 {% block title %}{{ 'index.title'|trans }}{% endblock %}
 
 {% block body %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
+    <div class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="flex items-center justify-between mb-12">
+            <div>
+                <h1 class="text-4xl font-bold text-slate-900 mb-2">{{'index.connected_modules'|trans}}</h1>
+                <p class="text-slate-600">Access and manage your active modules</p>
+            </div>
 
-<div class="example-wrapper mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>{{'index.connected_modules'|trans}}</h2>
-        <div class="dropdown">
-            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                {{ app.request.locale|upper }}
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1" style="min-width: auto;">
-                <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'cs'}) }}">čeština</a></li>
-                <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'en'}) }}">english</a></li>
-                <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'ru'}) }}">русский</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="card mt-3">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="border rounded p-1 me-3 d-flex align-items-center justify-content-center" style="width: 4rem; height: 4rem;">
-                        <img src="{{ asset('images/icon_greeting.png') }}" alt="" style="max-height: 100%; max-width: 100%; height: auto; width: auto;">
-                    </div>
-                    <div>
-                        <h5 class="card-title mb-1">{{'index.title'|trans({}, 'greeting')}}</h5>
-                        <p class="card-text text-secondary small-text mb-0">{{'index.description'|trans({}, 'greeting')}}</p>
+            <div class="relative group">
+                <button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all duration-200" id="langDropdown">
+                    <i class="bi bi-globe w-4 h-4 text-slate-600"></i>
+                    <span class="text-slate-700 font-medium">{{ app.request.locale|upper }}</span>
+                </button>
+                {# Custom Dropdown Content #}
+                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div class="py-1">
+                        <a href="{{ path('index_default', {'_locale': 'cs'}) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900">Čeština</a>
+                        <a href="{{ path('index_default', {'_locale': 'en'}) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900">English</a>
+                        <a href="{{ path('index_default', {'_locale': 'ru'}) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900">Русский</a>
                     </div>
                 </div>
-                <a href="{{ path('greeting_dashboard', {'_locale': app.request.locale}) }}" class="btn btn-outline-secondary" title="{{'index.open_tooltip'|trans({}, 'greeting')}}">
-                    <i class="bi bi-caret-right"></i>
-                </a>
             </div>
         </div>
-    </div>
-    <div class="card mt-3">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="border rounded p-2 me-3 d-flex align-items-center justify-content-center" style="width: 4rem; height: 4rem;">
-                        <img src="{{ asset('images/icon_multi_currency_wallet.png') }}" alt="" style="max-height: 100%; max-width: 100%; height: auto; width: auto;">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {# Greeting Module Card #}
+            <a href="{{ path('greeting_dashboard', {'_locale': app.request.locale}) }}" class="block text-decoration-none">
+                <div class="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-transparent cursor-pointer h-full">
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-rose-500 to-orange-400"
+                         style="mix-blend-mode: multiply; opacity: 0.03;"></div>
+
+                    <div class="relative p-8 h-full flex flex-col">
+                        <div class="flex items-start justify-between mb-6">
+                            <div class="p-4 rounded-xl bg-gradient-to-br from-rose-50 to-orange-50 group-hover:scale-110 transition-transform duration-300">
+                                <div class="text-transparent bg-clip-text bg-gradient-to-br from-rose-500 to-orange-400">
+                                    <i class="bi bi-gift-fill text-3xl text-rose-500"></i>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-50 group-hover:bg-gradient-to-br group-hover:from-slate-100 group-hover:to-slate-50 border border-slate-200 group-hover:border-slate-300 transition-all duration-300 group-hover:shadow-md">
+                                <i class="bi bi-chevron-right w-5 h-5 text-slate-600 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-all duration-300 flex justify-center items-center"></i>
+                            </div>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-slate-900 transition-colors">
+                            {{'index.title'|trans({}, 'greeting')}}
+                        </h3>
+
+                        <p class="text-slate-600 leading-relaxed">
+                            {{'index.description'|trans({}, 'greeting')}}
+                        </p>
                     </div>
-                    <div>
-                        <h5 class="card-title mb-1">{{'index.title'|trans({}, 'multi_currency_wallet')}}</h5>
-                        <p class="card-text text-secondary small-text mb-0">{{'index.description'|trans({}, 'multi_currency_wallet')}}</p>
-                    </div>
+
+                    <div class="h-1 w-0 group-hover:w-full transition-all duration-500 bg-gradient-to-r from-rose-500 to-orange-400"></div>
                 </div>
-                <a href="{{ path('multi_currency_wallet_dashboard', {'_locale': app.request.locale}) }}" class="btn btn-outline-secondary" title="{{'index.open_tooltip'|trans({}, 'multi_currency_wallet')}}">
-                    <i class="bi bi-caret-right"></i>
-                </a>
-            </div>
+            </a>
+
+            {# Money Calculator Module Card #}
+            <a href="{{ path('multi_currency_wallet_dashboard', {'_locale': app.request.locale}) }}" class="block text-decoration-none">
+                <div class="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-transparent cursor-pointer h-full">
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-emerald-500 to-teal-400"
+                         style="mix-blend-mode: multiply; opacity: 0.03;"></div>
+
+                    <div class="relative p-8 h-full flex flex-col">
+                        <div class="flex items-start justify-between mb-6">
+                            <div class="p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 group-hover:scale-110 transition-transform duration-300">
+                                <div class="text-transparent bg-clip-text bg-gradient-to-br from-emerald-500 to-teal-400">
+                                    <i class="bi bi-wallet2 text-3xl text-emerald-500"></i>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-50 group-hover:bg-gradient-to-br group-hover:from-slate-100 group-hover:to-slate-50 border border-slate-200 group-hover:border-slate-300 transition-all duration-300 group-hover:shadow-md">
+                                <i class="bi bi-chevron-right w-5 h-5 text-slate-600 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-all duration-300 flex justify-center items-center"></i>
+                            </div>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-slate-900 transition-colors">
+                            {{'index.title'|trans({}, 'multi_currency_wallet')}}
+                        </h3>
+
+                        <p class="text-slate-600 leading-relaxed">
+                            {{'index.description'|trans({}, 'multi_currency_wallet')}}
+                        </p>
+                    </div>
+
+                    <div class="h-1 w-0 group-hover:w-full transition-all duration-500 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
+                </div>
+            </a>
         </div>
     </div>
 </div>

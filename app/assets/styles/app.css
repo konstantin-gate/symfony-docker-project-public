@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import "~bootstrap/dist/css/bootstrap.min.css";
 @import "~bootstrap-icons/font/bootstrap-icons.css";
 @import "~datatables.net-bs5/css/dataTables.bootstrap5.min.css";
@@ -12,12 +18,15 @@
 }
 
 .invalid-feedback li {
-    color: #dc3545; /* Bootstrap's danger red */
+    color: #dc3545;
+    /* Bootstrap's danger red */
     display: flex;
     align-items: center;
 }
 
 .invalid-email-icon {
-    margin-right: 5px; /* Spacing between icon and text */
-    color: #dc3545; /* Ensure icon is also red */
+    margin-right: 5px;
+    /* Spacing between icon and text */
+    color: #dc3545;
+    /* Ensure icon is also red */
 }
