@@ -14,7 +14,9 @@
 {% endblock %}
 
 {% block body %}
-<div class="min-vh-100 bg-light">
+<div class="position-fixed top-0 start-0 w-100 h-100 bg-light" style="z-index: -1;"></div>
+
+<div class="">
     <header class="bg-white border-bottom shadow-sm mb-4">
         <div class="container py-4 d-flex justify-content-between align-items-center">
             <a href="{{ path('index_default', {'_locale': app.request.locale}) }}" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center">
@@ -32,9 +34,9 @@
                     <span class="me-1">{{ app.request.locale }}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1" style="min-width: auto;">
-                    <li><a class="dropdown-item small" href="{{ path('greeting_dashboard', {'_locale': 'cs'}) }}">čeština</a></li>
-                    <li><a class="dropdown-item small" href="{{ path('greeting_dashboard', {'_locale': 'en'}) }}">english</a></li>
-                    <li><a class="dropdown-item small" href="{{ path('greeting_dashboard', {'_locale': 'ru'}) }}">русский</a></li>
+                    <li><a class="dropdown-item small" href="{{ path('greeting_dashboard', {'_locale': 'cs'}) }}">{{ 'language.Czech'|trans }}</a></li>
+                    <li><a class="dropdown-item small" href="{{ path('greeting_dashboard', {'_locale': 'en'}) }}">{{ 'language.English'|trans }}</a></li>
+                    <li><a class="dropdown-item small" href="{{ path('greeting_dashboard', {'_locale': 'ru'}) }}">{{ 'language.Russian'|trans }}</a></li>
                 </ul>
             </div>
         </div>

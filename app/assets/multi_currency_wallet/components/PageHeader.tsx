@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function PageHeader() {
-  const { locale, homeUrl, title, backText, iconUrl } = useAppConfig();
+  const { locale, homeUrl, title, backText, iconUrl, translations } = useAppConfig();
 
   const switchLocale = (newLocale: string) => {
     // Replace the locale segment in the URL.
@@ -21,9 +21,9 @@ export function PageHeader() {
   };
 
   const languages = [
-    { code: 'cs', label: 'čeština' },
-    { code: 'en', label: 'english' },
-    { code: 'ru', label: 'русский' },
+    { code: 'cs', label: translations.language_czech || 'čeština' },
+    { code: 'en', label: translations.language_english || 'english' },
+    { code: 'ru', label: translations.language_russian || 'русский' },
   ];
 
   return (

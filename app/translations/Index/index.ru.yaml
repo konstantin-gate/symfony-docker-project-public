@@ -1,4 +1,10 @@
 index:
-    title: "Домашняя страница"
-    connected_modules: "Подключенные модули"
+    title: "Symfony Modular Suite"
+    connected_modules: "Symfony Modular Suite"
+    subtitle: "Доступ и управление вашими активными модулями"
+
+language:
+    Czech: 'čeština'
+    English: 'english'
+    Russian: 'русский'
 

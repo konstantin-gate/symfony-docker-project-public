@@ -22,9 +22,9 @@ import:
     generate_test_emails_tooltip: 'Сгенерировать и добавить в текстовое поле 10 тестовых email'
 
 language:
-    Czech: 'Чешский'
-    English: 'Английский'
-    Russian: 'Русский'
+    Czech: 'čeština'
+    English: 'english'
+    Russian: 'русский'
     cs_speaking: 'Чешскоговорящие'
     en_speaking: 'Англоговорящие'
     ru_speaking: 'Русскоговорящие'

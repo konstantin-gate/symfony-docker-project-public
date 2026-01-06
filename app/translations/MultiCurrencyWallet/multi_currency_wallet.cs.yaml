@@ -1,7 +1,12 @@
 index:
     title: Multiměnová peněženka
-    description: Modul pro finanční výpočty
+    description: Správa zůstatků, převody a aktuální směnné kurzy
     open_tooltip: Přejít na modul
+
+language:
+    Czech: 'čeština'
+    English: 'english'
+    Russian: 'русский'
 
 dashboard:
     title: Multiměnová peněženka

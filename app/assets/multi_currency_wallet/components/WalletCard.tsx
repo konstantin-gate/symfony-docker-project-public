@@ -57,13 +57,13 @@ export function WalletCard({ currency, symbol, balance, icon, decimals, onBalanc
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsEditing(true)}
-                  className="text-muted-foreground hover:text-foreground h-8 w-8"
+                  className="text-muted-foreground hover:text-foreground h-8 w-8 !bg-transparent !border-transparent !shadow-none !ring-0 hover:!bg-accent hover:!shadow-none hover:!border-none"
                 >
                   <Pencil className="w-4 h-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{translations['card_edit'] || "Edit"}</p>
+                {translations['card_edit'] || "Edit"}
               </TooltipContent>
             </Tooltip>
           )}

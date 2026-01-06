@@ -1,7 +1,12 @@
 index:
     title: Мультивалютный кошелёк
-    description: Модуль финансовых расчетов
+    description: Управление балансами, конвертация и актуальные курсы&nbsp;валют
     open_tooltip: Перейти к модулю
+
+language:
+    Czech: 'čeština'
+    English: 'english'
+    Russian: 'русский'
 
 dashboard:
     title: Мультивалютный кошелёк

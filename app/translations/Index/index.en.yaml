@@ -1,4 +1,10 @@
 index:
-    title: Homepage
-    connected_modules: "Connected Modules"
+    title: "Symfony Modular Suite"
+    connected_modules: "Symfony Modular Suite"
+    subtitle: "Access and manage your active modules"
+
+language:
+    Czech: 'čeština'
+    English: 'english'
+    Russian: 'русский'
 

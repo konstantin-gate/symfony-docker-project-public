@@ -4,55 +4,95 @@
 {% block title %}{{ 'index.title'|trans }}{% endblock %}
 
 {% block body %}
+<!-- Fixed background that always covers the viewport -->
+<div class="fixed inset-0 bg-gradient-to-br from-slate-50 to-slate-100 -z-10"></div>
 
-<div class="example-wrapper mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>{{'index.connected_modules'|trans}}</h2>
-        <div class="dropdown">
-            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                {{ app.request.locale|upper }}
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1" style="min-width: auto;">
-                <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'cs'}) }}">čeština</a></li>
-                <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'en'}) }}">english</a></li>
-                <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'ru'}) }}">русский</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="card mt-3">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="border rounded p-1 me-3 d-flex align-items-center justify-content-center" style="width: 4rem; height: 4rem;">
-                        <img src="{{ asset('images/icon_greeting.png') }}" alt="" style="max-height: 100%; max-width: 100%; height: auto; width: auto;">
-                    </div>
-                    <div>
-                        <h5 class="card-title mb-1">{{'index.title'|trans({}, 'greeting')}}</h5>
-                        <p class="card-text text-secondary small-text mb-0">{{'index.description'|trans({}, 'greeting')}}</p>
-                    </div>
+<!-- Scrollable content -->
+<div class="pt-4">
+    <div class="max-w-5xl w-full mx-auto px-0 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-[1rem]">
+                <img src="{{ asset('images/icon 3D Symfony Modular Suite.png') }}"
+                     alt="Symfony Modular Suite Icon"
+                     class="w-auto h-[7rem] object-contain">
+                <div>
+                    <h1 class="text-4xl font-bold text-slate-900 mb-2">{{'index.connected_modules'|trans}}</h1>
+                    <p class="text-slate-600">{{ 'index.subtitle'|trans }}</p>
                 </div>
-                <a href="{{ path('greeting_dashboard', {'_locale': app.request.locale}) }}" class="btn btn-outline-secondary" title="{{'index.open_tooltip'|trans({}, 'greeting')}}">
-                    <i class="bi bi-caret-right"></i>
-                </a>
+            </div>
+
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary btn-sm dropdown-toggle text-uppercase" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="me-1">{{ app.request.locale }}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" style="min-width: auto;">
+                    <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'cs'}) }}">{{ 'language.Czech'|trans }}</a></li>
+                    <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'en'}) }}">{{ 'language.English'|trans }}</a></li>
+                    <li><a class="dropdown-item small" href="{{ path('index_default', {'_locale': 'ru'}) }}">{{ 'language.Russian'|trans }}</a></li>
+                </ul>
             </div>
         </div>
-    </div>
-    <div class="card mt-3">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="border rounded p-2 me-3 d-flex align-items-center justify-content-center" style="width: 4rem; height: 4rem;">
-                        <img src="{{ asset('images/icon_multi_currency_wallet.png') }}" alt="" style="max-height: 100%; max-width: 100%; height: auto; width: auto;">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {# Greeting Module Card #}
+            <a href="{{ path('greeting_dashboard', {'_locale': app.request.locale}) }}" class="block text-decoration-none">
+                <div class="group relative bg-gradient-to-b from-white to-[#FFF6F4] rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-transparent cursor-pointer h-full">
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-rose-500 to-orange-400"
+                         style="mix-blend-mode: multiply; opacity: 0.03;"></div>
+
+                    <div class="relative p-8 h-full flex flex-col">
+                        <div class="flex items-start justify-between mb-6">
+                            <div class="p-4 rounded-xl bg-gradient-to-br from-rose-50 to-orange-50 group-hover:scale-110 transition-transform duration-300">
+                                <img src="{{ asset('images/icon_greeting_letter.png') }}" 
+                                     alt="Greeting Icon" 
+                                     class="w-20 h-20 -m-6 object-contain drop-shadow-sm">
+                            </div>
+
+                            <div class="arrow-circle arrow-greeting"></div>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-slate-900 transition-colors">
+                            {{'index.title'|trans({}, 'greeting')}}
+                        </h3>
+
+                        <p class="text-slate-600 leading-relaxed mb-0">
+                            {{'index.description'|trans({}, 'greeting')|raw}}
+                        </p>
                     </div>
-                    <div>
-                        <h5 class="card-title mb-1">{{'index.title'|trans({}, 'multi_currency_wallet')}}</h5>
-                        <p class="card-text text-secondary small-text mb-0">{{'index.description'|trans({}, 'multi_currency_wallet')}}</p>
-                    </div>
+
+                    <div class="absolute bottom-0 left-0 h-[4px] w-0 group-hover:w-full transition-all [transition-duration:1000ms] bg-gradient-to-r from-[#fff2f0] to-[#f43f5e]"></div>
                 </div>
-                <a href="{{ path('multi_currency_wallet_dashboard', {'_locale': app.request.locale}) }}" class="btn btn-outline-secondary" title="{{'index.open_tooltip'|trans({}, 'multi_currency_wallet')}}">
-                    <i class="bi bi-caret-right"></i>
-                </a>
-            </div>
+            </a>
+
+            {# Money Calculator Module Card #}
+            <a href="{{ path('multi_currency_wallet_dashboard', {'_locale': app.request.locale}) }}" class="block text-decoration-none">
+                <div class="group relative bg-gradient-to-b from-white to-[#F4FFFB] rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-transparent cursor-pointer h-full">
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-emerald-500 to-teal-400"
+                         style="mix-blend-mode: multiply; opacity: 0.03;"></div>
+
+                    <div class="relative p-8 h-full flex flex-col">
+                        <div class="flex items-start justify-between mb-6">
+                            <div class="p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 group-hover:scale-110 transition-transform duration-300">
+                                <img src="{{ asset('images/icon_multi_currency_wallet_2.png') }}" 
+                                     alt="Wallet Icon" 
+                                     class="w-20 h-20 -m-6 object-contain drop-shadow-sm">
+                            </div>
+
+                            <div class="arrow-circle arrow-wallet"></div>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-slate-900 transition-colors">
+                            {{'index.title'|trans({}, 'multi_currency_wallet')}}
+                        </h3>
+
+                        <p class="text-slate-600 leading-relaxed mb-0">
+                            {{'index.description'|trans({}, 'multi_currency_wallet')|raw}}
+                        </p>
+                    </div>
+
+                    <div class="absolute bottom-0 left-0 h-[4px] w-0 group-hover:w-full transition-all [transition-duration:1000ms] bg-gradient-to-r from-[#2a9d90] to-[#2b849c]"></div>
+                </div>
+            </a>
         </div>
     </div>
 </div>
