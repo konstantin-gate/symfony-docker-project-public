@@ -1,7 +1,7 @@
 /* Custom styles for index page */
 .arrow-circle {
-    width: 60px;
-    height: 60px;
+    width: 45px;
+    height: 45px;
     background: white;
     border-radius: 50%;
     position: relative;
@@ -35,14 +35,14 @@
     transform: translate(-40%, -50%);
     width: 0;
     height: 0;
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
 }
 
 .arrow-greeting::after {
-    border-left: 15px solid #f43f5e;
+    border-left: 11px solid #f43f5e;
 }
 
 .arrow-wallet::after {
-    border-left: 15px solid #2a9d90;
+    border-left: 11px solid #2a9d90;
 }
