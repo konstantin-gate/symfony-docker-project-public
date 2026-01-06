@@ -63,7 +63,7 @@ export function WalletCard({ currency, symbol, balance, icon, decimals, onBalanc
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{translations['card_edit'] || "Edit"}</p>
+                {translations['card_edit'] || "Edit"}
               </TooltipContent>
             </Tooltip>
           )}
