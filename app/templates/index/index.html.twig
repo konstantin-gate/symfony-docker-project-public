@@ -36,7 +36,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {# Greeting Module Card #}
             <a href="{{ path('greeting_dashboard', {'_locale': app.request.locale}) }}" class="block text-decoration-none">
-                <div class="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-transparent cursor-pointer h-full">
+                <div class="group relative bg-gradient-to-b from-white to-[#FFF6F4] rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-transparent cursor-pointer h-full">
                     <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-rose-500 to-orange-400"
                          style="mix-blend-mode: multiply; opacity: 0.03;"></div>
 
@@ -57,7 +57,7 @@
                             {{'index.title'|trans({}, 'greeting')}}
                         </h3>
 
-                        <p class="text-slate-600 leading-relaxed">
+                        <p class="text-slate-600 leading-relaxed mb-0">
                             {{'index.description'|trans({}, 'greeting')|raw}}
                         </p>
                     </div>
@@ -68,7 +68,7 @@
 
             {# Money Calculator Module Card #}
             <a href="{{ path('multi_currency_wallet_dashboard', {'_locale': app.request.locale}) }}" class="block text-decoration-none">
-                <div class="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-transparent cursor-pointer h-full">
+                <div class="group relative bg-gradient-to-b from-white to-[#F4FFFB] rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-transparent cursor-pointer h-full">
                     <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-emerald-500 to-teal-400"
                          style="mix-blend-mode: multiply; opacity: 0.03;"></div>
 
@@ -89,7 +89,7 @@
                             {{'index.title'|trans({}, 'multi_currency_wallet')}}
                         </h3>
 
-                        <p class="text-slate-600 leading-relaxed">
+                        <p class="text-slate-600 leading-relaxed mb-0">
                             {{'index.description'|trans({}, 'multi_currency_wallet')|raw}}
                         </p>
                     </div>
