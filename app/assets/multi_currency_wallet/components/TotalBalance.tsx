@@ -106,7 +106,7 @@ export function TotalBalance({ balances }: TotalBalanceProps) {
 
           {total !== null && (
             <div className="flex-1 w-full md:w-auto h-10 rounded-md flex items-center justify-center px-6 animate-fade-in bg-total-balance">
-              <p className="text-lg font-bold text-white whitespace-nowrap">
+              <p className="text-lg font-bold text-white whitespace-nowrap m-0 flex items-center leading-none">
                 <span className="text-sm font-normal text-white/80 mr-2">
                   {translations['total_balance_result_label'] || "Total Balance"}:
                 </span>
