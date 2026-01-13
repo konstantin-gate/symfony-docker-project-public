@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\PolygraphyDigest\Controller\Api;
 
+use App\PolygraphyDigest\DTO\Search\SearchCriteria;
 use App\PolygraphyDigest\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -20,5 +23,59 @@ class PolygraphyApiController extends AbstractController
         private readonly SearchService $searchService,
         private readonly SerializerInterface $serializer
     ) {
+    }
+
+    /**
+     * Vyhledávání článků (news/articles).
+     * Endpoint: GET /api/polygraphy/articles
+     */
+    #[Route('/articles', name: 'search_articles', methods: ['GET'])]
+    public function searchArticles(Request $request): JsonResponse
+    {
+        $criteria = SearchCriteria::fromRequest($request);
+        $result = $this->searchService->searchArticles($criteria);
+
+        return new JsonResponse($this->serializer->serialize($result, 'json'), 200, [], true);
+    }
+
+    /**
+     * Vyhledávání produktů.
+     * Endpoint: GET /api/polygraphy/products
+     */
+    #[Route('/products', name: 'search_products', methods: ['GET'])]
+    public function searchProducts(Request $request): JsonResponse
+    {
+        $criteria = SearchCriteria::fromRequest($request);
+        $result = $this->searchService->searchProducts($criteria);
+
+        return new JsonResponse($this->serializer->serialize($result, 'json'), 200, [], true);
+    }
+
+    /**
+     * Našeptávač (Autocomplete).
+     * Endpoint: GET /api/polygraphy/suggest
+     */
+    #[Route('/suggest', name: 'suggest', methods: ['GET'])]
+    public function suggest(Request $request): JsonResponse
+    {
+        $query = (string) $request->query->get('q', '');
+        $suggestions = $this->searchService->suggest($query);
+
+        return new JsonResponse($suggestions);
+    }
+
+    /**
+     * Získání statistik (agregací).
+     * Endpoint: GET /api/polygraphy/stats
+     */
+    #[Route('/stats', name: 'stats', methods: ['GET'])]
+    public function stats(Request $request): JsonResponse
+    {
+        $criteria = SearchCriteria::fromRequest($request);
+        $criteria->limit = 0; // Chceme pouze agregace
+
+        $result = $this->searchService->searchArticles($criteria);
+
+        return new JsonResponse($result->aggregations);
     }
 }
