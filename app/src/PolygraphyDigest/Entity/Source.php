@@ -84,6 +84,7 @@ class Source
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -95,6 +96,7 @@ class Source
     public function setUrl(string $url): self
     {
         $this->url = $url;
+
         return $this;
     }
 
@@ -106,6 +108,7 @@ class Source
     public function setType(SourceTypeEnum $type): self
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -117,6 +120,7 @@ class Source
     public function setActive(bool $active): self
     {
         $this->active = $active;
+
         return $this;
     }
 
@@ -128,6 +132,7 @@ class Source
     public function setSchedule(?string $schedule): self
     {
         $this->schedule = $schedule;
+
         return $this;
     }
 
@@ -139,6 +144,7 @@ class Source
     public function setLastScrapedAt(?\DateTimeImmutable $lastScrapedAt): self
     {
         $this->lastScrapedAt = $lastScrapedAt;
+
         return $this;
     }
 

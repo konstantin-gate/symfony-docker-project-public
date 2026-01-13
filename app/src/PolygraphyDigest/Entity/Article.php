@@ -79,6 +79,7 @@ class Article
     public function setSource(?Source $source): self
     {
         $this->source = $source;
+
         return $this;
     }
 
@@ -90,6 +91,7 @@ class Article
     public function setExternalId(?string $externalId): self
     {
         $this->externalId = $externalId;
+
         return $this;
     }
 
@@ -101,6 +103,7 @@ class Article
     public function setTitle(string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -112,6 +115,7 @@ class Article
     public function setUrl(string $url): self
     {
         $this->url = $url;
+
         return $this;
     }
 
@@ -123,6 +127,7 @@ class Article
     public function setContent(?string $content): self
     {
         $this->content = $content;
+
         return $this;
     }
 
@@ -134,6 +139,7 @@ class Article
     public function setSummary(?string $summary): self
     {
         $this->summary = $summary;
+
         return $this;
     }
 
@@ -145,6 +151,7 @@ class Article
     public function setPublishedAt(?\DateTimeImmutable $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
+
         return $this;
     }
 
@@ -156,6 +163,7 @@ class Article
     public function setFetchedAt(\DateTimeImmutable $fetchedAt): self
     {
         $this->fetchedAt = $fetchedAt;
+
         return $this;
     }
 
@@ -167,6 +175,7 @@ class Article
     public function setStatus(ArticleStatusEnum $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 

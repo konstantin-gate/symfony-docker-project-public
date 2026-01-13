@@ -60,6 +60,7 @@ class Product
     public function setArticle(?Article $article): self
     {
         $this->article = $article;
+
         return $this;
     }
 
@@ -71,6 +72,7 @@ class Product
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -82,6 +84,7 @@ class Product
     public function setPrice(?string $price): self
     {
         $this->price = $price;
+
         return $this;
     }
 
@@ -93,6 +96,7 @@ class Product
     public function setCurrency(?string $currency): self
     {
         $this->currency = $currency;
+
         return $this;
     }
 
@@ -110,6 +114,7 @@ class Product
     public function setAttributes(?array $attributes): self
     {
         $this->attributes = $attributes;
+
         return $this;
     }
 
@@ -127,6 +132,7 @@ class Product
     public function setRawData(?array $rawData): self
     {
         $this->rawData = $rawData;
+
         return $this;
     }
 }
