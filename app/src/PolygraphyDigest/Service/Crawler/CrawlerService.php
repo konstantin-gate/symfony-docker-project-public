@@ -6,6 +6,7 @@ namespace App\PolygraphyDigest\Service\Crawler;
 
 use App\PolygraphyDigest\Entity\Source;
 use App\PolygraphyDigest\Repository\ArticleRepository;
+use App\PolygraphyDigest\Service\Search\SearchIndexer;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -20,6 +21,7 @@ readonly class CrawlerService
         private ParserProvider $parserProvider,
         private EntityManagerInterface $entityManager,
         private ArticleRepository $articleRepository,
+        private SearchIndexer $searchIndexer,
         private LoggerInterface $logger,
     ) {
     }
@@ -53,6 +55,7 @@ readonly class CrawlerService
             ]);
 
             $newCount = 0;
+            $newArticles = [];
 
             foreach ($articles as $article) {
                 // Kontrola duplicity podle externího ID a zdroje
@@ -63,13 +66,26 @@ readonly class CrawlerService
 
                 if ($existing === null) {
                     $this->entityManager->persist($article);
+                    $newArticles[] = $article;
                     ++$newCount;
                 }
             }
 
             if ($newCount > 0) {
                 $this->entityManager->flush();
-                $this->logger->info(\sprintf('Saved %d new articles', $newCount), [
+
+                foreach ($newArticles as $newArticle) {
+                    try {
+                        $this->searchIndexer->indexArticle($newArticle);
+                    } catch (\Throwable $e) {
+                        $this->logger->error('Failed to index article', [
+                            'article_id' => $newArticle->getId(),
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                }
+
+                $this->logger->info(\sprintf('Saved and indexed %d new articles', $newCount), [
                     'source' => $source->getName(),
                 ]);
             }
