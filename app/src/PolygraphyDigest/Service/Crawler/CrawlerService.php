@@ -44,7 +44,10 @@ readonly class CrawlerService
         try {
             $this->logger->info('Fetching content', ['url' => $url, 'source' => $source->getName()]);
 
-            $response = $this->httpClient->request('GET', $url);
+            $response = $this->httpClient->request('GET', $url, [
+                'verify_peer' => false,
+                'verify_host' => false,
+            ]);
             $content = $response->getContent();
 
             $parser = $this->parserProvider->getParser($source->getType());
