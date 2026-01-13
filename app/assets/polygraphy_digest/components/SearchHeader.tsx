@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSearch } from '../context/SearchContext';
 import { api } from '../services/api';
 import { Search, Loader2 } from 'lucide-react';
 import { debounce } from 'lodash';
 
 const SearchHeader: React.FC = () => {
+    const { t } = useTranslation();
     const { query, setQuery, performSearch, isLoading } = useSearch();
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -33,7 +35,6 @@ const SearchHeader: React.FC = () => {
         setQuery(suggestion);
         setSuggestions([]);
         setShowSuggestions(false);
-        // Trigger search immediately on suggestion click
         setTimeout(performSearch, 0);
     };
 
@@ -53,12 +54,12 @@ const SearchHeader: React.FC = () => {
                     <input
                         type="text"
                         className="form-control border-start-0 ps-0"
-                        placeholder="Hledejte v novinkách nebo produktech..."
+                        placeholder={t('search_placeholder')}
                         value={query}
                         onChange={handleInputChange}
                         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                     />
-                    <button className="btn btn-primary px-4" type="submit">Hledat</button>
+                    <button className="btn btn-primary px-4" type="submit">{t('search_button')}</button>
                 </div>
 
                 {showSuggestions && suggestions.length > 0 && (

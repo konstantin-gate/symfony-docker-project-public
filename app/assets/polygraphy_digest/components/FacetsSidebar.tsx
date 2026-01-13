@@ -1,8 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSearch } from '../context/SearchContext';
 import { Filter, Calendar, Tag, CreditCard } from 'lucide-react';
 
 const FacetsSidebar: React.FC = () => {
+    const { t } = useTranslation();
     const { articleResults, productResults, searchMode, filters, setFilters, performSearch } = useSearch();
 
     const aggregations = searchMode === 'articles' ? articleResults?.aggregations : productResults?.aggregations;
@@ -15,7 +17,6 @@ const FacetsSidebar: React.FC = () => {
             newFilters[key] = value;
         }
         setFilters(newFilters);
-        // Instant feedback
         setTimeout(performSearch, 0);
     };
 
@@ -24,7 +25,7 @@ const FacetsSidebar: React.FC = () => {
             <div className="card-header bg-white border-0 py-3">
                 <h5 className="card-title mb-0 d-flex align-items-center">
                     <Filter size={18} className="me-2 text-primary" />
-                    Filtry
+                    {t('filters.title')}
                 </h5>
             </div>
             <div className="card-body pt-0">
@@ -33,7 +34,7 @@ const FacetsSidebar: React.FC = () => {
                     <div className="mb-4">
                         <label className="form-label fw-bold d-flex align-items-center small text-uppercase text-muted mb-3">
                             <Tag size={14} className="me-2" />
-                            Zdroje
+                            {t('filters.sources')}
                         </label>
                         <div className="list-group list-group-flush border rounded overflow-hidden">
                             {aggregations.sources.buckets?.map((bucket) => (
@@ -56,13 +57,13 @@ const FacetsSidebar: React.FC = () => {
                 <div className="mb-4">
                     <label className="form-label fw-bold d-flex align-items-center small text-uppercase text-muted mb-3">
                         <Calendar size={14} className="me-2" />
-                        Období
+                        {t('filters.period')}
                     </label>
                     <select className="form-select form-select-sm" onChange={(e) => handleFilterChange('date_range', e.target.value)}>
-                        <option value="">Všechna data</option>
-                        <option value="today">Dnes</option>
-                        <option value="week">Poslední týden</option>
-                        <option value="month">Poslední měsíc</option>
+                        <option value="">{t('filters.all_dates')}</option>
+                        <option value="today">{t('filters.today')}</option>
+                        <option value="week">{t('filters.week')}</option>
+                        <option value="month">{t('filters.month')}</option>
                     </select>
                 </div>
 
@@ -71,12 +72,12 @@ const FacetsSidebar: React.FC = () => {
                     <div className="mb-4">
                         <label className="form-label fw-bold d-flex align-items-center small text-uppercase text-muted mb-3">
                             <CreditCard size={14} className="me-2" />
-                            Cena
+                            {t('filters.price')}
                         </label>
                         <div className="px-2 small text-muted">
-                            <div>Min: {Math.round(aggregations.price_stats.min || 0)}</div>
-                            <div>Max: {Math.round(aggregations.price_stats.max || 0)}</div>
-                            <div>Průměr: {Math.round(aggregations.price_stats.avg || 0)}</div>
+                            <div>{t('filters.min')}: {Math.round(aggregations.price_stats.min || 0)}</div>
+                            <div>{t('filters.max')}: {Math.round(aggregations.price_stats.max || 0)}</div>
+                            <div>{t('filters.avg')}: {Math.round(aggregations.price_stats.avg || 0)}</div>
                         </div>
                     </div>
                 )}

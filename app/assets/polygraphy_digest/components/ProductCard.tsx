@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Product } from '../types';
 import { ShoppingCart, Tag } from 'lucide-react';
 
@@ -7,6 +8,8 @@ interface Props {
 }
 
 const ProductCard: React.FC<Props> = ({ product }) => {
+    const { t } = useTranslation();
+
     return (
         <div className="card h-100 shadow-sm border-0 transition-all">
             <div className="card-body">
@@ -28,7 +31,7 @@ const ProductCard: React.FC<Props> = ({ product }) => {
             <div className="card-footer bg-transparent border-0 pb-3">
                 <button className="btn btn-outline-primary btn-sm w-100 d-flex align-items-center justify-content-center">
                     <ShoppingCart size={14} className="me-2" />
-                    Koupit
+                    {t('buy_button')}
                 </button>
             </div>
         </div>

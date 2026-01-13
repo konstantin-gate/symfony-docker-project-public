@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SearchProvider } from './context/SearchContext';
 import SearchHeader from './components/SearchHeader';
 import FacetsSidebar from './components/FacetsSidebar';
 import ResultsList from './components/ResultsList';
 import Dashboard from './pages/Dashboard';
+import LanguageSwitcher from './components/LanguageSwitcher';
 import { LayoutDashboard, Newspaper, Package, Settings } from 'lucide-react';
 
 const App: React.FC = () => {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<'dashboard' | 'search'>('dashboard');
 
     return (
@@ -25,18 +28,18 @@ const App: React.FC = () => {
                             <button 
                                 onClick={() => setActiveTab('dashboard')}
                                 className={`btn border-0 p-3 rounded-3 transition-all ${activeTab === 'dashboard' ? 'bg-primary text-white shadow' : 'text-white-50 hover-text-white'}`}
-                                title="Dashboard"
+                                title={t('nav.dashboard')}
                             >
                                 <LayoutDashboard size={24} />
                             </button>
                             <button 
                                 onClick={() => setActiveTab('search')}
                                 className={`btn border-0 p-3 rounded-3 transition-all ${activeTab === 'search' ? 'bg-primary text-white shadow' : 'text-white-50 hover-text-white'}`}
-                                title="Search"
+                                title={t('nav.search')}
                             >
                                 <Newspaper size={24} />
                             </button>
-                            <button className="btn border-0 p-3 rounded-3 text-white-50 hover-text-white mt-auto" title="Settings">
+                            <button className="btn border-0 p-3 rounded-3 text-white-50 hover-text-white mt-auto" title={t('nav.settings')}>
                                 <Settings size={24} />
                             </button>
                         </nav>
@@ -49,16 +52,12 @@ const App: React.FC = () => {
                                 <div className="row align-items-center">
                                     <div className="col">
                                         <h1 className="h4 mb-0 fw-bold text-dark">
-                                            {activeTab === 'dashboard' ? 'Dashboard & Analytics' : 'Polygraphy Smart Search'}
+                                            {activeTab === 'dashboard' ? t('dashboard_title') : t('app_title')}
                                         </h1>
-                                        <span className="small text-muted">PolygraphyDigest Module v1.0</span>
+                                        <span className="small text-muted">{t('app_subtitle')}</span>
                                     </div>
                                     <div className="col-auto">
-                                        <div className="dropdown">
-                                            <button className="btn btn-light btn-sm rounded-pill border shadow-sm px-3 dropdown-toggle" type="button">
-                                                Čeština
-                                            </button>
-                                        </div>
+                                        <LanguageSwitcher />
                                     </div>
                                 </div>
                             </div>

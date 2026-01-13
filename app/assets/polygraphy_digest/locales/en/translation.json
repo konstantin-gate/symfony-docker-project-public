@@ -1,0 +1,41 @@
+{
+    "app_title": "Polygraphy Smart Search",
+    "app_subtitle": "Smart Search & Analytics for Polygraphy Industry",
+    "dashboard_title": "Dashboard & Analytics",
+    "search_placeholder": "Search news or products...",
+    "search_button": "Search",
+    "loading": "Searching for the best results...",
+    "no_results": "No results found for your query.",
+    "found_articles": "Found {{count}} articles",
+    "found_products": "Found {{count}} products",
+    "page_info": "Page {{page}} of {{totalPages}}",
+    "prev_page": "Previous",
+    "next_page": "Next",
+    "more_link": "Read more",
+    "buy_button": "Buy",
+    "active_sources": "Active Sources",
+    "trend_week": "Weekly Trend",
+    "total_articles": "Total Articles",
+    "source_distribution": "Source Distribution",
+    "quick_search": "Quick Search",
+    "quick_search_desc": "Find the cheapest printing services across the market in seconds.",
+    "start_search": "Start Search",
+    "filters": {
+        "title": "Filters",
+        "sources": "Sources",
+        "period": "Period",
+        "price": "Price",
+        "all_dates": "All dates",
+        "today": "Today",
+        "week": "Last week",
+        "month": "Last month",
+        "min": "Min",
+        "max": "Max",
+        "avg": "Avg"
+    },
+    "nav": {
+        "dashboard": "Dashboard",
+        "search": "Search",
+        "settings": "Settings"
+    }
+}

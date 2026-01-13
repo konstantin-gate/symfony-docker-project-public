@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Article } from '../types';
 import { ExternalLink, Calendar, Building2 } from 'lucide-react';
 
@@ -7,7 +8,10 @@ interface Props {
 }
 
 const ArticleCard: React.FC<Props> = ({ article }) => {
-    const formattedDate = new Date(article.publishedAt).toLocaleDateString('cs-CZ', {
+    const { t, i18n } = useTranslation();
+    
+    // Fallback formatting for date
+    const formattedDate = new Date(article.publishedAt).toLocaleDateString(i18n.language === 'cs' ? 'cs-CZ' : i18n.language, {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
@@ -38,7 +42,7 @@ const ArticleCard: React.FC<Props> = ({ article }) => {
 
                 <div className="mt-auto pt-3 border-top d-flex justify-content-end">
                     <span className="text-primary small fw-semibold d-flex align-items-center">
-                        Více <ExternalLink size={14} className="ms-1" />
+                        {t('more_link')} <ExternalLink size={14} className="ms-1" />
                     </span>
                 </div>
             </div>

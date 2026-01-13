@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../services/api';
 import { BarChart3, TrendingUp, Newspaper, PackageSearch } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
+    const { t } = useTranslation();
     const [stats, setStats] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -32,7 +34,7 @@ const Dashboard: React.FC = () => {
                         <div className="card-body">
                             <div className="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <div className="small opacity-75 text-uppercase fw-bold mb-1">Aktivní zdroje</div>
+                                    <div className="small opacity-75 text-uppercase fw-bold mb-1">{t('active_sources')}</div>
                                     <div className="h3 mb-0 fw-bold">{sourcesCount}</div>
                                 </div>
                                 <BarChart3 size={32} className="opacity-50" />
@@ -45,7 +47,7 @@ const Dashboard: React.FC = () => {
                         <div className="card-body">
                             <div className="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <div className="small opacity-75 text-uppercase fw-bold mb-1">Trend týdne</div>
+                                    <div className="small opacity-75 text-uppercase fw-bold mb-1">{t('trend_week')}</div>
                                     <div className="h3 mb-0 fw-bold">+12%</div>
                                 </div>
                                 <TrendingUp size={32} className="opacity-50" />
@@ -58,7 +60,7 @@ const Dashboard: React.FC = () => {
                         <div className="card-body">
                             <div className="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <div className="small opacity-75 text-uppercase fw-bold mb-1">Celkem článků</div>
+                                    <div className="small opacity-75 text-uppercase fw-bold mb-1">{t('total_articles')}</div>
                                     <div className="h3 mb-0 fw-bold">1,240</div>
                                 </div>
                                 <Newspaper size={32} className="opacity-50" />
@@ -72,15 +74,15 @@ const Dashboard: React.FC = () => {
                 <div className="col-lg-8">
                     <div className="card border-0 shadow-sm h-100">
                         <div className="card-header bg-white py-3">
-                            <h6 className="mb-0 fw-bold">Distribuce zdrojů</h6>
+                            <h6 className="mb-0 fw-bold">{t('source_distribution')}</h6>
                         </div>
                         <div className="card-body">
                             <div className="table-responsive">
                                 <table className="table table-hover align-middle mb-0">
                                     <thead className="table-light">
                                         <tr className="small text-uppercase text-muted">
-                                            <th>Zdroj</th>
-                                            <th className="text-end">Počet článků</th>
+                                            <th>{t('filters.sources')}</th>
+                                            <th className="text-end">{t('total_articles')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -101,12 +103,12 @@ const Dashboard: React.FC = () => {
                 <div className="col-lg-4">
                     <div className="card border-0 shadow-sm h-100">
                         <div className="card-header bg-white py-3">
-                            <h6 className="mb-0 fw-bold">Rychlé hledání</h6>
+                            <h6 className="mb-0 fw-bold">{t('quick_search')}</h6>
                         </div>
                         <div className="card-body text-center d-flex flex-column justify-content-center">
                             <PackageSearch size={48} className="text-primary mx-auto mb-3 opacity-25" />
-                            <p className="text-muted small mb-4">Najděte nejlevnější tiskové služby napříč trhem během několika sekund.</p>
-                            <button className="btn btn-outline-primary rounded-pill">Spustit vyhledávač</button>
+                            <p className="text-muted small mb-4">{t('quick_search_desc')}</p>
+                            <button className="btn btn-outline-primary rounded-pill">{t('start_search')}</button>
                         </div>
                     </div>
                 </div>
