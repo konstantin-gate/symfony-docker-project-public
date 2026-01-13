@@ -61,19 +61,6 @@ class PolygraphySourceFixtures extends Fixture implements FixtureGroupInterface
                 'type' => SourceTypeEnum::RSS,
                 'schedule' => '0 9 * * *', // Раз в день в 9 утра
             ],
-            [
-                'name' => 'Font.cz',
-                'url' => 'https://www.font.cz/rss.html',
-                'type' => SourceTypeEnum::RSS,
-                'schedule' => '0 10 * * *', // Раз в день в 10 утра
-            ],
-            // Запасной англоязычный источник для объема
-            [
-                'name' => 'PrintWeek (EN)',
-                'url' => 'https://www.printweek.com/rss/news',
-                'type' => SourceTypeEnum::RSS,
-                'schedule' => '*/45 * * * *',
-            ],
         ];
 
         foreach ($sources as $data) {
