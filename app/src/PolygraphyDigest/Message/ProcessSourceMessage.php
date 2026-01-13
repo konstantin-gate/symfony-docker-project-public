@@ -13,7 +13,7 @@ final readonly class ProcessSourceMessage
     /**
      * Vytvoří novou instanci zprávy.
      *
-     * @param string $sourceId UUID identifikátor zdroje, který má být zpracován.
+     * @param string $sourceId UUID identifikátor zdroje, který má být zpracován
      */
     public function __construct(
         public string $sourceId,

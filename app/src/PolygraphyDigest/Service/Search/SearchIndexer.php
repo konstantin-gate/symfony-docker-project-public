@@ -12,7 +12,6 @@ use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Exception\MissingParameterException;
 use Elastic\Elasticsearch\Exception\ServerResponseException;
-use InvalidArgumentException;
 
 /**
  * Služba pro indexaci dokumentů do Elasticsearch.
@@ -37,7 +36,7 @@ class SearchIndexer
     public function indexArticle(Article $article): void
     {
         if ($article->getId() === null) {
-            throw new InvalidArgumentException('Article id is required for indexing.');
+            throw new \InvalidArgumentException('Article id is required for indexing.');
         }
 
         $dto = $this->transformArticle($article);
@@ -61,7 +60,7 @@ class SearchIndexer
     public function indexProduct(Product $product): void
     {
         if ($product->getId() === null) {
-            throw new InvalidArgumentException('Product id is required for indexing.');
+            throw new \InvalidArgumentException('Product id is required for indexing.');
         }
 
         $dto = $this->transformProduct($product);
@@ -107,7 +106,7 @@ class SearchIndexer
         $id = $article->getId();
 
         if ($id === null) {
-            throw new InvalidArgumentException('Article id is required for indexing.');
+            throw new \InvalidArgumentException('Article id is required for indexing.');
         }
 
         return new ArticleDocument(
@@ -129,7 +128,7 @@ class SearchIndexer
         $id = $product->getId();
 
         if ($id === null) {
-            throw new InvalidArgumentException('Product id is required for indexing.');
+            throw new \InvalidArgumentException('Product id is required for indexing.');
         }
 
         return new ProductDocument(

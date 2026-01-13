@@ -14,9 +14,6 @@ use Symfony\Component\DomCrawler\Crawler;
  */
 final class HtmlParser implements ParserInterface
 {
-    /**
-     * @inheritDoc
-     */
     public function parse(string $content, Source $source): array
     {
         $crawler = new Crawler($content);
@@ -24,7 +21,7 @@ final class HtmlParser implements ParserInterface
 
         // Velmi zjednodušená logika: hledáme všechny <a> tagy, které vypadají jako články
         // V reálném nasazení by zde byly selektory z konfigurace zdroje
-        $crawler->filter('article, .post, .entry')->each(function (Crawler $node) use (&$articles, $source) {
+        $crawler->filter('article, .post, .entry')->each(function (Crawler $node) use (&$articles, $source): void {
             $linkNode = $node->filter('a')->first();
 
             if ($linkNode->count() === 0) {

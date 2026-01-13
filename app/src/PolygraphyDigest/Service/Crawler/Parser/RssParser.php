@@ -6,23 +6,17 @@ namespace App\PolygraphyDigest\Service\Crawler\Parser;
 
 use App\PolygraphyDigest\Entity\Article;
 use App\PolygraphyDigest\Entity\Source;
-use DateTimeImmutable;
-use Exception;
-use SimpleXMLElement;
 
 /**
  * Parser pro zpracování RSS kanálů.
  */
 final class RssParser implements ParserInterface
 {
-    /**
-     * @inheritDoc
-     */
     public function parse(string $content, Source $source): array
     {
         try {
-            $xml = new SimpleXMLElement($content);
-        } catch (Exception) {
+            $xml = new \SimpleXMLElement($content);
+        } catch (\Exception) {
             return [];
         }
 
@@ -44,8 +38,8 @@ final class RssParser implements ParserInterface
 
             if ($pubDate = (string) $item->pubDate) {
                 try {
-                    $article->setPublishedAt(new DateTimeImmutable($pubDate));
-                } catch (Exception) {
+                    $article->setPublishedAt(new \DateTimeImmutable($pubDate));
+                } catch (\Exception) {
                     // Pokud nelze datum parsovat, zůstane null
                 }
             }

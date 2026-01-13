@@ -9,7 +9,6 @@ use App\PolygraphyDigest\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Throwable;
 
 /**
  * Služba pro stahování a parsování obsahu ze zdrojů.
@@ -17,18 +16,18 @@ use Throwable;
 readonly class CrawlerService
 {
     public function __construct(
-        private HttpClientInterface    $httpClient,
-        private ParserProvider         $parserProvider,
+        private HttpClientInterface $httpClient,
+        private ParserProvider $parserProvider,
         private EntityManagerInterface $entityManager,
-        private ArticleRepository      $articleRepository,
-        private LoggerInterface        $logger,
+        private ArticleRepository $articleRepository,
+        private LoggerInterface $logger,
     ) {
     }
 
     /**
      * Zpracuje daný zdroj: stáhne obsah, vyparsuje články a uloží nové do databáze.
      *
-     * @throws Throwable
+     * @throws \Throwable
      */
     public function processSource(Source $source): void
     {
@@ -49,7 +48,7 @@ readonly class CrawlerService
             $parser = $this->parserProvider->getParser($source->getType());
             $articles = $parser->parse($content, $source);
 
-            $this->logger->info(sprintf('Parsed %d articles from source', count($articles)), [
+            $this->logger->info(\sprintf('Parsed %d articles from source', \count($articles)), [
                 'source' => $source->getName(),
             ]);
 
@@ -64,17 +63,17 @@ readonly class CrawlerService
 
                 if ($existing === null) {
                     $this->entityManager->persist($article);
-                    $newCount++;
+                    ++$newCount;
                 }
             }
 
             if ($newCount > 0) {
                 $this->entityManager->flush();
-                $this->logger->info(sprintf('Saved %d new articles', $newCount), [
+                $this->logger->info(\sprintf('Saved %d new articles', $newCount), [
                     'source' => $source->getName(),
                 ]);
             }
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('Error during crawling', [
                 'source' => $source->getName(),
                 'error' => $e->getMessage(),

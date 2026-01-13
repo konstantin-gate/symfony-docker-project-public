@@ -7,12 +7,9 @@ namespace App\PolygraphyDigest\MessageHandler;
 use App\PolygraphyDigest\Message\ProcessSourceMessage;
 use App\PolygraphyDigest\Repository\SourceRepository;
 use App\PolygraphyDigest\Service\Crawler\CrawlerService;
-use DateMalformedStringException;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Throwable;
 
 /**
  * Handler pro zpracování zpráv typu ProcessSourceMessage.
@@ -22,16 +19,16 @@ use Throwable;
 final readonly class ProcessSourceHandler
 {
     /**
-     * @param SourceRepository $sourceRepository Repozitář pro přístup k entitám zdrojů.
-     * @param CrawlerService $crawlerService Služba pro samotné stahování a parsování obsahu.
-     * @param EntityManagerInterface $entityManager Správce entit pro ukládání změn.
-     * @param LoggerInterface $logger Služba pro logování průběhu a chyb.
+     * @param SourceRepository       $sourceRepository repozitář pro přístup k entitám zdrojů
+     * @param CrawlerService         $crawlerService   služba pro samotné stahování a parsování obsahu
+     * @param EntityManagerInterface $entityManager    správce entit pro ukládání změn
+     * @param LoggerInterface        $logger           služba pro logování průběhu a chyb
      */
     public function __construct(
-        private SourceRepository       $sourceRepository,
-        private CrawlerService         $crawlerService,
+        private SourceRepository $sourceRepository,
+        private CrawlerService $crawlerService,
         private EntityManagerInterface $entityManager,
-        private LoggerInterface        $logger,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -41,10 +38,10 @@ final readonly class ProcessSourceHandler
      * 2. Spustí proces stahování přes CrawlerService.
      * 3. Aktualizuje čas posledního stažení u zdroje.
      *
-     * @param ProcessSourceMessage $message Zpráva obsahující ID zdroje ke zpracování.
+     * @param ProcessSourceMessage $message zpráva obsahující ID zdroje ke zpracování
      *
-     * @throws DateMalformedStringException Pokud dojde k chybě při vytváření DateTimeImmutable.
-     * @throws Throwable Pokud dojde k jakékoli chybě během zpracování, je vyhozena dál pro případný retry v Messengeru.
+     * @throws \DateMalformedStringException pokud dojde k chybě při vytváření DateTimeImmutable
+     * @throws \Throwable                    pokud dojde k jakékoli chybě během zpracování, je vyhozena dál pro případný retry v Messengeru
      */
     public function __invoke(ProcessSourceMessage $message): void
     {
@@ -62,11 +59,11 @@ final readonly class ProcessSourceHandler
             $this->crawlerService->processSource($source);
 
             // Aktualizace času posledního stažení
-            $source->setLastScrapedAt(new DateTimeImmutable());
+            $source->setLastScrapedAt(new \DateTimeImmutable());
             $this->entityManager->flush();
 
             $this->logger->info('Source processed successfully', ['sourceId' => $source->getId()]);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error('Error processing source', [
                 'sourceId' => $source->getId(),
                 'error' => $e->getMessage(),

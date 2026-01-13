@@ -10,13 +10,13 @@ namespace App\PolygraphyDigest\DTO\Search;
 final readonly class ArticleDocument
 {
     /**
-     * @param string $id UUID článku
-     * @param string $title Titulek
-     * @param string $summary Stručný výtah
-     * @param string $content Textový obsah bez HTML
-     * @param string $url Odkaz na článek
+     * @param string $id          UUID článku
+     * @param string $title       Titulek
+     * @param string $summary     Stručný výtah
+     * @param string $content     Textový obsah bez HTML
+     * @param string $url         Odkaz na článek
      * @param string $publishedAt Datum publikace (ISO 8601)
-     * @param string $sourceName Název zdroje
+     * @param string $sourceName  Název zdroje
      */
     public function __construct(
         public string $id,

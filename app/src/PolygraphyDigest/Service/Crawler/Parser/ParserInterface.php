@@ -15,8 +15,9 @@ interface ParserInterface
     /**
      * Parsuje obsah a vrací pole entit Article.
      *
-     * @param string $content Surový obsah ke zpracování.
-     * @param Source $source Zdroj, ke kterému články patří.
+     * @param string $content surový obsah ke zpracování
+     * @param Source $source  zdroj, ke kterému články patří
+     *
      * @return Article[]
      */
     public function parse(string $content, Source $source): array;

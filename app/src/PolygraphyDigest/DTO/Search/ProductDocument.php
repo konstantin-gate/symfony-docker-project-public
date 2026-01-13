@@ -10,12 +10,12 @@ namespace App\PolygraphyDigest\DTO\Search;
 final readonly class ProductDocument
 {
     /**
-     * @param string $id UUID produktu
-     * @param string $name Název produktu
-     * @param string $description Popis produktu
-     * @param string|float $price Cena (pro scaled_float v ES)
-     * @param string $currency Kód měny (ISO)
-     * @param string $articleId UUID referenčního článku
+     * @param string       $id          UUID produktu
+     * @param string       $name        Název produktu
+     * @param string       $description Popis produktu
+     * @param string|float $price       Cena (pro scaled_float v ES)
+     * @param string       $currency    Kód měny (ISO)
+     * @param string       $articleId   UUID referenčního článku
      */
     public function __construct(
         public string $id,

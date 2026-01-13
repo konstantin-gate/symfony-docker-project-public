@@ -6,7 +6,6 @@ namespace App\PolygraphyDigest\Entity;
 
 use App\PolygraphyDigest\Enum\ArticleStatusEnum;
 use App\PolygraphyDigest\Repository\ArticleRepository;
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -47,10 +46,10 @@ class Article
     private ?string $summary = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?DateTimeImmutable $publishedAt = null;
+    private ?\DateTimeImmutable $publishedAt = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private DateTimeImmutable $fetchedAt;
+    private \DateTimeImmutable $fetchedAt;
 
     #[ORM\Column(type: 'string', enumType: ArticleStatusEnum::class)]
     private ArticleStatusEnum $status = ArticleStatusEnum::NEW;
@@ -63,7 +62,7 @@ class Article
 
     public function __construct()
     {
-        $this->fetchedAt = new DateTimeImmutable();
+        $this->fetchedAt = new \DateTimeImmutable();
         $this->products = new ArrayCollection();
     }
 
@@ -144,24 +143,24 @@ class Article
         return $this;
     }
 
-    public function getPublishedAt(): ?DateTimeImmutable
+    public function getPublishedAt(): ?\DateTimeImmutable
     {
         return $this->publishedAt;
     }
 
-    public function setPublishedAt(?DateTimeImmutable $publishedAt): self
+    public function setPublishedAt(?\DateTimeImmutable $publishedAt): self
     {
         $this->publishedAt = $publishedAt;
 
         return $this;
     }
 
-    public function getFetchedAt(): DateTimeImmutable
+    public function getFetchedAt(): \DateTimeImmutable
     {
         return $this->fetchedAt;
     }
 
-    public function setFetchedAt(DateTimeImmutable $fetchedAt): self
+    public function setFetchedAt(\DateTimeImmutable $fetchedAt): self
     {
         $this->fetchedAt = $fetchedAt;
 

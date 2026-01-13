@@ -52,7 +52,7 @@ class TestIndexingCommand extends Command
             $property = $reflection->getProperty('id');
             $property->setValue($article, Uuid::v4());
 
-            $io->text(sprintf('Indexuji článek: "%s" (ID: %s)', $article->getTitle(), $article->getId()));
+            $io->text(\sprintf('Indexuji článek: "%s" (ID: %s)', $article->getTitle(), $article->getId()));
 
             $this->searchIndexer->indexArticle($article);
 

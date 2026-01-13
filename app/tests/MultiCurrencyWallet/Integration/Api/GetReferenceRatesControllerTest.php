@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Integrační testy pro endpoint získání referenčních kurzů.
+ *
  * @see \App\MultiCurrencyWallet\Controller\Api\GetReferenceRatesController
  */
 class GetReferenceRatesControllerTest extends WebTestCase
