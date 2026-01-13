@@ -1,0 +1,80 @@
+import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { SearchCriteria, SearchResult, Article, Product, SearchAggregations } from '../types';
+import { api } from '../services/api';
+
+interface SearchContextType {
+    query: string;
+    setQuery: (query: string) => void;
+    page: number;
+    setPage: (page: number) => void;
+    filters: Record<string, any>;
+    setFilters: (filters: Record<string, any>) => void;
+    articleResults: SearchResult<Article> | null;
+    productResults: SearchResult<Product> | null;
+    isLoading: boolean;
+    error: string | null;
+    searchMode: 'articles' | 'products';
+    setSearchMode: (mode: 'articles' | 'products') => void;
+    performSearch: () => Promise<void>;
+}
+
+const SearchContext = createContext<SearchContextType | undefined>(undefined);
+
+export const SearchProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const [query, setQuery] = useState('');
+    const [page, setPage] = useState(1);
+    const [filters, setFilters] = useState<Record<string, any>>({});
+    const [searchMode, setSearchMode] = useState<'articles' | 'products'>('articles');
+    const [articleResults, setArticleResults] = useState<SearchResult<Article> | null>(null);
+    const [productResults, setProductResults] = useState<SearchResult<Product> | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const performSearch = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const criteria: SearchCriteria = {
+                query,
+                page,
+                limit: 12,
+                filters,
+                sort: searchMode === 'articles' ? { published_at: 'desc' } : {},
+            };
+
+            if (searchMode === 'articles') {
+                const results = await api.searchArticles(criteria);
+                setArticleResults(results);
+            } else {
+                const results = await api.searchProducts(criteria);
+                setProductResults(results);
+            }
+        } catch (err: any) {
+            setError(err.message || 'An error occurred during search');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [query, page, filters, searchMode]);
+
+    return (
+        <SearchContext.Provider value={{
+            query, setQuery,
+            page, setPage,
+            filters, setFilters,
+            articleResults, productResults,
+            isLoading, error,
+            searchMode, setSearchMode,
+            performSearch
+        }}>
+            {children}
+        </SearchContext.Provider>
+    );
+};
+
+export const useSearch = () => {
+    const context = useContext(SearchContext);
+    if (context === undefined) {
+        throw new Error('useSearch must be used within a SearchProvider');
+    }
+    return context;
+};
