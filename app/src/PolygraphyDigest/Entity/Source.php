@@ -6,6 +6,7 @@ namespace App\PolygraphyDigest\Entity;
 
 use App\PolygraphyDigest\Enum\SourceTypeEnum;
 use App\PolygraphyDigest\Repository\SourceRepository;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -43,24 +44,24 @@ class Source
     private ?string $schedule = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $lastScrapedAt = null;
+    private ?DateTimeImmutable $lastScrapedAt = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private \DateTimeImmutable $createdAt;
+    private DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private \DateTimeImmutable $updatedAt;
+    private DateTimeImmutable $updatedAt;
 
     /**
      * @var Collection<int, Article>
      */
-    #[ORM\OneToMany(mappedBy: 'source', targetEntity: Article::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'source', cascade: ['persist', 'remove'])]
     private Collection $articles;
 
     public function __construct()
     {
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->createdAt = new DateTimeImmutable();
+        $this->updatedAt = new DateTimeImmutable();
         $this->articles = new ArrayCollection();
         $this->type = SourceTypeEnum::RSS; // Default
     }
@@ -68,7 +69,7 @@ class Source
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
     {
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = new DateTimeImmutable();
     }
 
     public function getId(): ?Uuid
@@ -136,24 +137,24 @@ class Source
         return $this;
     }
 
-    public function getLastScrapedAt(): ?\DateTimeImmutable
+    public function getLastScrapedAt(): ?DateTimeImmutable
     {
         return $this->lastScrapedAt;
     }
 
-    public function setLastScrapedAt(?\DateTimeImmutable $lastScrapedAt): self
+    public function setLastScrapedAt(?DateTimeImmutable $lastScrapedAt): self
     {
         $this->lastScrapedAt = $lastScrapedAt;
 
         return $this;
     }
 
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function getUpdatedAt(): \DateTimeImmutable
+    public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
     }
