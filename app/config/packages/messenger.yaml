@@ -19,6 +19,7 @@ framework:
         routing:
             # Route your messages to the transports
             'App\Message\SendEmailMessage': async
+            'App\PolygraphyDigest\Message\ProcessSourceMessage': polygraphy
 
 when@test:
     framework:
