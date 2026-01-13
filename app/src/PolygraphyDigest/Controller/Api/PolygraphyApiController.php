@@ -21,39 +21,47 @@ class PolygraphyApiController extends AbstractController
 {
     public function __construct(
         private readonly SearchService $searchService,
-        private readonly SerializerInterface $serializer
+        private readonly SerializerInterface $serializer,
     ) {
     }
 
     /**
      * Vyhledávání článků (news/articles).
-     * Endpoint: GET /api/polygraphy/articles
+     * Endpoint: GET /api/polygraphy/articles.
      */
     #[Route('/articles', name: 'search_articles', methods: ['GET'])]
     public function searchArticles(Request $request): JsonResponse
     {
-        $criteria = SearchCriteria::fromRequest($request);
-        $result = $this->searchService->searchArticles($criteria);
+        try {
+            $criteria = SearchCriteria::fromRequest($request);
+            $result = $this->searchService->searchArticles($criteria);
 
-        return new JsonResponse($this->serializer->serialize($result, 'json'), 200, [], true);
+            return new JsonResponse($this->serializer->serialize($result, 'json'), 200, [], true);
+        } catch (\Throwable $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
      * Vyhledávání produktů.
-     * Endpoint: GET /api/polygraphy/products
+     * Endpoint: GET /api/polygraphy/products.
      */
     #[Route('/products', name: 'search_products', methods: ['GET'])]
     public function searchProducts(Request $request): JsonResponse
     {
-        $criteria = SearchCriteria::fromRequest($request);
-        $result = $this->searchService->searchProducts($criteria);
+        try {
+            $criteria = SearchCriteria::fromRequest($request);
+            $result = $this->searchService->searchProducts($criteria);
 
-        return new JsonResponse($this->serializer->serialize($result, 'json'), 200, [], true);
+            return new JsonResponse($this->serializer->serialize($result, 'json'), 200, [], true);
+        } catch (\Throwable $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
      * Našeptávač (Autocomplete).
-     * Endpoint: GET /api/polygraphy/suggest
+     * Endpoint: GET /api/polygraphy/suggest.
      */
     #[Route('/suggest', name: 'suggest', methods: ['GET'])]
     public function suggest(Request $request): JsonResponse
@@ -66,16 +74,20 @@ class PolygraphyApiController extends AbstractController
 
     /**
      * Získání statistik (agregací).
-     * Endpoint: GET /api/polygraphy/stats
+     * Endpoint: GET /api/polygraphy/stats.
      */
     #[Route('/stats', name: 'stats', methods: ['GET'])]
     public function stats(Request $request): JsonResponse
     {
-        $criteria = SearchCriteria::fromRequest($request);
-        $criteria->limit = 0; // Chceme pouze agregace
+        try {
+            $criteria = SearchCriteria::fromRequest($request);
+            $criteria->limit = 0; // Chceme pouze agregace
 
-        $result = $this->searchService->searchArticles($criteria);
+            $result = $this->searchService->searchArticles($criteria);
 
-        return new JsonResponse($result->aggregations);
+            return new JsonResponse($result->aggregations);
+        } catch (\Throwable $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 500);
+        }
     }
 }
