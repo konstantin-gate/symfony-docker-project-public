@@ -7,7 +7,7 @@ import { Loader2, AlertCircle } from 'lucide-react';
 
 const ResultsList: React.FC = () => {
     const { t } = useTranslation();
-    const { articleResults, productResults, isLoading, error, searchMode } = useSearch();
+    const { articleResults, productResults, isLoading, error, searchMode, setPage } = useSearch();
 
     if (isLoading && !articleResults && !productResults) {
         return (
@@ -68,11 +68,23 @@ const ResultsList: React.FC = () => {
                     <nav aria-label="Page navigation">
                         <ul className="pagination shadow-sm">
                             <li className={`page-item ${results.page <= 1 ? 'disabled' : ''}`}>
-                                <button className="page-link px-3 py-2">{t('prev_page')}</button>
+                                <button 
+                                    className="page-link px-3 py-2"
+                                    onClick={() => setPage(results.page - 1)}
+                                    disabled={results.page <= 1}
+                                >
+                                    {t('prev_page')}
+                                </button>
                             </li>
                             <li className="page-item active"><span className="page-link px-3 py-2">{results.page}</span></li>
                             <li className={`page-item ${results.page >= results.totalPages ? 'disabled' : ''}`}>
-                                <button className="page-link px-3 py-2">{t('next_page')}</button>
+                                <button 
+                                    className="page-link px-3 py-2"
+                                    onClick={() => setPage(results.page + 1)}
+                                    disabled={results.page >= results.totalPages}
+                                >
+                                    {t('next_page')}
+                                </button>
                             </li>
                         </ul>
                     </nav>

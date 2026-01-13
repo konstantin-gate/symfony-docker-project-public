@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { SearchCriteria, SearchResult, Article, Product, SearchAggregations } from '../types';
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect, useRef } from 'react';
+import { SearchCriteria, SearchResult, Article, Product } from '../types';
 import { api } from '../services/api';
 
 interface SearchContextType {
@@ -30,6 +30,10 @@ export const SearchProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Ref to prevent initial search if we want to wait for dashboard or manual trigger
+    // But for this module, it's better to load initial data.
+    const isInitialMount = useRef(true);
+
     const performSearch = useCallback(async () => {
         setIsLoading(true);
         setError(null);
@@ -55,6 +59,13 @@ export const SearchProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             setIsLoading(false);
         }
     }, [query, page, filters, searchMode]);
+
+    // Reactive search: triggers when filters, page or search mode change
+    useEffect(() => {
+        // We can skip the very first mount if needed, 
+        // but usually we want to see initial results in the search tab.
+        performSearch();
+    }, [filters, page, searchMode]);
 
     return (
         <SearchContext.Provider value={{

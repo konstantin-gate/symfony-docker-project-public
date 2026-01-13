@@ -17,7 +17,6 @@ const FacetsSidebar: React.FC = () => {
             newFilters[key] = value;
         }
         setFilters(newFilters);
-        setTimeout(performSearch, 0);
     };
 
     return (

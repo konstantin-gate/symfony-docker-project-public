@@ -55,6 +55,11 @@ class SearchService
             ],
         ];
 
+        $postFilter = $this->buildArticlesPostFilter($criteria);
+        if ($postFilter) {
+            $params['body']['post_filter'] = $postFilter;
+        }
+
         // Přidání řazení
         if (!empty($criteria->sort)) {
             $sort = [];
@@ -99,6 +104,11 @@ class SearchService
                 ],
             ],
         ];
+
+        $postFilter = $this->buildProductsPostFilter($criteria);
+        if ($postFilter) {
+            $params['body']['post_filter'] = $postFilter;
+        }
 
         // Default sort for products usually by price or relevance
         if (!empty($criteria->sort)) {
@@ -178,33 +188,47 @@ class SearchService
             $bool['must'][] = ['match_all' => new \stdClass()];
         }
 
-        // Filtry
-        if (!empty($criteria->filters)) {
-            $filter = [];
+        return ['bool' => $bool];
+    }
 
-            // Filtr podle zdroje (source_id)
-            if (isset($criteria->filters['source_id'])) {
-                $filter[] = ['term' => ['source_id' => $criteria->filters['source_id']]];
-            }
-
-            // Filtr podle data (published_at range)
-            if (isset($criteria->filters['date_from']) || isset($criteria->filters['date_to'])) {
-                $range = [];
-
-                if (isset($criteria->filters['date_from'])) {
-                    $range['gte'] = $criteria->filters['date_from'];
-                }
-
-                if (isset($criteria->filters['date_to'])) {
-                    $range['lte'] = $criteria->filters['date_to'];
-                }
-                $filter[] = ['range' => ['published_at' => $range]];
-            }
-
-            $bool['filter'] = $filter;
+    /**
+     * Sestavení post_filteru pro články.
+     * Umožňuje filtrovat výsledky bez ovlivnění agregací (facetů).
+     *
+     * @return array<string, mixed>|null
+     */
+    private function buildArticlesPostFilter(SearchCriteria $criteria): ?array
+    {
+        if (empty($criteria->filters)) {
+            return null;
         }
 
-        return ['bool' => $bool];
+        $filter = [];
+
+        // Filtr podle zdroje (source_id v requestu mapujeme na source_name v ES)
+        if (isset($criteria->filters['source_id'])) {
+            $filter[] = ['term' => ['source_name' => $criteria->filters['source_id']]];
+        }
+
+        // Filtr podle data (published_at range)
+        if (isset($criteria->filters['date_from']) || isset($criteria->filters['date_to'])) {
+            $range = [];
+
+            if (isset($criteria->filters['date_from'])) {
+                $range['gte'] = $criteria->filters['date_from'];
+            }
+
+            if (isset($criteria->filters['date_to'])) {
+                $range['lte'] = $criteria->filters['date_to'];
+            }
+            $filter[] = ['range' => ['published_at' => $range]];
+        }
+
+        if (empty($filter)) {
+            return null;
+        }
+
+        return ['bool' => ['filter' => $filter]];
     }
 
     /**
@@ -228,32 +252,46 @@ class SearchService
             $bool['must'][] = ['match_all' => new \stdClass()];
         }
 
-        if (!empty($criteria->filters)) {
-            $filter = [];
+        return ['bool' => $bool];
+    }
 
-            // Cena
-            if (isset($criteria->filters['price_min']) || isset($criteria->filters['price_max'])) {
-                $range = [];
-
-                if (isset($criteria->filters['price_min'])) {
-                    $range['gte'] = $criteria->filters['price_min'];
-                }
-
-                if (isset($criteria->filters['price_max'])) {
-                    $range['lte'] = $criteria->filters['price_max'];
-                }
-                $filter[] = ['range' => ['price' => $range]];
-            }
-
-            // Měna
-            if (isset($criteria->filters['currency'])) {
-                $filter[] = ['term' => ['currency' => $criteria->filters['currency']]];
-            }
-
-            $bool['filter'] = $filter;
+    /**
+     * Sestavení post_filteru pro produkty.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function buildProductsPostFilter(SearchCriteria $criteria): ?array
+    {
+        if (empty($criteria->filters)) {
+            return null;
         }
 
-        return ['bool' => $bool];
+        $filter = [];
+
+        // Cena
+        if (isset($criteria->filters['price_min']) || isset($criteria->filters['price_max'])) {
+            $range = [];
+
+            if (isset($criteria->filters['price_min'])) {
+                $range['gte'] = $criteria->filters['price_min'];
+            }
+
+            if (isset($criteria->filters['price_max'])) {
+                $range['lte'] = $criteria->filters['price_max'];
+            }
+            $filter[] = ['range' => ['price' => $range]];
+        }
+
+        // Měna
+        if (isset($criteria->filters['currency'])) {
+            $filter[] = ['term' => ['currency' => $criteria->filters['currency']]];
+        }
+
+        if (empty($filter)) {
+            return null;
+        }
+
+        return ['bool' => ['filter' => $filter]];
     }
 
     /**
