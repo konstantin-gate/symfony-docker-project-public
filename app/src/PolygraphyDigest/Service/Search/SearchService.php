@@ -284,7 +284,7 @@ class SearchService
         }
 
         $aggregations = $data['aggregations'] ?? [];
-        $totalPages = (int) ceil($total / $criteria->limit);
+        $totalPages = $criteria->limit > 0 ? (int) ceil($total / $criteria->limit) : 0;
 
         return new SearchResult(
             items: $items,
@@ -320,7 +320,7 @@ class SearchService
         }
 
         $aggregations = $data['aggregations'] ?? [];
-        $totalPages = (int) ceil($total / $criteria->limit);
+        $totalPages = $criteria->limit > 0 ? (int) ceil($total / $criteria->limit) : 0;
 
         return new SearchResult(
             items: $items,
