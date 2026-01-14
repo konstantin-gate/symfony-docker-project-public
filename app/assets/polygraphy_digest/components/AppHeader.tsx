@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Package } from 'lucide-react';
 
 interface AppHeaderProps {
     title: string;
@@ -34,8 +33,10 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
 
                     {/* Center: Icon + Title */}
                     <div className="flex items-center">
-                        <div className="border rounded p-2 mr-4 flex items-center justify-center w-12 h-12">
-                            <Package size={24} className="text-dark" />
+                        <div className="border rounded p-[3px] mr-4 flex items-center justify-center w-12 h-12 overflow-hidden">
+                            <img src="/images/icon_polygraphy_2.png" 
+                                 alt="Polygraphy Icon" 
+                                 className="w-full h-full object-contain" />
                         </div>
                         <h1 className="text-[calc(1.375rem_+_1.5vw)] xl:text-[2.5rem] font-medium leading-[1.2] text-foreground mb-0" style={{ fontFamily: 'var(--bs-body-font-family)' }}>
                             {title}
