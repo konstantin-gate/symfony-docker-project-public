@@ -17,7 +17,7 @@ const App: React.FC = () => {
             <div className="polygraphy-app min-vh-100 bg-light">
                 <AppHeader title={activeTab === 'dashboard' ? t('dashboard_title') : t('app_title')} />
 
-                <main className="container-fluid px-4 pb-5 max-w-7xl mx-auto">
+                <main className="container-fluid px-0 pb-5 max-w-7xl mx-auto">
                     <div className="d-flex gap-4 align-items-start">
                         {/* Navigation Sidebar (Moved inside container) */}
                         <div className="bg-dark text-white d-flex flex-column align-items-center py-4 rounded-3 shadow sticky-top" style={{ width: '80px', top: '100px', zIndex: 80 }}>

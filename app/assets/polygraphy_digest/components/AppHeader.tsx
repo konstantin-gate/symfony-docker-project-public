@@ -23,9 +23,9 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
     const currentLangCode = i18n.language;
 
     return (
-        <header className="bg-white border-b border-border shadow-sm mb-2">
-            <div className="container py-4">
-                <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <header className="bg-white border-b border-border shadow-sm mb-4 sticky-top" style={{ zIndex: 1000 }}>
+            <div className="max-w-7xl mx-auto py-[28px] px-0">
+                <div className="d-flex justify-content-between align-items-center">
                     {/* Left: Home Button */}
                     <a href="/" className="btn btn-outline-secondary btn-sm d-inline-flex align-items-center" style={{ fontFamily: 'var(--bs-body-font-family)' }}>
                         <i className="bi bi-house me-2"></i>
