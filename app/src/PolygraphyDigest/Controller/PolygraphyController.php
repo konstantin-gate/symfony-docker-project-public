@@ -17,7 +17,8 @@ class PolygraphyController extends AbstractController
      * Hlavní vstupní bod pro React aplikaci.
      * Zachytává všechny cesty začínající /polygraphy, které nejsou /api.
      */
-    #[Route('/polygraphy/{reactRouting}', name: 'polygraphy_index', requirements: ['reactRouting' => '^(?!api).+'], defaults: ['reactRouting' => null])]
+    #[Route('/polygraphy/{reactRouting}', name: 'polygraphy_index_default', requirements: ['reactRouting' => '^(?!api).+'], defaults: ['reactRouting' => null], methods: ['GET'])]
+    #[Route('/{_locale}/polygraphy/{reactRouting}', name: 'polygraphy_index', requirements: ['_locale' => '%app.supported_locales%', 'reactRouting' => '^(?!api).+'], defaults: ['reactRouting' => null], methods: ['GET'])]
     public function index(): Response
     {
         return $this->render('polygraphy_digest/index.html.twig');
