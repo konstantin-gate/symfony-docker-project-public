@@ -27,7 +27,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
             <div className="max-w-7xl mx-auto py-[28px] px-0">
                 <div className="d-flex justify-content-between align-items-center">
                     {/* Left: Home Button */}
-                    <a href="/" className="btn btn-outline-secondary btn-sm d-inline-flex align-items-center" style={{ fontFamily: 'var(--bs-body-font-family)' }}>
+                    <a href={`/${currentLangCode}`} className="btn btn-outline-secondary btn-sm d-inline-flex align-items-center" style={{ fontFamily: 'var(--bs-body-font-family)' }}>
                         <i className="bi bi-house me-2"></i>
                         {t('nav.back_to_home', 'Zpět na hlavní')}
                     </a>

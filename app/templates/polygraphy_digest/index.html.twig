@@ -3,7 +3,7 @@
 {% block title %}Polygraphy Digest | {{ parent() }}{% endblock %}
 
 {% block body %}
-    <div id="polygraphy-digest-app">
+    <div id="polygraphy-digest-app" data-locale="{{ app.request.locale }}">
         {# React aplikace se vykreslí sem #}
         <div class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
             <div class="spinner-border text-primary" role="status">
