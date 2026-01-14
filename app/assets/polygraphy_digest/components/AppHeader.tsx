@@ -14,9 +14,9 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
     };
 
     const languages = [
-        { code: 'cs', label: 'Čeština' },
-        { code: 'en', label: 'English' },
-        { code: 'ru', label: 'Русский' }
+        { code: 'cs', label: 'čeština' },
+        { code: 'en', label: 'english' },
+        { code: 'ru', label: 'русский' }
     ];
 
     // Current language code
@@ -58,7 +58,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
                             {languages.map((lang) => (
                                 <li key={lang.code}>
                                     <button 
-                                        className={`dropdown-item ${currentLangCode === lang.code ? 'active' : ''}`} 
+                                        className="dropdown-item small" 
                                         onClick={() => changeLanguage(lang.code)}
                                     >
                                         {lang.label}
