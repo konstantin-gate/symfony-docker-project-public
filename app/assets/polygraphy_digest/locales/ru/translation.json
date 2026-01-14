@@ -36,6 +36,7 @@
     "nav": {
         "dashboard": "Дашборд",
         "search": "Поиск",
-        "settings": "Настройки"
+        "settings": "Настройки",
+        "back_to_home": "На главную"
     }
 }
