@@ -19,35 +19,40 @@ const App: React.FC = () => {
 
                 <main className="container-fluid px-0 pb-5 max-w-7xl mx-auto">
                     <div className="d-flex gap-4 align-items-start">
-                        {/* Navigation Sidebar (Moved inside container) */}
-                        <div className="bg-dark text-white d-flex flex-column align-items-center py-4 rounded-3 shadow sticky-top" style={{ width: '80px', top: '100px', zIndex: 80 }}>
-                            <div className="mb-4">
-                                <div className="bg-primary rounded-3 p-2 shadow">
-                                    <Package size={24} color="white" />
-                                </div>
-                            </div>
-                            
-                            <nav className="nav flex-column gap-3">
-                                <button 
-                                    onClick={() => setActiveTab('dashboard')}
-                                    className={`btn border-0 p-3 rounded-3 transition-all ${activeTab === 'dashboard' ? 'bg-primary text-white shadow' : 'text-white-50 hover-text-white'}`}
-                                    title={t('nav.dashboard')}
-                                >
-                                    <LayoutDashboard size={24} />
-                                </button>
-                                <button 
-                                    onClick={() => setActiveTab('search')}
-                                    className={`btn border-0 p-3 rounded-3 transition-all ${activeTab === 'search' ? 'bg-primary text-white shadow' : 'text-white-50 hover-text-white'}`}
-                                    title={t('nav.search')}
-                                >
-                                    <Newspaper size={24} />
-                                </button>
-                                <button className="btn border-0 p-3 rounded-3 text-white-50 hover-text-white mt-3" title={t('nav.settings')}>
-                                    <Settings size={24} />
-                                </button>
-                            </nav>
-                        </div>
-
+                                                {/* Navigation Sidebar (Moved inside container) */}
+                                                <div className="bg-dark text-white d-flex flex-column align-items-center py-4 rounded-3 shadow sticky-top flex-shrink-0" style={{ width: '60px', minWidth: '60px', top: '100px', zIndex: 80 }}>
+                                                    <div className="mb-4">
+                                                        <div className="bg-primary rounded-3 shadow d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px' }}>
+                                                            <Package size={20} color="white" />
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <nav className="nav flex-column gap-3">
+                                                        <button 
+                                                            onClick={() => setActiveTab('dashboard')}
+                                                            className={`btn border-0 p-0 rounded-3 transition-all d-flex align-items-center justify-content-center ${activeTab === 'dashboard' ? 'bg-primary text-white shadow' : 'text-white-50 hover-text-white'}`}
+                                                            style={{ width: '40px', height: '40px' }}
+                                                            title={t('nav.dashboard')}
+                                                        >
+                                                            <LayoutDashboard size={20} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => setActiveTab('search')}
+                                                            className={`btn border-0 p-0 rounded-3 transition-all d-flex align-items-center justify-content-center ${activeTab === 'search' ? 'bg-primary text-white shadow' : 'text-white-50 hover-text-white'}`}
+                                                            style={{ width: '40px', height: '40px' }}
+                                                            title={t('nav.search')}
+                                                        >
+                                                            <Newspaper size={20} />
+                                                        </button>
+                                                        <button 
+                                                            className="btn border-0 p-0 rounded-3 text-white-50 hover-text-white mt-3 d-flex align-items-center justify-content-center" 
+                                                            style={{ width: '40px', height: '40px' }}
+                                                            title={t('nav.settings')}
+                                                        >
+                                                            <Settings size={20} />
+                                                        </button>
+                                                    </nav>
+                                                </div>
                         {/* Main Content Area */}
                         <div className="flex-grow-1" style={{ minWidth: 0 }}>
                             {activeTab === 'dashboard' ? (
