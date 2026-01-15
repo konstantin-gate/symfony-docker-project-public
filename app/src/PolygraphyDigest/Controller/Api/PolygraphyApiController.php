@@ -85,7 +85,10 @@ class PolygraphyApiController extends AbstractController
 
             $result = $this->searchService->searchArticles($criteria);
 
-            return new JsonResponse($result->aggregations);
+            return new JsonResponse([
+                'aggregations' => $result->aggregations,
+                'total' => $result->total,
+            ]);
         } catch (\Throwable $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }

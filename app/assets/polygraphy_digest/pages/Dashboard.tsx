@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../services/api';
-import { BarChart3, TrendingUp, Newspaper, PackageSearch } from 'lucide-react';
+import { BarChart3, TrendingUp, Newspaper, PackageSearch, TrendingDown } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
     const { t } = useTranslation();
@@ -24,7 +24,28 @@ const Dashboard: React.FC = () => {
 
     if (isLoading) return <div className="text-center py-5"><div className="spinner-border text-primary" /></div>;
 
-    const sourcesCount = stats?.sources?.buckets?.length || 0;
+    // Data Extraction
+    const sourcesCount = stats?.aggregations?.sources?.buckets?.length || 0;
+    const totalArticles = stats?.total || 0;
+
+    // Trend Calculation
+    const calculateTrend = () => {
+        const buckets = stats?.aggregations?.weekly_trend?.buckets;
+        if (!buckets) return 0;
+
+        const current = buckets.current_week?.doc_count || 0;
+        const previous = buckets.last_week?.doc_count || 0;
+
+        if (previous === 0) {
+            return current > 0 ? 100 : 0;
+        }
+
+        return Math.round(((current - previous) / previous) * 100);
+    };
+
+    const trend = calculateTrend();
+    const trendLabel = trend > 0 ? `+${trend}%` : `${trend}%`;
+    const isPositiveTrend = trend >= 0;
 
     return (
         <div className="dashboard">
@@ -43,14 +64,14 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
                 <div className="col-md-4">
-                    <div className="card border-0 shadow-sm bg-success text-white">
+                    <div className={`card border-0 shadow-sm text-white ${isPositiveTrend ? 'bg-success' : 'bg-danger'}`}>
                         <div className="card-body">
                             <div className="d-flex justify-content-between align-items-center">
                                 <div>
                                     <div className="small opacity-75 text-uppercase fw-bold mb-1">{t('trend_week')}</div>
-                                    <div className="h3 mb-0 fw-bold">+12%</div>
+                                    <div className="h3 mb-0 fw-bold">{trendLabel}</div>
                                 </div>
-                                <TrendingUp size={32} className="opacity-50" />
+                                {isPositiveTrend ? <TrendingUp size={32} className="opacity-50" /> : <TrendingDown size={32} className="opacity-50" />}
                             </div>
                         </div>
                     </div>
@@ -61,7 +82,7 @@ const Dashboard: React.FC = () => {
                             <div className="d-flex justify-content-between align-items-center">
                                 <div>
                                     <div className="small opacity-75 text-uppercase fw-bold mb-1">{t('total_articles')}</div>
-                                    <div className="h3 mb-0 fw-bold">1,240</div>
+                                    <div className="h3 mb-0 fw-bold">{totalArticles.toLocaleString()}</div>
                                 </div>
                                 <Newspaper size={32} className="opacity-50" />
                             </div>
@@ -86,7 +107,7 @@ const Dashboard: React.FC = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {stats?.sources?.buckets?.map((bucket: any) => (
+                                        {stats?.aggregations?.sources?.buckets?.map((bucket: any) => (
                                             <tr key={bucket.key}>
                                                 <td className="fw-semibold text-dark">{bucket.key}</td>
                                                 <td className="text-end">

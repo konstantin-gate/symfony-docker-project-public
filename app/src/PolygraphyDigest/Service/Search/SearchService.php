@@ -45,6 +45,27 @@ class SearchService
                     'sources' => [
                         'terms' => ['field' => 'source_name'],
                     ],
+                    'weekly_trend' => [
+                        'filters' => [
+                            'filters' => [
+                                'current_week' => [
+                                    'range' => [
+                                        'published_at' => [
+                                            'gte' => 'now-7d/d',
+                                        ],
+                                    ],
+                                ],
+                                'last_week' => [
+                                    'range' => [
+                                        'published_at' => [
+                                            'gte' => 'now-14d/d',
+                                            'lt' => 'now-7d/d',
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 'highlight' => [
                     'fields' => [
