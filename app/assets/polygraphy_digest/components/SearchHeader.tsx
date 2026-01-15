@@ -47,13 +47,14 @@ const SearchHeader: React.FC = () => {
     return (
         <div className="search-header mb-4">
             <form onSubmit={handleSubmit} className="position-relative">
-                <div className="input-group input-group-lg shadow-sm">
+                <div className="input-group shadow-sm">
                     <span className="input-group-text bg-white border-end-0">
                         {isLoading ? <Loader2 className="animate-spin text-primary" size={20} /> : <Search size={20} className="text-muted" />}
                     </span>
                     <input
                         type="text"
                         className="form-control border-start-0 ps-0"
+                        style={{ boxShadow: 'none', borderColor: '#dee2e6' }}
                         placeholder={t('search_placeholder')}
                         value={query}
                         onChange={handleInputChange}
