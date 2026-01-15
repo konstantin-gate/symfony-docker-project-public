@@ -39,7 +39,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
                                  className="w-full h-full object-contain" />
                         </div>
                         <h1 className="text-[calc(1.375rem_+_1.5vw)] xl:text-[2.5rem] font-medium leading-[1.2] text-foreground mb-0" style={{ fontFamily: 'var(--bs-body-font-family)' }}>
-                            {title}
+                            Polygraphy<span className="opacity-75" style={{ fontSize: '0.65em' }}>. {title}</span>
                         </h1>
                     </div>
 
