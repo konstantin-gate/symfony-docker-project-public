@@ -222,6 +222,13 @@ class SearchService
             $bool['must'][] = ['match_all' => new \stdClass()];
         }
 
+        // Skrýt skryté články, pokud nejsou explicitně vyžádány
+        $showHidden = filter_var($criteria->filters['show_hidden'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+        if (!$showHidden) {
+            $bool['must_not'][] = ['term' => ['status' => 'hidden']];
+        }
+
         return ['bool' => $bool];
     }
 

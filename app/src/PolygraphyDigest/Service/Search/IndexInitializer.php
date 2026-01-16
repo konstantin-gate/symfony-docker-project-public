@@ -142,6 +142,7 @@ readonly class IndexInitializer
                         'url' => ['type' => 'keyword'],
                         'published_at' => ['type' => 'date'],
                         'source_name' => ['type' => 'keyword'],
+                        'status' => ['type' => 'keyword'],
                     ],
                 ],
             ],
