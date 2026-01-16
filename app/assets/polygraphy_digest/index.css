@@ -1,1 +1,10 @@
 /* Polygraphy Digest Styles */
+
+.search-input-no-focus:focus {
+    box-shadow: none !important;
+    border-color: #dee2e6 !important;
+}
+
+.search-input-no-focus {
+    transition: border-color 0.15s ease-in-out;
+}

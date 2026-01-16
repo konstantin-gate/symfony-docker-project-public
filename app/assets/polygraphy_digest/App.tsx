@@ -60,7 +60,7 @@ const App: React.FC = () => {
                         {/* Main Content Area */}
                         <div className="flex-grow-1" style={{minWidth: 0}}>
                             {activeTab === 'dashboard' ? (
-                                <Dashboard/>
+                                <Dashboard onNavigateToSearch={() => setActiveTab('search')} />
                             ) : (
                                 <div className="search-interface">
                                     <SearchHeader/>

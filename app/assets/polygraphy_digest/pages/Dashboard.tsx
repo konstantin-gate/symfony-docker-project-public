@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../services/api';
-import { BarChart3, TrendingUp, Newspaper, PackageSearch, TrendingDown } from 'lucide-react';
+import { BarChart3, TrendingUp, Newspaper, PackageSearch, TrendingDown, Search } from 'lucide-react';
+import { useSearch } from '../context/SearchContext';
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+    onNavigateToSearch: () => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onNavigateToSearch }) => {
     const { t } = useTranslation();
+    const { setQuery, performSearch } = useSearch();
     const [stats, setStats] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [localQuery, setLocalQuery] = useState('');
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -21,6 +28,14 @@ const Dashboard: React.FC = () => {
         };
         fetchStats();
     }, []);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (localQuery.trim()) {
+            setQuery(localQuery);
+            onNavigateToSearch();
+        }
+    };
 
     if (isLoading) return <div className="text-center py-5"><div className="spinner-border text-primary" /></div>;
 
@@ -129,7 +144,21 @@ const Dashboard: React.FC = () => {
                         <div className="card-body text-center d-flex flex-column justify-content-center">
                             <PackageSearch size={48} className="text-primary mx-auto mb-3 opacity-25" />
                             <p className="text-muted small mb-4">{t('quick_search_desc')}</p>
-                            <button className="btn btn-outline-primary rounded-pill">{t('start_search')}</button>
+                            
+                            <form onSubmit={handleSearch} className="w-100 px-3">
+                                <div className="input-group">
+                                    <input 
+                                        type="text" 
+                                        className="form-control search-input-no-focus" 
+                                        placeholder={t('search_placeholder') || "Search..."}
+                                        value={localQuery}
+                                        onChange={(e) => setLocalQuery(e.target.value)}
+                                    />
+                                    <button className="btn btn-primary" type="submit">
+                                        <Search size={18} />
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

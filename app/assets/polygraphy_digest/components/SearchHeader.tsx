@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearch } from '../context/SearchContext';
 import { api } from '../services/api';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, X } from 'lucide-react';
 import { debounce } from 'lodash';
 
 const SearchHeader: React.FC = () => {
@@ -44,6 +44,12 @@ const SearchHeader: React.FC = () => {
         performSearch();
     };
 
+    const handleClear = () => {
+        setQuery('');
+        setSuggestions([]);
+        setShowSuggestions(false);
+    };
+
     return (
         <div className="search-header mb-4">
             <form onSubmit={handleSubmit} className="position-relative">
@@ -53,13 +59,23 @@ const SearchHeader: React.FC = () => {
                     </span>
                     <input
                         type="text"
-                        className="form-control border-start-0 ps-0"
+                        className="form-control border-start-0 border-end-0 ps-0"
                         style={{ boxShadow: 'none', borderColor: '#dee2e6' }}
                         placeholder={t('search_placeholder')}
                         value={query}
                         onChange={handleInputChange}
                         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                     />
+                    {query && (
+                        <button
+                            type="button"
+                            className="btn bg-white border-top border-bottom border-end-0 rounded-0"
+                            style={{ borderColor: '#dee2e6' }}
+                            onClick={handleClear}
+                        >
+                            <X size={18} className="text-muted" />
+                        </button>
+                    )}
                     <button className="btn btn-primary px-4" type="submit">{t('search_button')}</button>
                 </div>
 

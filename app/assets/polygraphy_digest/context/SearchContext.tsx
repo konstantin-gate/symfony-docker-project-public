@@ -60,12 +60,12 @@ export const SearchProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         }
     }, [query, page, filters, searchMode]);
 
-    // Reactive search: triggers when filters, page or search mode change
+    // Reactive search: triggers when filters, page, search mode or query change
     useEffect(() => {
         // We can skip the very first mount if needed, 
         // but usually we want to see initial results in the search tab.
         performSearch();
-    }, [filters, page, searchMode]);
+    }, [filters, page, searchMode, query]);
 
     return (
         <SearchContext.Provider value={{
