@@ -62,24 +62,66 @@ const ResultsList: React.FC = () => {
                 ))}
             </div>
 
-            {/* Simple Pagination */}
+            {/* Pagination */}
             {results.totalPages > 1 && (
                 <div className="d-flex justify-content-center mt-5">
                     <nav aria-label="Page navigation">
-                        <ul className="pagination shadow-sm">
+                        <ul className="pagination pagination-sm shadow-sm">
                             <li className={`page-item ${results.page <= 1 ? 'disabled' : ''}`}>
                                 <button 
-                                    className="page-link px-3 py-2"
+                                    className="page-link"
                                     onClick={() => setPage(results.page - 1)}
                                     disabled={results.page <= 1}
                                 >
                                     {t('prev_page')}
                                 </button>
                             </li>
-                            <li className="page-item active"><span className="page-link px-3 py-2">{results.page}</span></li>
+                            
+                            {(() => {
+                                const pages = [];
+                                const maxVisibleButtons = 5;
+                                let startPage = Math.max(1, results.page - Math.floor(maxVisibleButtons / 2));
+                                let endPage = Math.min(results.totalPages, startPage + maxVisibleButtons - 1);
+
+                                if (endPage - startPage + 1 < maxVisibleButtons) {
+                                    startPage = Math.max(1, endPage - maxVisibleButtons + 1);
+                                }
+
+                                if (startPage > 1) {
+                                     pages.push(
+                                        <li key={1} className="page-item">
+                                            <button className="page-link" onClick={() => setPage(1)}>1</button>
+                                        </li>
+                                    );
+                                    if (startPage > 2) {
+                                        pages.push(<li key="ellipsis-start" className="page-item disabled"><span className="page-link">...</span></li>);
+                                    }
+                                }
+
+                                for (let i = startPage; i <= endPage; i++) {
+                                    pages.push(
+                                        <li key={i} className={`page-item ${i === results.page ? 'active' : ''}`}>
+                                            <button className="page-link" onClick={() => setPage(i)}>{i}</button>
+                                        </li>
+                                    );
+                                }
+
+                                if (endPage < results.totalPages) {
+                                    if (endPage < results.totalPages - 1) {
+                                        pages.push(<li key="ellipsis-end" className="page-item disabled"><span className="page-link">...</span></li>);
+                                    }
+                                    pages.push(
+                                        <li key={results.totalPages} className="page-item">
+                                            <button className="page-link" onClick={() => setPage(results.totalPages)}>{results.totalPages}</button>
+                                        </li>
+                                    );
+                                }
+                                return pages;
+                            })()}
+
                             <li className={`page-item ${results.page >= results.totalPages ? 'disabled' : ''}`}>
                                 <button 
-                                    className="page-link px-3 py-2"
+                                    className="page-link"
                                     onClick={() => setPage(results.page + 1)}
                                     disabled={results.page >= results.totalPages}
                                 >
