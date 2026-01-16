@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\PolygraphyDigest\Controller;
 
+use App\PolygraphyDigest\Service\LifecycleService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -13,6 +14,11 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 class PolygraphyController extends AbstractController
 {
+    public function __construct(
+        private readonly LifecycleService $lifecycleService,
+    ) {
+    }
+
     /**
      * Hlavní vstupní bod pro React aplikaci.
      * Zachytává všechny cesty začínající /polygraphy, které nejsou /api.
@@ -21,6 +27,8 @@ class PolygraphyController extends AbstractController
     #[Route('/{_locale}/polygraphy/{reactRouting}', name: 'polygraphy_index', requirements: ['_locale' => '%app.supported_locales%', 'reactRouting' => '^(?!api).+'], defaults: ['reactRouting' => null], methods: ['GET'])]
     public function index(): Response
     {
+        $this->lifecycleService->runMaintenance();
+
         return $this->render('polygraphy_digest/index.html.twig');
     }
 }
