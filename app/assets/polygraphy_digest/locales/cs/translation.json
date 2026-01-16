@@ -45,5 +45,12 @@
     "theme_light": "Světlý",
     "theme_dark": "Tmavý",
     "search_section": "Nastavení vyhledávání",
-    "items_per_page": "Počet položek na stránku"
+    "items_per_page": "Počet položek na stránku",
+    "settings": {
+        "show_disabled_articles": "Zobrazit skryté/vypnuté články"
+    },
+    "action": {
+        "enable": "Povolit (Zobrazit)",
+        "disable": "Zakázat (Skrýt)"
+    }
 }

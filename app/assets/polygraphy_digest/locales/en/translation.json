@@ -45,5 +45,12 @@
     "theme_light": "Light",
     "theme_dark": "Dark",
     "search_section": "Search Preferences",
-    "items_per_page": "Results per page"
+    "items_per_page": "Results per page",
+    "settings": {
+        "show_disabled_articles": "Show Hidden/Disabled Articles"
+    },
+    "action": {
+        "enable": "Enable (Show)",
+        "disable": "Disable (Hide)"
+    }
 }

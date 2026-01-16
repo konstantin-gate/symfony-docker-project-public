@@ -80,6 +80,21 @@ const SettingsPage: React.FC = () => {
                                     <option value={48}>48</option>
                                 </select>
                             </div>
+
+                            <div className="col-12 mt-3">
+                                <div className="form-check form-switch">
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        id="showDisabledArticles"
+                                        checked={useSettings().showHiddenArticles}
+                                        onChange={(e) => updateSettings({ showHiddenArticles: e.target.checked })}
+                                    />
+                                    <label className="form-check-label" htmlFor="showDisabledArticles">
+                                        {t('settings.show_disabled_articles')}
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

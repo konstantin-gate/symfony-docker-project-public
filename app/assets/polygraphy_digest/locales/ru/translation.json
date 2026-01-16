@@ -45,5 +45,12 @@
     "theme_light": "Светлая",
     "theme_dark": "Темная",
     "search_section": "Параметры поиска",
-    "items_per_page": "Результатов на странице"
+    "items_per_page": "Результатов на странице",
+    "settings": {
+        "show_disabled_articles": "Показывать скрытые/отключенные статьи"
+    },
+    "action": {
+        "enable": "Включить (Показать)",
+        "disable": "Отключить (Скрыть)"
+    }
 }

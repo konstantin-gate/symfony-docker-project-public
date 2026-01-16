@@ -23,3 +23,7 @@
     box-shadow: none !important;
 
 }
+
+.grayscale {
+    filter: grayscale(100%);
+}
