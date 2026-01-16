@@ -34,6 +34,21 @@ export const SearchProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     // But for this module, it's better to load initial data.
     const isInitialMount = useRef(true);
 
+    const handleSetQuery = (newQuery: string) => {
+        setQuery(newQuery);
+        setPage(1);
+    };
+
+    const handleSetFilters = (newFilters: Record<string, any>) => {
+        setFilters(newFilters);
+        setPage(1);
+    };
+
+    const handleSetSearchMode = (mode: 'articles' | 'products') => {
+        setSearchMode(mode);
+        setPage(1);
+    };
+
     const performSearch = useCallback(async () => {
         setIsLoading(true);
         setError(null);
@@ -69,12 +84,12 @@ export const SearchProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     return (
         <SearchContext.Provider value={{
-            query, setQuery,
+            query, setQuery: handleSetQuery,
             page, setPage,
-            filters, setFilters,
+            filters, setFilters: handleSetFilters,
             articleResults, productResults,
             isLoading, error,
-            searchMode, setSearchMode,
+            searchMode, setSearchMode: handleSetSearchMode,
             performSearch
         }}>
             {children}

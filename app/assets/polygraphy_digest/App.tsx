@@ -67,7 +67,7 @@ const App: React.FC = () => {
                                 <div className="search-interface">
                                     <SearchHeader/>
                                     <div className="row g-4">
-                                        <div className="col-lg-3">
+                                        <div className="col-lg-3" data-filters-column>
                                             <FacetsSidebar/>
                                         </div>
                                         <div className="col-lg-9">
