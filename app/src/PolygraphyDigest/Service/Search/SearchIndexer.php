@@ -117,6 +117,7 @@ class SearchIndexer
             url: $article->getUrl() ?? '',
             publishedAt: $article->getPublishedAt()?->format('c') ?? $article->getFetchedAt()->format('c'),
             sourceName: $article->getSource()?->getName() ?? 'Unknown',
+            status: $article->getStatus()->value,
         );
     }
 

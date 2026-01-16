@@ -26,6 +26,7 @@ final readonly class ArticleDocument
         public string $url,
         public string $publishedAt,
         public string $sourceName,
+        public string $status,
     ) {
     }
 
@@ -44,6 +45,7 @@ final readonly class ArticleDocument
             'url' => $this->url,
             'published_at' => $this->publishedAt,
             'source_name' => $this->sourceName,
+            'status' => $this->status,
         ];
     }
 }

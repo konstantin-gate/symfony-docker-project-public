@@ -14,6 +14,7 @@ enum ArticleStatusEnum: string implements TranslatableInterface
 {
     case NEW = 'new';
     case PROCESSED = 'processed';
+    case HIDDEN = 'hidden';
     case ERROR = 'error';
 
     /**

@@ -360,7 +360,8 @@ class SearchService
                 content: $hit['highlight']['content'][0] ?? mb_substr($source['content'] ?? '', 0, 200) . '...',
                 url: $source['url'] ?? '',
                 publishedAt: $source['published_at'] ?? '',
-                sourceName: $source['source_name'] ?? ''
+                sourceName: $source['source_name'] ?? '',
+                status: $source['status'] ?? 'new'
             );
         }
 
