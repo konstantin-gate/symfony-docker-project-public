@@ -38,5 +38,12 @@
         "search": "Search",
         "settings": "Settings",
         "back_to_home": "Back to Home"
-    }
+    },
+    "settings_title": "Settings",
+    "appearance_section": "Appearance",
+    "theme_label": "Color Mode",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "search_section": "Search Preferences",
+    "items_per_page": "Results per page"
 }

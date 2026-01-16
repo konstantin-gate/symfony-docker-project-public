@@ -38,5 +38,12 @@
         "search": "Vyhledávání",
         "settings": "Nastavení",
         "back_to_home": "Zpět na hlavní"
-    }
+    },
+    "settings_title": "Nastavení",
+    "appearance_section": "Vzhled",
+    "theme_label": "Barevný režim",
+    "theme_light": "Světlý",
+    "theme_dark": "Tmavý",
+    "search_section": "Nastavení vyhledávání",
+    "items_per_page": "Počet položek na stránku"
 }
