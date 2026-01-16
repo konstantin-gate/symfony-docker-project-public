@@ -35,31 +35,110 @@ readonly class IndexInitializer
             return;
         }
 
+        $analysisSettings = [
+            'filter' => [
+                'czech_stop' => [
+                    'type' => 'stop',
+                    'stopwords' => '_czech_',
+                ],
+                'czech_stemmer' => [
+                    'type' => 'stemmer',
+                    'language' => 'czech',
+                ],
+                'english_possessive_stemmer' => [
+                    'type' => 'stemmer',
+                    'language' => 'possessive_english',
+                ],
+                'english_stop' => [
+                    'type' => 'stop',
+                    'stopwords' => '_english_',
+                ],
+                'english_stemmer' => [
+                    'type' => 'stemmer',
+                    'language' => 'english',
+                ],
+                'russian_stop' => [
+                    'type' => 'stop',
+                    'stopwords' => '_russian_',
+                ],
+                'russian_stemmer' => [
+                    'type' => 'stemmer',
+                    'language' => 'russian',
+                ],
+            ],
+            'analyzer' => [
+                'default' => [
+                    'type' => 'standard',
+                ],
+                'cs_analyzer' => [
+                    'tokenizer' => 'standard',
+                    'filter' => [
+                        'lowercase',
+                        'czech_stop',
+                        'czech_stemmer',
+                        'asciifolding',
+                    ],
+                ],
+                'en_analyzer' => [
+                    'tokenizer' => 'standard',
+                    'filter' => [
+                        'english_possessive_stemmer',
+                        'lowercase',
+                        'english_stop',
+                        'english_stemmer',
+                        'asciifolding',
+                    ],
+                ],
+                'ru_analyzer' => [
+                    'tokenizer' => 'standard',
+                    'filter' => [
+                        'lowercase',
+                        'russian_stop',
+                        'russian_stemmer',
+                    ],
+                ],
+            ],
+        ];
+
         $params = [
             'index' => $indexName,
             'body' => [
                 'settings' => [
                     'number_of_shards' => 1,
                     'number_of_replicas' => 0,
-                    'analysis' => [
-                        'analyzer' => [
-                            'default' => [
-                                'type' => 'standard',
-                            ],
-                        ],
-                    ],
+                    'analysis' => $analysisSettings,
                 ],
                 'mappings' => [
                     'properties' => [
                         'id' => ['type' => 'keyword'],
                         'title' => [
                             'type' => 'text',
+                            'analyzer' => 'standard',
                             'fields' => [
+                                'cs' => ['type' => 'text', 'analyzer' => 'cs_analyzer'],
+                                'en' => ['type' => 'text', 'analyzer' => 'en_analyzer'],
+                                'ru' => ['type' => 'text', 'analyzer' => 'ru_analyzer'],
                                 'keyword' => ['type' => 'keyword'],
                             ],
                         ],
-                        'summary' => ['type' => 'text'],
-                        'content' => ['type' => 'text'],
+                        'summary' => [
+                            'type' => 'text',
+                            'analyzer' => 'standard',
+                            'fields' => [
+                                'cs' => ['type' => 'text', 'analyzer' => 'cs_analyzer'],
+                                'en' => ['type' => 'text', 'analyzer' => 'en_analyzer'],
+                                'ru' => ['type' => 'text', 'analyzer' => 'ru_analyzer'],
+                            ],
+                        ],
+                        'content' => [
+                            'type' => 'text',
+                            'analyzer' => 'standard',
+                            'fields' => [
+                                'cs' => ['type' => 'text', 'analyzer' => 'cs_analyzer'],
+                                'en' => ['type' => 'text', 'analyzer' => 'en_analyzer'],
+                                'ru' => ['type' => 'text', 'analyzer' => 'ru_analyzer'],
+                            ],
+                        ],
                         'url' => ['type' => 'keyword'],
                         'published_at' => ['type' => 'date'],
                         'source_name' => ['type' => 'keyword'],
@@ -86,23 +165,101 @@ readonly class IndexInitializer
             return;
         }
 
+        $analysisSettings = [
+            'filter' => [
+                'czech_stop' => [
+                    'type' => 'stop',
+                    'stopwords' => '_czech_',
+                ],
+                'czech_stemmer' => [
+                    'type' => 'stemmer',
+                    'language' => 'czech',
+                ],
+                'english_possessive_stemmer' => [
+                    'type' => 'stemmer',
+                    'language' => 'possessive_english',
+                ],
+                'english_stop' => [
+                    'type' => 'stop',
+                    'stopwords' => '_english_',
+                ],
+                'english_stemmer' => [
+                    'type' => 'stemmer',
+                    'language' => 'english',
+                ],
+                'russian_stop' => [
+                    'type' => 'stop',
+                    'stopwords' => '_russian_',
+                ],
+                'russian_stemmer' => [
+                    'type' => 'stemmer',
+                    'language' => 'russian',
+                ],
+            ],
+            'analyzer' => [
+                'default' => [
+                    'type' => 'standard',
+                ],
+                'cs_analyzer' => [
+                    'tokenizer' => 'standard',
+                    'filter' => [
+                        'lowercase',
+                        'czech_stop',
+                        'czech_stemmer',
+                        'asciifolding',
+                    ],
+                ],
+                'en_analyzer' => [
+                    'tokenizer' => 'standard',
+                    'filter' => [
+                        'english_possessive_stemmer',
+                        'lowercase',
+                        'english_stop',
+                        'english_stemmer',
+                        'asciifolding',
+                    ],
+                ],
+                'ru_analyzer' => [
+                    'tokenizer' => 'standard',
+                    'filter' => [
+                        'lowercase',
+                        'russian_stop',
+                        'russian_stemmer',
+                    ],
+                ],
+            ],
+        ];
+
         $params = [
             'index' => $indexName,
             'body' => [
                 'settings' => [
                     'number_of_shards' => 1,
                     'number_of_replicas' => 0,
+                    'analysis' => $analysisSettings,
                 ],
                 'mappings' => [
                     'properties' => [
                         'id' => ['type' => 'keyword'],
                         'name' => [
                             'type' => 'text',
+                            'analyzer' => 'standard',
                             'fields' => [
+                                'cs' => ['type' => 'text', 'analyzer' => 'cs_analyzer'],
+                                'en' => ['type' => 'text', 'analyzer' => 'en_analyzer'],
+                                'ru' => ['type' => 'text', 'analyzer' => 'ru_analyzer'],
                                 'keyword' => ['type' => 'keyword'],
                             ],
                         ],
-                        'description' => ['type' => 'text'],
+                        'description' => [
+                            'type' => 'text',
+                            'analyzer' => 'standard',
+                            'fields' => [
+                                'cs' => ['type' => 'text', 'analyzer' => 'cs_analyzer'],
+                                'en' => ['type' => 'text', 'analyzer' => 'en_analyzer'],
+                                'ru' => ['type' => 'text', 'analyzer' => 'ru_analyzer'],
+                            ],
+                        ],
                         'price' => [
                             'type' => 'scaled_float',
                             'scaling_factor' => 100,

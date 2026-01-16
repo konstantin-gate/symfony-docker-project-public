@@ -82,7 +82,7 @@ const SearchHeader: React.FC = () => {
                 </div>
 
                 {showSuggestions && suggestions.length > 0 && (
-                    <div className="list-group position-absolute w-100 shadow-lg mt-1" style={{ zIndex: 1000 }}>
+                    <div className="list-group position-absolute w-100 shadow-lg mt-1" style={{ zIndex: 1050 }}>
                         {suggestions.map((s, idx) => (
                             <button
                                 key={idx}

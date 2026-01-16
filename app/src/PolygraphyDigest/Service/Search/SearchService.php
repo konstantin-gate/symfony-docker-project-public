@@ -201,7 +201,20 @@ class SearchService
             $bool['must'][] = [
                 'multi_match' => [
                     'query' => $criteria->query,
-                    'fields' => ['title^3', 'summary^2', 'content'],
+                    'fields' => [
+                        'title^3',
+                        'title.cs^2.5',
+                        'title.en^2.5',
+                        'title.ru^2.5',
+                        'summary^2',
+                        'summary.cs^1.5',
+                        'summary.en^1.5',
+                        'summary.ru^1.5',
+                        'content',
+                        'content.cs',
+                        'content.en',
+                        'content.ru',
+                    ],
                     'fuzziness' => 'AUTO',
                 ],
             ];
@@ -265,7 +278,16 @@ class SearchService
             $bool['must'][] = [
                 'multi_match' => [
                     'query' => $criteria->query,
-                    'fields' => ['name^3', 'description'],
+                    'fields' => [
+                        'name^3',
+                        'name.cs^2.5',
+                        'name.en^2.5',
+                        'name.ru^2.5',
+                        'description',
+                        'description.cs',
+                        'description.en',
+                        'description.ru',
+                    ],
                     'fuzziness' => 'AUTO',
                 ],
             ];
