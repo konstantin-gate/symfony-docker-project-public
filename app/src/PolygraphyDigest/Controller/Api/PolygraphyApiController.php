@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\PolygraphyDigest\Controller\Api;
 
 use App\PolygraphyDigest\DTO\Search\SearchCriteria;
+use App\PolygraphyDigest\Enum\ArticleStatusEnum;
+use App\PolygraphyDigest\Repository\ArticleRepository;
+use App\PolygraphyDigest\Service\Search\SearchIndexer;
 use App\PolygraphyDigest\Service\Search\SearchService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +26,9 @@ class PolygraphyApiController extends AbstractController
     public function __construct(
         private readonly SearchService $searchService,
         private readonly SerializerInterface $serializer,
+        private readonly ArticleRepository $articleRepository,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly SearchIndexer $searchIndexer,
     ) {
     }
 
@@ -37,6 +44,43 @@ class PolygraphyApiController extends AbstractController
             $result = $this->searchService->searchArticles($criteria);
 
             return new JsonResponse($this->serializer->serialize($result, 'json'), 200, [], true);
+        } catch (\Throwable $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Aktualizace stavu článku.
+     * Endpoint: PATCH /api/polygraphy/articles/{id}/status.
+     */
+    #[Route('/articles/{id}/status', name: 'update_article_status', methods: ['PATCH'])]
+    public function updateArticleStatus(string $id, Request $request): JsonResponse
+    {
+        try {
+            $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            $statusValue = $data['status'] ?? null;
+
+            if (!$statusValue) {
+                return new JsonResponse(['error' => 'Status is required'], 400);
+            }
+
+            $status = ArticleStatusEnum::tryFrom($statusValue);
+            if (!$status) {
+                return new JsonResponse(['error' => 'Invalid status'], 400);
+            }
+
+            $article = $this->articleRepository->find($id);
+            if (!$article) {
+                return new JsonResponse(['error' => 'Article not found'], 404);
+            }
+
+            $article->setStatus($status);
+            $this->entityManager->flush();
+
+            // Reindexace v Elasticsearch
+            $this->searchIndexer->indexArticle($article);
+
+            return new JsonResponse(['status' => 'success', 'new_status' => $status->value]);
         } catch (\Throwable $e) {
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }
