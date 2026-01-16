@@ -24,7 +24,10 @@ services:
     volumes:
       - .:/var/www/html:delegated # Připojujeme aktuální složku do kontejneru
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
+      elasticsearch:
+        condition: service_healthy
     environment:
       - COMPOSER_MEMORY_LIMIT=-1  # Odstraňuje limit pro Composer
       - PHP_MEMORY_LIMIT=2048M    # Zvyšuje limit PHP
@@ -59,6 +62,12 @@ services:
       - "9200:9200"
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -vq '\"status\":\"red\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
   # 6. Kibana (Visualization)
   kibana:
