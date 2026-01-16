@@ -14,15 +14,17 @@ const App: React.FC = () => {
 
     return (
         <SearchProvider>
-            <div className="polygraphy-app min-vh-100 bg-light">
+            <div className="polygraphy-app min-vh-100 bg-light" data-polygraphy-app>
                 <AppHeader title={activeTab === 'dashboard' ? t('dashboard_title') : t('app_title')}/>
 
-                <main className="container-fluid px-0 pb-5 max-w-7xl mx-auto">
+                <main className="container-fluid px-0 pb-5 max-w-7xl mx-auto" data-main-content>
                     <div className="d-flex gap-4 align-items-start">
                         {/* Navigation Sidebar (Moved inside container) */}
                         <div
                             className="bg-dark text-white d-flex flex-column align-items-center py-4 rounded-3 shadow sticky-top flex-shrink-0"
-                            style={{width: '60px', minWidth: '60px', top: '100px', zIndex: 80}}>
+                            style={{width: '60px', minWidth: '60px', top: '100px', zIndex: 80}}
+                            data-navigation-sidebar
+                        >
                             <div className="mb-4">
                                 <div
                                     className="bg-primary rounded-3 shadow d-flex align-items-center justify-content-center"

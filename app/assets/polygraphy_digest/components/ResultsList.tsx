@@ -38,7 +38,7 @@ const ResultsList: React.FC = () => {
     }
 
     return (
-        <div className="results-container">
+        <div className="results-container" data-results-list>
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2 className="h5 mb-0 fw-bold">
                     {searchMode === 'articles' 
@@ -65,7 +65,7 @@ const ResultsList: React.FC = () => {
             {/* Pagination */}
             {results.totalPages > 1 && (
                 <div className="d-flex justify-content-center mt-5">
-                    <nav aria-label="Page navigation">
+                    <nav aria-label="Page navigation" data-pagination>
                         <ul className="pagination pagination-sm shadow-sm">
                             <li className={`page-item ${results.page <= 1 ? 'disabled' : ''}`}>
                                 <button 

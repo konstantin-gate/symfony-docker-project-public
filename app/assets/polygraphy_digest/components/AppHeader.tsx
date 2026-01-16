@@ -22,7 +22,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
     const currentLangCode = i18n.language;
 
     return (
-        <header className="bg-white border-b border-border shadow-sm mb-4 sticky-top" style={{ zIndex: 1000 }}>
+        <header className="bg-white border-b border-border shadow-sm mb-4 sticky-top" style={{ zIndex: 1000 }} data-app-header>
             <div className="max-w-7xl mx-auto py-[28px] px-0">
                 <div className="d-flex justify-content-between align-items-center">
                     {/* Left: Home Button */}

@@ -51,7 +51,7 @@ const SearchHeader: React.FC = () => {
     };
 
     return (
-        <div className="search-header mb-4">
+        <div className="search-header mb-4" data-search-header>
             <form onSubmit={handleSubmit} className="position-relative">
                 <div className="input-group shadow-sm">
                     <span className="input-group-text bg-white border-end-0">
@@ -65,6 +65,7 @@ const SearchHeader: React.FC = () => {
                         value={query}
                         onChange={handleInputChange}
                         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                        data-search-input
                     />
                     {query && (
                         <button
@@ -72,11 +73,12 @@ const SearchHeader: React.FC = () => {
                             className="btn bg-white border-top border-bottom border-end-0 rounded-0"
                             style={{ borderColor: '#dee2e6' }}
                             onClick={handleClear}
+                            data-search-clear-button
                         >
                             <X size={18} className="text-muted" />
                         </button>
                     )}
-                    <button className="btn btn-primary px-4" type="submit">{t('search_button')}</button>
+                    <button className="btn btn-primary px-4" type="submit" data-search-submit-button>{t('search_button')}</button>
                 </div>
 
                 {showSuggestions && suggestions.length > 0 && (

@@ -63,8 +63,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToSearch }) => {
     const isPositiveTrend = trend >= 0;
 
     return (
-        <div className="dashboard">
-            <div className="row g-4 mb-4">
+        <div className="dashboard" data-dashboard-page>
+            <div className="row g-4 mb-4" data-stats-grid>
                 <div className="col-md-4">
                     <div className="card border-0 shadow-sm bg-primary text-white">
                         <div className="card-body">
@@ -137,7 +137,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToSearch }) => {
                     </div>
                 </div>
                 <div className="col-lg-4">
-                    <div className="card border-0 shadow-sm h-100">
+                    <div className="card border-0 shadow-sm h-100" data-quick-search-block>
                         <div className="card-header bg-white py-3">
                             <h6 className="mb-0 fw-bold">{t('quick_search')}</h6>
                         </div>
