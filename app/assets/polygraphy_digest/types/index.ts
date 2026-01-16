@@ -1,3 +1,5 @@
+export type ArticleStatus = 'new' | 'processed' | 'error' | 'hidden';
+
 export interface Article {
     id: string;
     title: string;
@@ -6,6 +8,7 @@ export interface Article {
     url: string;
     publishedAt: string;
     sourceName: string;
+    status?: ArticleStatus;
 }
 
 export interface Product {

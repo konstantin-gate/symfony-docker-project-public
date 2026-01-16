@@ -22,7 +22,7 @@ interface SearchContextType {
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
 export const SearchProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const { itemsPerPage } = useSettings();
+    const { itemsPerPage, showHiddenArticles } = useSettings();
     const [query, setQuery] = useState('');
     const [page, setPage] = useState(1);
     const [filters, setFilters] = useState<Record<string, any>>({});
@@ -59,7 +59,7 @@ export const SearchProvider: React.FC<{ children: ReactNode }> = ({ children }) 
                 query,
                 page,
                 limit: itemsPerPage,
-                filters,
+                filters: { ...filters, show_hidden: showHiddenArticles },
                 sort: searchMode === 'articles' ? { published_at: 'desc' } : {},
             };
 
@@ -75,14 +75,14 @@ export const SearchProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         } finally {
             setIsLoading(false);
         }
-    }, [query, page, filters, searchMode, itemsPerPage]);
+    }, [query, page, filters, searchMode, itemsPerPage, showHiddenArticles]);
 
     // Reactive search: triggers when filters, page, search mode or query change
     useEffect(() => {
         // We can skip the very first mount if needed, 
         // but usually we want to see initial results in the search tab.
         performSearch();
-    }, [filters, page, searchMode, query, itemsPerPage]);
+    }, [filters, page, searchMode, query, itemsPerPage, showHiddenArticles]);
 
     return (
         <SearchContext.Provider value={{

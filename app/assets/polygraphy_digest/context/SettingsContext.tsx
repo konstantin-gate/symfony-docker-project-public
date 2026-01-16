@@ -3,11 +3,13 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 export interface Settings {
     theme: 'light' | 'dark';
     itemsPerPage: number;
+    showHiddenArticles: boolean;
 }
 
 const DEFAULT_SETTINGS: Settings = {
     theme: 'light',
     itemsPerPage: 12,
+    showHiddenArticles: false,
 };
 
 interface SettingsContextType extends Settings {

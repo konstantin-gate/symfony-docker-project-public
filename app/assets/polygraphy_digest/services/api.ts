@@ -70,5 +70,16 @@ export const api = {
 
         const response = await fetch(`${API_BASE_URL}/stats?${params.toString()}`);
         return handleResponse<any>(response);
+    },
+
+    async updateArticleStatus(id: string, status: string): Promise<{ status: string; new_status: string }> {
+        const response = await fetch(`${API_BASE_URL}/articles/${id}/status`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status }),
+        });
+        return handleResponse<{ status: string; new_status: string }>(response);
     }
 };
