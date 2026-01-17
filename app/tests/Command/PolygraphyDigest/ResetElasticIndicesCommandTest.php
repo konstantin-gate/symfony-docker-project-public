@@ -90,8 +90,14 @@ class ResetElasticIndicesCommandTest extends KernelTestCase
                 return $response;
             });
 
-        $this->client->expects($this->exactly(2))
-            ->method('indices')
+        // Přidáme mock pro metodu exists, aby command mohl projít čekací smyčkou
+        $indices->method('exists')->willReturnCallback(function () {
+            $response = $this->createMock(Elasticsearch::class);
+            $response->method('asBool')->willReturn(false); // Index už neexistuje
+            return $response;
+        });
+
+        $this->client->method('indices')
             ->willReturn($indices);
 
         $this->indexInitializer->expects($this->once())
@@ -122,8 +128,14 @@ class ResetElasticIndicesCommandTest extends KernelTestCase
             ->method('delete')
             ->willReturn($this->createMock(Elasticsearch::class));
 
-        $this->client->expects($this->exactly(2))
-            ->method('indices')
+        // Přidáme mock pro metodu exists
+        $indices->method('exists')->willReturnCallback(function () {
+            $response = $this->createMock(Elasticsearch::class);
+            $response->method('asBool')->willReturn(false);
+            return $response;
+        });
+
+        $this->client->method('indices')
             ->willReturn($indices);
 
         $this->indexInitializer->expects($this->once())
@@ -160,8 +172,7 @@ class ResetElasticIndicesCommandTest extends KernelTestCase
             ->method('delete')
             ->willThrowException($exception);
 
-        $this->client->expects($this->exactly(2))
-            ->method('indices')
+        $this->client->method('indices')
             ->willReturn($indices);
 
         $this->indexInitializer->expects($this->once())
@@ -199,8 +210,7 @@ class ResetElasticIndicesCommandTest extends KernelTestCase
             ->method('delete')
             ->willThrowException($exception);
 
-        $this->client->expects($this->once())
-            ->method('indices')
+        $this->client->method('indices')
             ->willReturn($indices);
 
         // Act
@@ -221,6 +231,13 @@ class ResetElasticIndicesCommandTest extends KernelTestCase
         // Arrange
         $indices = $this->createMock(Indices::class);
         $indices->method('delete')->willReturn($this->createMock(Elasticsearch::class));
+        
+        // Mock pro metodu exists
+        $indices->method('exists')->willReturnCallback(function () {
+            $response = $this->createMock(Elasticsearch::class);
+            $response->method('asBool')->willReturn(false);
+            return $response;
+        });
 
         $this->client->method('indices')->willReturn($indices);
 

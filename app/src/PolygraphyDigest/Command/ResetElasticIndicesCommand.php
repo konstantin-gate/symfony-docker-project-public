@@ -53,6 +53,13 @@ class ResetElasticIndicesCommand extends Command
                 try {
                     $this->client->indices()->delete(['index' => $index]);
                     $io->success("Index $index byl smazán.");
+
+                    // Čekání na skutečné smazání (prevence race condition)
+                    $retries = 0;
+                    while ($this->indexExists($index) && $retries < 10) {
+                        usleep(200000); // 200ms
+                        $retries++;
+                    }
                 } catch (ClientResponseException $e) {
                     if ($e->getResponse()->getStatusCode() === 404) {
                         $io->note("Index $index neexistuje, přeskakuji mazání.");
@@ -74,6 +81,20 @@ class ResetElasticIndicesCommand extends Command
             $io->error('Chyba: ' . $e->getMessage());
 
             return Command::FAILURE;
+        }
+    }
+
+    /**
+     * Bezpečně ověří existenci indexu.
+     */
+    private function indexExists(string $indexName): bool
+    {
+        try {
+            $response = $this->client->indices()->exists(['index' => $indexName]);
+
+            return $response instanceof \Elastic\Elasticsearch\Response\Elasticsearch ? $response->asBool() : false;
+        } catch (\Throwable) {
+            return false;
         }
     }
 }
