@@ -2,3 +2,11 @@ index:
     title: "Polygraphy Digest"
     description: "Your daily digest of printing and publishing news."
     open_tooltip: "Go to Dashboard"
+
+actions:
+    refresh: "Refresh"
+    refreshing: "Refreshing..."
+    refresh_sources: "Refresh sources"
+
+error:
+    refresh_failed: "Error refreshing data"

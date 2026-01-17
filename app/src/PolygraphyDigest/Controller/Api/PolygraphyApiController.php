@@ -7,6 +7,7 @@ namespace App\PolygraphyDigest\Controller\Api;
 use App\PolygraphyDigest\DTO\Search\SearchCriteria;
 use App\PolygraphyDigest\Enum\ArticleStatusEnum;
 use App\PolygraphyDigest\Repository\ArticleRepository;
+use App\PolygraphyDigest\Service\Crawler\CrawlerService;
 use App\PolygraphyDigest\Service\Search\SearchIndexer;
 use App\PolygraphyDigest\Service\Search\SearchService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,7 +30,24 @@ class PolygraphyApiController extends AbstractController
         private readonly ArticleRepository $articleRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly SearchIndexer $searchIndexer,
+        private readonly CrawlerService $crawlerService,
     ) {
+    }
+
+    /**
+     * Spustí manuální parsování všech zdrojů.
+     * Endpoint: POST /api/polygraphy/crawl.
+     */
+    #[Route('/crawl', name: 'crawl_all', methods: ['POST'])]
+    public function crawlAll(): JsonResponse
+    {
+        try {
+            $stats = $this->crawlerService->processAllSources();
+
+            return new JsonResponse($stats, 200);
+        } catch (\Throwable $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**

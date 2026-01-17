@@ -6,6 +6,7 @@ namespace App\PolygraphyDigest\Service\Crawler;
 
 use App\PolygraphyDigest\Entity\Source;
 use App\PolygraphyDigest\Repository\ArticleRepository;
+use App\PolygraphyDigest\Repository\SourceRepository;
 use App\PolygraphyDigest\Service\Search\SearchIndexer;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -21,6 +22,7 @@ readonly class CrawlerService
         private ParserProvider $parserProvider,
         private EntityManagerInterface $entityManager,
         private ArticleRepository $articleRepository,
+        private SourceRepository $sourceRepository,
         private SearchIndexer $searchIndexer,
         private LoggerInterface $logger,
     ) {
@@ -100,5 +102,39 @@ readonly class CrawlerService
 
             throw $e;
         }
+    }
+
+    /**
+     * Zpracuje všechny zdroje.
+     *
+     * @return array{processed: int, new_articles: int, errors: array<int, array{source: string, message: string}>}
+     */
+    public function processAllSources(): array
+    {
+        $stats = [
+            'processed' => 0,
+            'new_articles' => 0,
+            'errors' => [],
+        ];
+
+        $sources = $this->sourceRepository->findAll();
+
+        foreach ($sources as $source) {
+            try {
+                $this->processSource($source);
+                $stats['processed']++;
+            } catch (\Throwable $e) {
+                $stats['errors'][] = [
+                    'source' => $source->getName(),
+                    'message' => $e->getMessage(),
+                ];
+                $this->logger->error('Error processing source manually', [
+                    'source' => $source->getName(),
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return $stats;
     }
 }
