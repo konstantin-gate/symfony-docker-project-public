@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\PolygraphyDigest\Command;
 
+use App\PolygraphyDigest\Service\Search\ElasticsearchClientInterface;
 use App\PolygraphyDigest\Service\Search\IndexInitializer;
-use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -21,7 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class ResetElasticIndicesCommand extends Command
 {
     public function __construct(
-        private readonly Client $client,
+        private readonly ElasticsearchClientInterface $client,
         private readonly IndexInitializer $indexInitializer,
     ) {
         parent::__construct();
