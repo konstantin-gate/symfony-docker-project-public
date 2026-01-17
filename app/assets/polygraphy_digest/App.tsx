@@ -32,8 +32,8 @@ const App: React.FC = () => {
                         <div className="d-flex gap-4 align-items-start">
                             {/* Navigation Sidebar (Moved inside container) */}
                             <div
-                                className="bg-dark text-white d-flex flex-column align-items-center py-4 rounded-3 shadow sticky-top flex-shrink-0"
-                                style={{width: '60px', minWidth: '60px', top: '110px', zIndex: 80}}
+                                className="bg-dark text-white d-flex flex-column align-items-center py-4 rounded-3 shadow flex-shrink-0"
+                                style={{width: '60px', minWidth: '60px', position: 'sticky', top: '128px', zIndex: 80}}
                                 data-navigation-sidebar
                             >
                                 <div className="mb-4">
