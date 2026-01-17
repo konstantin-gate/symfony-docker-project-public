@@ -10,7 +10,7 @@ i18n
   .init({
     fallbackLng: 'cs', // Default to Czech for this project
     supportedLngs: ['cs', 'en', 'ru'],
-    debug: process.env.NODE_ENV === 'development',
+    debug: false,
     
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
