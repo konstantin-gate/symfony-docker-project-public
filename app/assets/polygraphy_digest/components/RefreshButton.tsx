@@ -12,7 +12,7 @@ interface RefreshButtonProps {
  */
 export const RefreshButton: React.FC<RefreshButtonProps> = ({ onRefreshComplete, className }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const { t } = useTranslation('PolygraphyDigest');
+    const { t } = useTranslation();
 
     const handleRefresh = async () => {
         if (isLoading) return;
@@ -38,7 +38,7 @@ export const RefreshButton: React.FC<RefreshButtonProps> = ({ onRefreshComplete,
             }
         } catch (error) {
             console.error('Error during crawl:', error);
-            alert(t('error.refresh_failed', 'Chyba při aktualizaci dat'));
+            alert(t('error.refresh_failed'));
         } finally {
             setIsLoading(false);
         }
@@ -49,7 +49,8 @@ export const RefreshButton: React.FC<RefreshButtonProps> = ({ onRefreshComplete,
             onClick={handleRefresh}
             disabled={isLoading}
             className={`btn btn-outline-primary d-flex align-items-center justify-content-center gap-2 ${className || ''}`}
-            title={t('actions.refresh_sources', 'Aktualizovat zdroje')}
+            title={t('actions.refresh_sources')}
+            data-refresh-button
         >
             {isLoading ? (
                 <Loader2 className="animate-spin" size={18} />
@@ -57,10 +58,7 @@ export const RefreshButton: React.FC<RefreshButtonProps> = ({ onRefreshComplete,
                 <RefreshCw size={18} />
             )}
             <span>
-                {isLoading 
-                    ? t('actions.refreshing', 'Aktualizace...') 
-                    : t('actions.refresh', 'Aktualizovat')
-                }
+                {isLoading ? t('actions.refreshing') : t('actions.refresh')}
             </span>
         </button>
     );

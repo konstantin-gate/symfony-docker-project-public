@@ -52,5 +52,13 @@
     "action": {
         "enable": "Povolit (Zobrazit)",
         "disable": "Zakázat (Skrýt)"
+    },
+    "actions": {
+        "refresh": "Aktualizovat",
+        "refreshing": "Aktualizace...",
+        "refresh_sources": "Aktualizovat zdroje"
+    },
+    "error": {
+        "refresh_failed": "Chyba při aktualizaci dat"
     }
 }

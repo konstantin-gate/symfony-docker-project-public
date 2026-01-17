@@ -52,5 +52,13 @@
     "action": {
         "enable": "Enable (Show)",
         "disable": "Disable (Hide)"
+    },
+    "actions": {
+        "refresh": "Refresh",
+        "refreshing": "Refreshing...",
+        "refresh_sources": "Refresh sources"
+    },
+    "error": {
+        "refresh_failed": "Error refreshing data"
     }
 }
