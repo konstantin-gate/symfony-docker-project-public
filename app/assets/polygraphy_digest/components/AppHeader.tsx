@@ -44,7 +44,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
                     </div>
 
                     {/* Right: Language Switcher */}
-                    <div className="dropdown">
+                    <div className="dropdown" data-language-switcher>
                         <button 
                             className="btn btn-outline-secondary btn-sm dropdown-toggle text-uppercase" 
                             type="button" 

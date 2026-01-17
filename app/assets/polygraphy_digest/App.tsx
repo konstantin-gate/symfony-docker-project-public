@@ -33,7 +33,7 @@ const App: React.FC = () => {
                             {/* Navigation Sidebar (Moved inside container) */}
                             <div
                                 className="bg-dark text-white d-flex flex-column align-items-center py-4 rounded-3 shadow sticky-top flex-shrink-0"
-                                style={{width: '60px', minWidth: '60px', top: '128px', zIndex: 80}}
+                                style={{width: '60px', minWidth: '60px', top: '110px', zIndex: 80}}
                                 data-navigation-sidebar
                             >
                                 <div className="mb-4">
@@ -72,7 +72,7 @@ const App: React.FC = () => {
                                 </nav>
                             </div>
                             {/* Main Content Area */}
-                            <div className="flex-grow-1 px-3" style={{minWidth: 0}}>
+                            <div className="flex-grow-1 ps-3 pe-0 overflow-x-hidden" style={{minWidth: 0}}>
                                 {activeTab === 'dashboard' && (
                                     <Dashboard onNavigateToSearch={() => setActiveTab('search')} />
                                 )}
