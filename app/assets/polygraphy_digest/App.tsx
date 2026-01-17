@@ -72,7 +72,7 @@ const App: React.FC = () => {
                                 </nav>
                             </div>
                             {/* Main Content Area */}
-                            <div className="flex-grow-1 ps-3 pe-0 overflow-x-hidden" style={{minWidth: 0}}>
+                            <div className="flex-grow-1 ps-0 pe-0 overflow-x-hidden" style={{minWidth: 0}} data-polygraphy-settings-parent>
                                 {activeTab === 'dashboard' && (
                                     <Dashboard onNavigateToSearch={() => setActiveTab('search')} />
                                 )}

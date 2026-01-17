@@ -16,14 +16,14 @@ const SettingsPage: React.FC = () => {
     };
 
     return (
-        <div className="container-fluid py-4">
+        <div className="container-fluid p-0" data-settings-page>
             <div className="card shadow-sm border-0">
                 <div className="card-header bg-white py-3">
                     <h5 className="mb-0 fw-bold">{t('settings_title')}</h5>
                 </div>
                 <div className="card-body">
                     {/* Appearance Section */}
-                    <div className="mb-5">
+                    <div className="mb-5" data-settings-section="appearance">
                         <h6 className="text-uppercase text-muted fw-bold mb-3" style={{ fontSize: '0.8rem' }}>
                             {t('appearance_section')}
                         </h6>
@@ -31,7 +31,7 @@ const SettingsPage: React.FC = () => {
                         <div className="row g-3">
                             <div className="col-md-6 col-lg-4">
                                 <label className="form-label d-block mb-2">{t('theme_label')}</label>
-                                <div className="btn-group w-100" role="group">
+                                <div className="btn-group w-100" role="group" data-settings-theme-selector>
                                     <button
                                         type="button"
                                         className={`btn ${theme === 'light' ? 'btn-primary' : 'btn-outline-primary'}`}
@@ -56,7 +56,7 @@ const SettingsPage: React.FC = () => {
                     <hr className="my-4 text-muted opacity-25" />
 
                     {/* Search Preferences Section */}
-                    <div className="mb-3">
+                    <div className="mb-3" data-settings-section="search">
                         <h6 className="text-uppercase text-muted fw-bold mb-3" style={{ fontSize: '0.8rem' }}>
                             {t('search_section')}
                         </h6>
@@ -71,6 +71,7 @@ const SettingsPage: React.FC = () => {
                                     className="form-select"
                                     value={itemsPerPage}
                                     onChange={handleItemsPerPageChange}
+                                    data-settings-items-per-page
                                 >
                                     <option value={3}>3</option>
                                     <option value={6}>6</option>
@@ -89,6 +90,7 @@ const SettingsPage: React.FC = () => {
                                         id="showDisabledArticles"
                                         checked={useSettings().showHiddenArticles}
                                         onChange={(e) => updateSettings({ showHiddenArticles: e.target.checked })}
+                                        data-settings-show-hidden
                                     />
                                     <label className="form-check-label" htmlFor="showDisabledArticles">
                                         {t('settings.show_disabled_articles')}
