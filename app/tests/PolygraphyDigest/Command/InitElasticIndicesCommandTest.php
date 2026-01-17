@@ -10,6 +10,7 @@ use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Exception\MissingParameterException;
 use Elastic\Elasticsearch\Exception\ServerResponseException;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -133,5 +134,43 @@ class InitElasticIndicesCommandTest extends TestCase
         $this->assertSame(1, $exitCode);
         $output = $commandTester->getDisplay();
         $this->assertStringContainsString('Neočekávaná chyba: Unexpected error', $output);
+    }
+
+    /**
+     * Testuje tichý režim (quiet mode), kdy příkaz nesmí vypisovat žádný text.
+     */
+    public function testExecuteQuietMode(): void
+    {
+        $this->indexInitializer->expects($this->once())
+            ->method('initializeArticlesIndex');
+
+        $this->indexInitializer->expects($this->once())
+            ->method('initializeProductsIndex');
+
+        $commandTester = new CommandTester($this->command);
+        $exitCode = $commandTester->execute([], ['verbosity' => OutputInterface::VERBOSITY_QUIET]);
+
+        $this->assertSame(0, $exitCode);
+        $this->assertEmpty($commandTester->getDisplay());
+    }
+
+    /**
+     * Testuje neinteraktivní režim, aby bylo zajištěno, že příkaz nebude čekat na vstup uživatele.
+     */
+    public function testExecuteNonInteractive(): void
+    {
+        $this->indexInitializer->expects($this->once())
+            ->method('initializeArticlesIndex');
+
+        $this->indexInitializer->expects($this->once())
+            ->method('initializeProductsIndex');
+
+        $commandTester = new CommandTester($this->command);
+        $commandTester->setInputs([]); // Žádný vstup
+        
+        $exitCode = $commandTester->execute([], ['interactive' => false]);
+
+        $this->assertSame(0, $exitCode);
+        $this->assertStringContainsString('Inicializace indexů Elasticsearch', $commandTester->getDisplay());
     }
 }
