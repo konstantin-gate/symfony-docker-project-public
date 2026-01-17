@@ -11,6 +11,7 @@ namespace App\PolygraphyDigest\DTO\Search;
 class SearchResult
 {
     /**
+     * @param array<ArticleDocument|ProductDocument> $items
      * @param array<string, mixed> $aggregations
      */
     public function __construct(
@@ -19,6 +20,7 @@ class SearchResult
         public array $aggregations,
         public int $page,
         public int $totalPages,
+        public ?string $lastUpdatedAt = null,
     ) {
     }
 }

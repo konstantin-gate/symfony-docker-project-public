@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\PolygraphyDigest\Entity\Source;
@@ -18,7 +20,7 @@ class PolygraphySourceFixtures extends Fixture implements FixtureGroupInterface
     /**
      * Definuje skupiny, do kterých tato fixture patří.
      * Umožňuje spouštět pouze fixtures pro tento modul příkazem:
-     * php bin/console doctrine:fixtures:load --group=polygraphy
+     * php bin/console doctrine:fixtures:load --group=polygraphy.
      *
      * @return array<string> Seznam skupin
      */
@@ -70,7 +72,7 @@ class PolygraphySourceFixtures extends Fixture implements FixtureGroupInterface
             $source->setType($data['type']);
             $source->setActive(true);
             $source->setSchedule($data['schedule']);
-            
+
             $manager->persist($source);
         }
 

@@ -75,7 +75,7 @@ class PolygraphyApiController extends AbstractController
     public function updateArticleStatus(string $id, Request $request): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            $data = json_decode($request->getContent(), true, 512, \JSON_THROW_ON_ERROR);
             $statusValue = $data['status'] ?? null;
 
             if (!$statusValue) {
@@ -83,11 +83,13 @@ class PolygraphyApiController extends AbstractController
             }
 
             $status = ArticleStatusEnum::tryFrom($statusValue);
+
             if (!$status) {
                 return new JsonResponse(['error' => 'Invalid status'], 400);
             }
 
             $article = $this->articleRepository->find($id);
+
             if (!$article) {
                 return new JsonResponse(['error' => 'Article not found'], 404);
             }

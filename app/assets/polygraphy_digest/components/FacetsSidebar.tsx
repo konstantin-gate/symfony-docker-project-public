@@ -90,7 +90,14 @@ const FacetsSidebar: React.FC = () => {
                 </div>
             </div>
             
-            <div className="mt-3">
+            <div className="mt-3 d-flex flex-column gap-2">
+                {searchMode === 'articles' && articleResults?.lastUpdatedAt && (
+                    <div className="text-center">
+                       <small className="text-muted" style={{ fontSize: '0.75rem' }}>
+                           {t('filters.last_updated')}: {new Date(articleResults.lastUpdatedAt).toLocaleString()}
+                       </small>
+                    </div>
+                )}
                 <RefreshButton className="w-100" onRefreshComplete={performSearch} />
             </div>
         </>

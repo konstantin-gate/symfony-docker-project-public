@@ -125,7 +125,7 @@ readonly class CrawlerService
         foreach ($sources as $source) {
             try {
                 $this->processSource($source);
-                $stats['processed']++;
+                ++$stats['processed'];
             } catch (\Throwable $e) {
                 $stats['errors'][] = [
                     'source' => $source->getName(),

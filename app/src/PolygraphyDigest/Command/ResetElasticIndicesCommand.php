@@ -39,6 +39,7 @@ class ResetElasticIndicesCommand extends Command
 
         if (!$force && !$io->confirm('Opravdu chcete smazat všechny indexy a data v nich? Tato akce je nevratná!', false)) {
             $io->note('Akce zrušena.');
+
             return Command::SUCCESS;
         }
 
@@ -65,12 +66,13 @@ class ResetElasticIndicesCommand extends Command
             $io->text('Vytvářím nové indexy...');
             $this->indexInitializer->initializeArticlesIndex();
             $this->indexInitializer->initializeProductsIndex();
-            
+
             $io->success('Indexy byly úspěšně resetovány a znovu vytvořeny.');
 
             return Command::SUCCESS;
         } catch (\Exception $e) {
             $io->error('Chyba: ' . $e->getMessage());
+
             return Command::FAILURE;
         }
     }

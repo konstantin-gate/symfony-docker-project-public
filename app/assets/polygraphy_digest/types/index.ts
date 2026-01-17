@@ -40,6 +40,7 @@ export interface SearchResult<T> {
     aggregations: SearchAggregations;
     page: number;
     totalPages: number;
+    lastUpdatedAt?: string;
 }
 
 export interface SearchCriteria {

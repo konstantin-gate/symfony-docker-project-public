@@ -62,9 +62,7 @@ class LifecycleService
      */
     private function shouldRun(): bool
     {
-        $lastRun = $this->cache->get(self::CACHE_KEY_LAST_RUN, function (ItemInterface $item) {
-            return null;
-        });
+        $lastRun = $this->cache->get(self::CACHE_KEY_LAST_RUN, fn (ItemInterface $item) => null);
 
         $today = (new \DateTimeImmutable())->format('Y-m-d');
 
@@ -110,6 +108,7 @@ class LifecycleService
 
         if ($count > 0) {
             $i = 0;
+
             foreach ($articles as $article) {
                 try {
                     // Odstranění z Elasticsearch

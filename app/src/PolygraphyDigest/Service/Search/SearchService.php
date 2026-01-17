@@ -42,6 +42,9 @@ class SearchService
                 'size' => $criteria->limit,
                 'query' => $this->buildArticlesQuery($criteria),
                 'aggs' => [
+                    'last_updated' => [
+                        'max' => ['field' => 'published_at'],
+                    ],
                     'sources' => [
                         'terms' => ['field' => 'source_name'],
                     ],
@@ -77,6 +80,7 @@ class SearchService
         ];
 
         $postFilter = $this->buildArticlesPostFilter($criteria);
+
         if ($postFilter) {
             $params['body']['post_filter'] = $postFilter;
         }
@@ -127,6 +131,7 @@ class SearchService
         ];
 
         $postFilter = $this->buildProductsPostFilter($criteria);
+
         if ($postFilter) {
             $params['body']['post_filter'] = $postFilter;
         }
@@ -223,7 +228,7 @@ class SearchService
         }
 
         // Skrýt skryté články, pokud nejsou explicitně vyžádány
-        $showHidden = filter_var($criteria->filters['show_hidden'] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $showHidden = filter_var($criteria->filters['show_hidden'] ?? false, \FILTER_VALIDATE_BOOLEAN);
 
         if (!$showHidden) {
             $bool['must_not'][] = ['term' => ['status' => 'hidden']];
@@ -374,13 +379,15 @@ class SearchService
 
         $aggregations = $data['aggregations'] ?? [];
         $totalPages = $criteria->limit > 0 ? (int) ceil($total / $criteria->limit) : 0;
+        $lastUpdated = $aggregations['last_updated']['value_as_string'] ?? null;
 
         return new SearchResult(
             items: $items,
             total: (int) $total,
             aggregations: $aggregations,
             page: $criteria->page,
-            totalPages: $totalPages
+            totalPages: $totalPages,
+            lastUpdatedAt: $lastUpdated
         );
     }
 

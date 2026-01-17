@@ -24,7 +24,7 @@ class ReindexArticlesCommand extends Command
 {
     /**
      * @param ArticleRepository $articleRepository Repozitář pro získání článků z DB
-     * @param SearchIndexer $searchIndexer Služba pro indexaci do Elasticsearch
+     * @param SearchIndexer     $searchIndexer     Služba pro indexaci do Elasticsearch
      */
     public function __construct(
         private readonly ArticleRepository $articleRepository,
@@ -37,8 +37,9 @@ class ReindexArticlesCommand extends Command
      * Hlavní metoda pro spuštění příkazu.
      * Načte všechny články a postupně je odesílá do Elasticsearch s vizualizací průběhu.
      *
-     * @param InputInterface $input Vstupní rozhraní konzole
+     * @param InputInterface  $input  Vstupní rozhraní konzole
      * @param OutputInterface $output Výstupní rozhraní konzole
+     *
      * @return int Návratový kód příkazu (0 pro úspěch)
      */
     protected function execute(InputInterface $input, OutputInterface $output): int

@@ -9,7 +9,7 @@ use Doctrine\Migrations\AbstractMigration;
 
 /**
  * Migrace pro zvětšení délky polí v tabulce polygraphy_article.
- * Tato změna řeší chybu "value too long for type character varying(255)" 
+ * Tato změna řeší chybu "value too long for type character varying(255)"
  * u dlouhých titulků a URL adres z RSS kanálů.
  */
 final class Version20260113194258 extends AbstractMigration

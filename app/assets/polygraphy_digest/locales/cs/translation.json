@@ -31,7 +31,8 @@
         "month": "Poslední měsíc",
         "min": "Min",
         "max": "Max",
-        "avg": "Průměr"
+        "avg": "Průměr",
+        "last_updated": "Poslední aktualizace"
     },
     "nav": {
         "dashboard": "Dashboard",

@@ -31,7 +31,8 @@
         "month": "Last month",
         "min": "Min",
         "max": "Max",
-        "avg": "Avg"
+        "avg": "Avg",
+        "last_updated": "Last update"
     },
     "nav": {
         "dashboard": "Dashboard",
