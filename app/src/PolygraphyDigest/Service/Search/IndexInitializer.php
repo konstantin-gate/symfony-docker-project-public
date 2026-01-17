@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\PolygraphyDigest\Service\Search;
 
-use Elastic\Elasticsearch\Client;
+use App\PolygraphyDigest\Service\Search\ElasticsearchClientInterface;
 use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Elastic\Elasticsearch\Exception\MissingParameterException;
 use Elastic\Elasticsearch\Exception\ServerResponseException;
@@ -15,7 +15,7 @@ use Elastic\Elasticsearch\Exception\ServerResponseException;
 readonly class IndexInitializer
 {
     public function __construct(
-        private Client $client,
+        private ElasticsearchClientInterface $client,
     ) {
     }
 
