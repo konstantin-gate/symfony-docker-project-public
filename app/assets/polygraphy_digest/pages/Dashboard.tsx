@@ -108,7 +108,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToSearch }) => {
 
             <div className="row g-4" data-dashboard-content>
                 <div className="col-lg-8" data-stats-distribution>
-                    <div className="card border-0 shadow-sm h-100">
+                    <div className="card border shadow-sm h-100" data-distribution-card>
                         <div className="card-header bg-white py-3">
                             <h6 className="mb-0 fw-bold">{t('source_distribution')}</h6>
                         </div>
@@ -137,7 +137,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToSearch }) => {
                     </div>
                 </div>
                 <div className="col-lg-4" data-stats-quick-search>
-                    <div className="card border-0 shadow-sm h-100" data-quick-search-block>
+                    <div className="card border shadow-sm h-100" data-quick-search-block>
                         <div className="card-header bg-white py-3">
                             <h6 className="mb-0 fw-bold">{t('quick_search')}</h6>
                         </div>

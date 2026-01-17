@@ -35,7 +35,7 @@ const ArticleCard: React.FC<Props> = ({ article }) => {
     };
 
     return (
-        <div className={`card h-100 shadow-sm border-0 hover-lift transition-all ${isDisabled ? 'opacity-50 grayscale' : ''}`}>
+        <div className={`card h-100 shadow-sm border hover-lift transition-all ${isDisabled ? 'opacity-50 grayscale' : ''}`}>
             <div className="card-body d-flex flex-column">
                 <div className="d-flex justify-content-between align-items-start mb-2">
                     <span className="badge bg-light text-primary border px-2 py-1 small d-flex align-items-center">

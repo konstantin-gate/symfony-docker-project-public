@@ -11,7 +11,7 @@ const ProductCard: React.FC<Props> = ({ product }) => {
     const { t } = useTranslation();
 
     return (
-        <div className="card h-100 shadow-sm border-0 transition-all">
+        <div className="card h-100 shadow-sm border transition-all">
             <div className="card-body">
                 <div className="d-flex justify-content-between align-items-center mb-2">
                     <span className="badge bg-success-soft text-success px-2 py-1 small fw-bold">

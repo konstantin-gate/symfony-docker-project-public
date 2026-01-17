@@ -22,7 +22,7 @@ const FacetsSidebar: React.FC = () => {
 
     return (
         <>
-            <div className="card shadow-sm border-0" data-facets-sidebar>
+            <div className="card shadow-sm border" data-facets-sidebar>
                 <div className="card-header bg-white border-0 py-3">
                     <h5 className="card-title mb-0 d-flex align-items-center" data-filter-title>
                         <Filter size={18} className="me-2 text-primary" />
