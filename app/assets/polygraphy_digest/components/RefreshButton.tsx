@@ -27,9 +27,6 @@ export const RefreshButton: React.FC<RefreshButtonProps> = ({ onRefreshComplete,
                 throw new Error('Failed to refresh data');
             }
 
-            // Můžeme zpracovat i data (statistiky) pokud budeme chtít v budoucnu zobrazit toast
-            // const data = await response.json();
-
             if (onRefreshComplete) {
                 onRefreshComplete();
             } else {

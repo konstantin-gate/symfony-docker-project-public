@@ -10,6 +10,7 @@ use App\PolygraphyDigest\Repository\SourceRepository;
 use App\PolygraphyDigest\Service\Search\SearchIndexer;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -24,6 +25,8 @@ readonly class CrawlerService
         private ArticleRepository $articleRepository,
         private SourceRepository $sourceRepository,
         private SearchIndexer $searchIndexer,
+        #[Autowire(service: 'monolog.logger.polygraphy')]
+        private LoggerInterface $polygraphyLogger,
         private LoggerInterface $logger,
     ) {
     }
@@ -132,8 +135,14 @@ readonly class CrawlerService
                     'source' => $source->getName(),
                     'error' => $e->getMessage(),
                 ]);
+                $this->polygraphyLogger->error('Error processing source manually', [
+                    'source' => $source->getName(),
+                    'error' => $e->getMessage(),
+                ]);
             }
         }
+
+        $this->polygraphyLogger->info('Manual crawl executed', $stats);
 
         return $stats;
     }
