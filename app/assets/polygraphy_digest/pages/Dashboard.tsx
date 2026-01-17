@@ -65,7 +65,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToSearch }) => {
     return (
         <div className="dashboard" data-dashboard-page>
             <div className="row g-4 mb-4" data-stats-grid>
-                <div className="col-md-4">
+                <div className="col-md-4" data-stats-col="sources">
                     <div className="card border-0 shadow-sm bg-primary text-white">
                         <div className="card-body">
                             <div className="d-flex justify-content-between align-items-center">
@@ -78,7 +78,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToSearch }) => {
                         </div>
                     </div>
                 </div>
-                <div className="col-md-4">
+                <div className="col-md-4" data-stats-col="trend">
                     <div className={`card border-0 shadow-sm text-white ${isPositiveTrend ? 'bg-success' : 'bg-danger'}`}>
                         <div className="card-body">
                             <div className="d-flex justify-content-between align-items-center">
@@ -91,7 +91,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToSearch }) => {
                         </div>
                     </div>
                 </div>
-                <div className="col-md-4">
+                <div className="col-md-4" data-stats-col="total">
                     <div className="card border-0 shadow-sm bg-info text-white">
                         <div className="card-body">
                             <div className="d-flex justify-content-between align-items-center">
@@ -106,8 +106,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToSearch }) => {
                 </div>
             </div>
 
-            <div className="row g-4">
-                <div className="col-lg-8">
+            <div className="row g-4" data-dashboard-content>
+                <div className="col-lg-8" data-stats-distribution>
                     <div className="card border-0 shadow-sm h-100">
                         <div className="card-header bg-white py-3">
                             <h6 className="mb-0 fw-bold">{t('source_distribution')}</h6>
@@ -136,7 +136,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigateToSearch }) => {
                         </div>
                     </div>
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-4" data-stats-quick-search>
                     <div className="card border-0 shadow-sm h-100" data-quick-search-block>
                         <div className="card-header bg-white py-3">
                             <h6 className="mb-0 fw-bold">{t('quick_search')}</h6>
