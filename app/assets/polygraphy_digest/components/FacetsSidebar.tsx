@@ -91,7 +91,7 @@ const FacetsSidebar: React.FC = () => {
             </div>
             
             <div className="mt-3">
-                <RefreshButton className="w-100" />
+                <RefreshButton className="w-100" onRefreshComplete={performSearch} />
             </div>
         </>
     );
