@@ -12,7 +12,7 @@ class SearchResult
 {
     /**
      * @param array<ArticleDocument|ProductDocument> $items
-     * @param array<string, mixed> $aggregations
+     * @param array<string, mixed>                   $aggregations
      */
     public function __construct(
         public array $items,

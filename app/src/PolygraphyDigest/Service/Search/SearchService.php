@@ -42,9 +42,6 @@ class SearchService
                 'size' => $criteria->limit,
                 'query' => $this->buildArticlesQuery($criteria),
                 'aggs' => [
-                    'last_updated' => [
-                        'max' => ['field' => 'published_at'],
-                    ],
                     'sources' => [
                         'terms' => ['field' => 'source_name'],
                     ],
@@ -379,15 +376,13 @@ class SearchService
 
         $aggregations = $data['aggregations'] ?? [];
         $totalPages = $criteria->limit > 0 ? (int) ceil($total / $criteria->limit) : 0;
-        $lastUpdated = $aggregations['last_updated']['value_as_string'] ?? null;
 
         return new SearchResult(
             items: $items,
             total: (int) $total,
             aggregations: $aggregations,
             page: $criteria->page,
-            totalPages: $totalPages,
-            lastUpdatedAt: $lastUpdated
+            totalPages: $totalPages
         );
     }
 

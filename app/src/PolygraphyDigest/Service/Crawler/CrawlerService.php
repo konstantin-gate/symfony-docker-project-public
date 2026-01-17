@@ -79,9 +79,10 @@ readonly class CrawlerService
                 }
             }
 
-            if ($newCount > 0) {
-                $this->entityManager->flush();
+            $source->setLastScrapedAt(new \DateTimeImmutable());
+            $this->entityManager->flush();
 
+            if ($newCount > 0) {
                 foreach ($newArticles as $newArticle) {
                     try {
                         $this->searchIndexer->indexArticle($newArticle);

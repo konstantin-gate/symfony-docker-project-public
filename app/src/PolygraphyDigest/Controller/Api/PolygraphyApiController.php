@@ -7,6 +7,7 @@ namespace App\PolygraphyDigest\Controller\Api;
 use App\PolygraphyDigest\DTO\Search\SearchCriteria;
 use App\PolygraphyDigest\Enum\ArticleStatusEnum;
 use App\PolygraphyDigest\Repository\ArticleRepository;
+use App\PolygraphyDigest\Repository\SourceRepository;
 use App\PolygraphyDigest\Service\Crawler\CrawlerService;
 use App\PolygraphyDigest\Service\Search\SearchIndexer;
 use App\PolygraphyDigest\Service\Search\SearchService;
@@ -31,6 +32,7 @@ class PolygraphyApiController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly SearchIndexer $searchIndexer,
         private readonly CrawlerService $crawlerService,
+        private readonly SourceRepository $sourceRepository,
     ) {
     }
 
@@ -60,6 +62,13 @@ class PolygraphyApiController extends AbstractController
         try {
             $criteria = SearchCriteria::fromRequest($request);
             $result = $this->searchService->searchArticles($criteria);
+
+            $sourceName = $criteria->filters['source_id'] ?? null;
+            $lastScrapedAt = $this->sourceRepository->findLatestScrapedAt($sourceName);
+
+            if ($lastScrapedAt) {
+                $result->lastUpdatedAt = $lastScrapedAt->format(\DateTimeInterface::ATOM);
+            }
 
             return new JsonResponse($this->serializer->serialize($result, 'json'), 200, [], true);
         } catch (\Throwable $e) {
