@@ -22,7 +22,7 @@ const FacetsSidebar: React.FC = () => {
 
     return (
         <>
-            <div className="card shadow-sm border-0 sticky-top" style={{ top: '20px' }} data-facets-sidebar>
+            <div className="card shadow-sm border-0" data-facets-sidebar>
                 <div className="card-header bg-white border-0 py-3">
                     <h5 className="card-title mb-0 d-flex align-items-center" data-filter-title>
                         <Filter size={18} className="me-2 text-primary" />
@@ -92,7 +92,7 @@ const FacetsSidebar: React.FC = () => {
             
             <div className="mt-3 d-flex flex-column gap-2">
                 {searchMode === 'articles' && articleResults?.lastUpdatedAt && (
-                    <div className="text-center">
+                    <div className="text-center" data-last-updated-display>
                        <small className="text-muted" style={{ fontSize: '0.75rem' }}>
                            {t('filters.last_updated')}: {new Date(articleResults.lastUpdatedAt).toLocaleString()}
                        </small>
