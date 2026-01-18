@@ -29,6 +29,15 @@
     *   **Конвертер валют:** Мгновенный пересчет по актуальным курсам.
     *   **Автообновление:** Интеграция с внешними API (Exchangerate.host, CurrencyFreaks) с логикой Failover (переключение на запасной провайдер при сбое).
 
+### 3. Polygraphy Digest (Интеллектуальный поиск)
+Агрегатор новостей и товаров полиграфической отрасли с мощным поисковым движком.
+
+*   **Функциональность:**
+    *   **Агрегация:** Автоматический сбор данных из RSS и внешних сайтов.
+    *   **Умный поиск:** Полнотекстовый поиск в Elasticsearch с автодополнением и подсветкой результатов.
+    *   **Аналитика:** Расчет трендов активности публикаций в реальном времени.
+    *   **Интерфейс:** Современный React-интерфейс с фасетной фильтрацией.
+
 ---
 
 ## 🛠 Технологический стек
@@ -36,8 +45,10 @@
 ### Backend
 *   **Framework:** Symfony 8.0 (PHP 8.4)
 *   **Database:** PostgreSQL 16
+*   **Search Engine:** Elasticsearch 8.x
+*   **Cache/Queue:** KeyDB (Redis-compatible)
 *   **ORM:** Doctrine ORM
-*   **Queue:** Symfony Messenger (Doctrine transport)
+*   **Queue:** Symfony Messenger
 *   **Math:** `brick/money`, `brick/math` (для финансовых операций)
 
 ### Frontend
@@ -45,9 +56,10 @@
 *   **Core:**
     *   *Greeting:* Bootstrap 5, Twig, Native JS.
     *   *Wallet:* **React 18**, TypeScript, Tailwind CSS, Shadcn UI.
+    *   *Polygraphy:* **React 18**, TypeScript, Tailwind CSS.
 
 ### Infrastructure
-*   **Docker:** Nginx, PHP-FPM, Postgres, Node.js (для сборки ассетов).
+*   **Docker:** Nginx, PHP-FPM, Postgres, Elasticsearch, Kibana, KeyDB, Node.js.
 
 ---
 
@@ -98,6 +110,9 @@ CURRENCYFREAKS_KEY=your_key_here
 # Инициализация БД (Migrations + Fixtures)
 docker compose exec php composer db-init
 
+# Инициализация поисковых индексов (Elasticsearch)
+docker compose exec php bin/console polygraphy:search:init
+
 # Сборка фронтенда (Dev режим с отслеживанием изменений)
 docker compose run --rm node npm run dev
 ```
@@ -111,11 +126,16 @@ docker compose run --rm node npm run dev
 ### Основные разделы
 *   **Greeting Dashboard:** `/greeting/dashboard`
 *   **Multi-Currency Wallet:** `/multi-currency-wallet`
+*   **Polygraphy Digest:** `/polygraphy`
 
 ### Консольные команды
-*   **Воркер очереди (отправка писем):**
+*   **Воркер очереди (Greeting Module):**
     ```bash
     docker compose exec php bin/console messenger:consume async -v
+    ```
+*   **Воркер очереди и планировщик (Polygraphy Module):**
+    ```bash
+    docker compose exec php bin/console messenger:consume polygraphy scheduler_polygraphy -vv
     ```
 *   **Проверка статуса сервисов:**
     ```bash

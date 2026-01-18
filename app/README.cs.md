@@ -1,6 +1,6 @@
 # Symfony Modular Suite
 
-**Symfony Modular Suite** je moderní webová aplikace postavená na Symfony 8.0 s modulární architekturou. Projekt demonstruje integraci klasického server-side renderingu (Twig) s moderními SPA technologiemi (React) v rámci jednoho monolitu.
+**Symfony Modular Suite** je moderní webová aplikace založená na Symfony 8.0, postavená na modulární architektuře. Projekt demonstruje integraci klasického server-side renderingu (Twig) s moderními SPA technologiemi (React) v rámci jednoho monolitu.
 
 Projekt je plně dockerizován a připraven k nasazení.
 
@@ -8,7 +8,7 @@ Projekt je plně dockerizován a připraven k nasazení.
 
 ## 📦 Moduly
 
-Aplikace se skládá ze dvou nezávislých funkčních modulů:
+Aplikace se skládá ze tří nezávislých funkčních modulů:
 
 ### 1. Greeting Module (Rozesílání)
 Klasický Symfony modul (MVC) pro správu kontaktů a hromadné rozesílání pozdravů.
@@ -29,6 +29,15 @@ Modul pro správu financí implementovaný jako **React SPA** (Single Page Appli
     *   **Převodník měn:** Okamžitý přepočet podle aktuálních kurzů.
     *   **Automatická aktualizace:** Integrace s externími API (Exchangerate.host, CurrencyFreaks) s logikou Failover (přepnutí na záložního poskytovatele při výpadku).
 
+### 3. Polygraphy Digest (Inteligentní vyhledávání)
+Agregátor novinek a produktů polygrafického průmyslu s výkonným vyhledávacím nástrojem.
+
+*   **Funkcionalita:**
+    *   **Agregace:** Automatický sběr dat z RSS a externích webových stránek.
+    *   **Chytré vyhledávání:** Fulltextové vyhledávání v Elasticsearch s našeptávačem a zvýrazněním výsledků.
+    *   **Analytika:** Výpočet trendů aktivity publikací v reálném čase.
+    *   **Rozhraní:** Moderní React rozhraní s fasetovou filtrací.
+
 ---
 
 ## 🛠 Technologický stack
@@ -36,8 +45,10 @@ Modul pro správu financí implementovaný jako **React SPA** (Single Page Appli
 ### Backend
 *   **Framework:** Symfony 8.0 (PHP 8.4)
 *   **Databáze:** PostgreSQL 16
+*   **Vyhledávač:** Elasticsearch 8.x
+*   **Cache/Fronta:** KeyDB (kompatibilní s Redis)
 *   **ORM:** Doctrine ORM
-*   **Fronta:** Symfony Messenger (Doctrine transport)
+*   **Fronta:** Symfony Messenger
 *   **Matematika:** `brick/money`, `brick/math` (pro finanční operace)
 
 ### Frontend
@@ -45,9 +56,10 @@ Modul pro správu financí implementovaný jako **React SPA** (Single Page Appli
 *   **Jádro:**
     *   *Greeting:* Bootstrap 5, Twig, Native JS.
     *   *Wallet:* **React 18**, TypeScript, Tailwind CSS, Shadcn UI.
+    *   *Polygraphy:* **React 18**, TypeScript, Tailwind CSS.
 
 ### Infrastruktura
-*   **Docker:** Nginx, PHP-FPM, Postgres, Node.js (pro sestavení assetů).
+*   **Docker:** Nginx, PHP-FPM, Postgres, Elasticsearch, Kibana, KeyDB, Node.js.
 
 ---
 
@@ -62,7 +74,7 @@ Sestavte a spusťte prostředí:
 docker compose up --build -d
 ```
 
-### Krok 2: Instalace závislostí
+### Krok 2: Instalace záвисиlostí
 Nainstalujte PHP a Node.js závislosti:
 
 ```bash
@@ -98,6 +110,9 @@ Spusťte skript pro kompletní inicializaci. Vytvoří databázi, provede migrac
 # Inicializace DB (Migrace + Fixtures)
 docker compose exec php composer db-init
 
+# Inicializace vyhledávacích indexů (Elasticsearch)
+docker compose exec php bin/console polygraphy:search:init
+
 # Sestavení frontendu (Dev režim s watch)
 docker compose run --rm node npm run dev
 ```
@@ -111,11 +126,16 @@ Po spuštění je aplikace dostupná na adrese: **[http://localhost](http://loca
 ### Hlavní sekce
 *   **Greeting Dashboard:** `/greeting/dashboard`
 *   **Multi-Currency Wallet:** `/multi-currency-wallet`
+*   **Polygraphy Digest:** `/polygraphy`
 
 ### Konzolové příkazy
-*   **Worker fronty (odesílání e-mailů):**
+*   **Worker fronty (Greeting Module):**
     ```bash
     docker compose exec php bin/console messenger:consume async -v
+    ```
+*   **Worker fronty a plánovač (Polygraphy Module):**
+    ```bash
+    docker compose exec php bin/console messenger:consume polygraphy scheduler_polygraphy -vv
     ```
 *   **Kontrola stavu služeb:**
     ```bash
