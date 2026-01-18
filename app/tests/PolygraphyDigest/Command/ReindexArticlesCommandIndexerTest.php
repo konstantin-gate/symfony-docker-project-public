@@ -382,8 +382,8 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
         $this->assertStringContainsString('Chyba při načítání článků z databáze', $output);
         $this->assertStringContainsString('Nelze se připojit k databázi', $output);
 
-        // Ověříme, že příkaz vrátí SUCCESS i při selhání databáze
-        $this->assertSame(0, $commandTester->getStatusCode());
+        // Ověříme, že příkaz vrátí FAILURE při selhání databáze
+        $this->assertSame(1, $commandTester->getStatusCode());
 
         // Ověříme, že progress bar nebyl spuštěn
         $this->assertStringNotContainsString('Startuji reindexaci', $output);

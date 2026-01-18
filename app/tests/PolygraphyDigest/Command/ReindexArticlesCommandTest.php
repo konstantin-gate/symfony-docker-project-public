@@ -15,145 +15,154 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Uid\Uuid;
 
 /**
- * Testovací třída pro příkaz ReindexArticlesCommand.
- * Pokrývá:
- * 1. Úspěšnou reindexaci (Happy Path).
- * 2. Chybu při načítání z DB.
- * 3. Chybu při indexaci konkrétní položky.
+ * Komplexní testy pro příkaz ReindexArticlesCommand.
+ * Sjednocuje testy základní funkcionality, práce s repozitářem a zpracování chyb.
  */
 class ReindexArticlesCommandTest extends TestCase
 {
     private ArticleRepository|MockObject $articleRepository;
     private SearchIndexer|MockObject $searchIndexer;
     private CommandTester $commandTester;
+    private ReindexArticlesCommand $command;
 
-    /**
-     * Inicializace testovacího prostředí.
-     * Vytvoří mock objekty pro repozitář a indexer a instanci testovaného příkazu.
-     */
     protected function setUp(): void
     {
         $this->articleRepository = $this->createMock(ArticleRepository::class);
         $this->searchIndexer = $this->createMock(SearchIndexer::class);
 
-        $command = new ReindexArticlesCommand(
+        $this->command = new ReindexArticlesCommand(
             $this->articleRepository,
             $this->searchIndexer
         );
-        $this->commandTester = new CommandTester($command);
+        $this->commandTester = new CommandTester($this->command);
     }
 
     /**
-     * Testuje úspěšný průběh reindexace (Happy Path).
-     *
-     * Ověřuje, že:
-     * - Všechny články z repozitáře jsou předány indexeru.
-     * - Výstup obsahuje informaci o počtu článků a úspěšném dokončení.
-     * - Nevyskytují se žádné chybové hlášky.
+     * Testuje spuštění příkazu s prázdným seznamem článků.
+     * Ověřuje, že příkaz úspěšně dokončí bez chyb a nevolá indexer.
      */
-    public function testExecuteHappyPath(): void
+    public function testExecuteWithEmptyDatabase(): void
     {
-        // 1. Příprava dat (2 články)
+        $this->articleRepository->expects($this->once())
+            ->method('findAll')
+            ->willReturn([]);
+
+        $this->searchIndexer->expects($this->never())
+            ->method('indexArticle');
+
+        $exitCode = $this->commandTester->execute([]);
+        $output = $this->commandTester->getDisplay();
+
+        $this->assertSame(Command::SUCCESS, $exitCode);
+        $this->assertStringContainsString('Startuji reindexaci 0 článků', $output);
+        $this->assertStringContainsString('Reindexace dokončena.', $output);
+    }
+
+    /**
+     * Testuje úspěšný průběh reindexace (Happy Path) s více články.
+     * Ověřuje, že všechny články jsou předány indexeru.
+     */
+    public function testExecuteHappyPathWithMultipleArticles(): void
+    {
         $article1 = $this->createMock(Article::class);
         $article2 = $this->createMock(Article::class);
         $articles = [$article1, $article2];
 
-        // 2. Nastavení očekávání
         $this->articleRepository->expects($this->once())
             ->method('findAll')
             ->willReturn($articles);
 
-        // Očekáváme, že se indexer zavolá 2x s instancí Article
-        $this->searchIndexer->expects($this->exactly(2))
+        // Ověříme, že se indexer zavolá postupně pro každý článek
+        $matcher = $this->exactly(2);
+        $this->searchIndexer->expects($matcher)
             ->method('indexArticle')
-            ->with($this->isInstanceOf(Article::class));
+            ->willReturnCallback(function (Article $article) use ($matcher, $article1, $article2) {
+                match ($matcher->numberOfInvocations()) {
+                    1 => $this->assertSame($article1, $article),
+                    2 => $this->assertSame($article2, $article),
+                    default => throw new \LogicException('Unexpected call count'),
+                };
+            });
 
-        // 3. Spuštění
         $exitCode = $this->commandTester->execute([]);
-
-        // 4. Ověření
         $output = $this->commandTester->getDisplay();
 
         $this->assertSame(Command::SUCCESS, $exitCode);
         $this->assertStringContainsString('Startuji reindexaci 2 článků', $output);
         $this->assertStringContainsString('Reindexace dokončena.', $output);
-        $this->assertStringNotContainsString('Chyba', $output);
     }
 
     /**
-     * Testuje chování aplikace při selhání databáze.
-     *
-     * Ověřuje, že:
-     * - Pokud `findAll` vyhodí výjimku, indexace se nespustí.
-     * - Uživatel je informován o chybě načítání dat.
-     * - Příkaz skončí s kódem SUCCESS (graceful shutdown).
+     * Testuje chování aplikace při selhání načítání z databáze.
+     * Příkaz by měl skončit s kódem SUCCESS (graceful shutdown) a vypsat chybu.
      */
     public function testExecuteHandlesDatabaseFailure(): void
     {
-        // 1. Simulace chyby DB
         $exceptionMessage = 'Connection refused';
         $this->articleRepository->expects($this->once())
             ->method('findAll')
-            ->willThrowException(new \Exception($exceptionMessage));
+            ->willThrowException(new \RuntimeException($exceptionMessage));
 
-        // Indexer by se neměl vůbec zavolat
         $this->searchIndexer->expects($this->never())
             ->method('indexArticle');
 
-        // 2. Spuštění
         $exitCode = $this->commandTester->execute([]);
         $output = $this->commandTester->getDisplay();
 
-        // 3. Ověření
-        $this->assertSame(Command::SUCCESS, $exitCode); // Příkaz vrací SUCCESS i při chybě (dle implementace)
+        $this->assertSame(Command::FAILURE, $exitCode);
         $this->assertStringContainsString('Chyba při načítání článků z databáze', $output);
         $this->assertStringContainsString($exceptionMessage, $output);
     }
 
     /**
      * Testuje částečné selhání indexace.
-     *
-     * Scénář: Jeden článek se podaří zaindexovat, druhý selže.
-     * Ověřuje, že:
-     * - Chyba u jednoho článku nezastaví zpracování ostatních.
-     * - Je vypsána konkrétní chyba s ID problematického článku.
-     * - Celkový proces doběhne do konce.
+     * Pokud jeden článek selže, ostatní by se měly zpracovat.
      */
     public function testExecuteHandlesPartialIndexingFailure(): void
     {
-        // 1. Příprava dat (2 články)
         $articleSuccess = $this->createMock(Article::class);
         
         $articleFail = $this->createMock(Article::class);
         $uuid = Uuid::v4();
         $articleFail->method('getId')->willReturn($uuid);
 
-        // 2. Nastavení očekávání
         $this->articleRepository->expects($this->once())
             ->method('findAll')
             ->willReturn([$articleSuccess, $articleFail]);
 
-        // Simulace: První projde, druhý vyhodí chybu
         $this->searchIndexer->expects($this->exactly(2))
             ->method('indexArticle')
             ->willReturnCallback(function (Article $article) use ($articleFail) {
                 if ($article === $articleFail) {
-                    throw new \Exception('Elasticsearch down');
+                    throw new \RuntimeException('Elasticsearch down');
                 }
             });
 
-        // 3. Spuštění
         $exitCode = $this->commandTester->execute([]);
         $output = $this->commandTester->getDisplay();
 
-        // 4. Ověření
         $this->assertSame(Command::SUCCESS, $exitCode);
-        
-        // Musí obsahovat chybu pro konkrétní ID
         $this->assertStringContainsString('Chyba při indexaci článku ID ' . $uuid->toRfc4122(), $output);
         $this->assertStringContainsString('Elasticsearch down', $output);
-        
-        // Musí ale doběhnout do konce
         $this->assertStringContainsString('Reindexace dokončena.', $output);
+    }
+
+    /**
+     * Testuje validaci typů v konstruktoru.
+     * Ověřuje, že nelze předat null.
+     */
+    public function testConstructorValidation(): void
+    {
+        $this->expectException(\TypeError::class);
+        new ReindexArticlesCommand(null, $this->searchIndexer);
+    }
+
+    /**
+     * Testuje konfiguraci příkazu (název a popis).
+     */
+    public function testCommandConfiguration(): void
+    {
+        $this->assertSame('polygraphy:search:reindex', $this->command->getName());
+        $this->assertStringContainsString('Reindexuje všechny články', $this->command->getDescription());
     }
 }

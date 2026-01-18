@@ -50,7 +50,7 @@ class ReindexArticlesCommand extends Command
             $articles = $this->articleRepository->findAll();
         } catch (\Throwable $e) {
             $io->error(\sprintf('Chyba při načítání článků z databáze: %s', $e->getMessage()));
-            return Command::SUCCESS;
+            return Command::FAILURE;
         }
 
         $count = \count($articles);
