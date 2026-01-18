@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Command\PolygraphyDigest;
+namespace App\Tests\PolygraphyDigest\Command;
 
 use App\PolygraphyDigest\Command\ResetElasticIndicesCommand;
 use App\PolygraphyDigest\Service\Search\ElasticsearchClientInterface;

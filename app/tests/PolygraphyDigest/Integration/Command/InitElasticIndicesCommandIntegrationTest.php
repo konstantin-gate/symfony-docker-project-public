@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\PolygraphyDigest;
+namespace App\Tests\PolygraphyDigest\Integration\Command;
 
 use App\PolygraphyDigest\Service\Search\IndexInitializer;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
