@@ -46,7 +46,13 @@ class ReindexArticlesCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $articles = $this->articleRepository->findAll();
+        try {
+            $articles = $this->articleRepository->findAll();
+        } catch (\Throwable $e) {
+            $io->error(\sprintf('Chyba při načítání článků z databáze: %s', $e->getMessage()));
+            return Command::SUCCESS;
+        }
+
         $count = \count($articles);
 
         $io->title(\sprintf('Startuji reindexaci %d článků', $count));
