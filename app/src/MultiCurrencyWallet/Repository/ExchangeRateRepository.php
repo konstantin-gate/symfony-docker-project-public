@@ -92,4 +92,30 @@ class ExchangeRateRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    /**
+     * Vrátí seznam unikátních dat s kurzovými záznamy za posledních N dní.
+     *
+     * Metoda slouží k získání dostupných dnů pro historickou analýzu.
+     * Nevrací samotné kurzy — ty se počítají pomocí RateHistoryService,
+     * který využívá CurrencyConverter pro správný výpočet křížových kurzů.
+     *
+     * @param int $days Počet dní historie (výchozí 30)
+     *
+     * @return array<string> Seznam unikátních dat ve formátu Y-m-d, seřazených vzestupně
+     */
+    public function getAvailableDatesInRange(int $days = 30): array
+    {
+        $startDate = (new \DateTimeImmutable())->modify("-{$days} days")->setTime(0, 0, 0);
+
+        $results = $this->createQueryBuilder('e')
+            ->select('DISTINCT PG_DATE(e.fetchedAt) as date')
+            ->where('e.fetchedAt >= :start')
+            ->setParameter('start', $startDate)
+            ->orderBy('date', 'ASC')
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_column($results, 'date');
+    }
 }
