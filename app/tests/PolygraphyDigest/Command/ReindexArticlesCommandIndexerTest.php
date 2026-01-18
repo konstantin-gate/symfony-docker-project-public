@@ -21,7 +21,7 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
     public function testIndexerInteraction(): void
     {
         $article = $this->createMock(Article::class);
-        
+
         $articleRepository = $this->createMock(ArticleRepository::class);
         $articleRepository->method('findAll')->willReturn([$article]);
 
@@ -33,7 +33,7 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
         $command = new ReindexArticlesCommand($articleRepository, $searchIndexer);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        
+
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
@@ -76,7 +76,7 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
         $articleRepository->method('findAll')->willReturn($articles);
 
         $searchIndexer = $this->createMock(SearchIndexer::class);
-        
+
         $expectedArticles = $articles;
         $searchIndexer->expects($this->exactly(3))
             ->method('indexArticle')
@@ -104,7 +104,7 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
         $article1 = $this->createMock(Article::class);
         $uuid1 = Uuid::v4();
         $article1->method('getId')->willReturn($uuid1);
-        
+
         $article2 = $this->createMock(Article::class);
         $uuid2 = Uuid::v4();
         $article2->method('getId')->willReturn($uuid2);
@@ -115,7 +115,7 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
         $articleRepository->method('findAll')->willReturn($articles);
 
         $searchIndexer = $this->createMock(SearchIndexer::class);
-        
+
         // První článek vyhodí výjimku
         $searchIndexer->expects($this->exactly(2))
             ->method('indexArticle')
@@ -134,12 +134,12 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
 
         // Příkaz by měl skončit úspěšně (0), i když došlo k chybě u jednoho článku
         $this->assertSame(0, $commandTester->getStatusCode());
-        
+
         $output = $commandTester->getDisplay();
         // Ověříme, že chyba byla zalogována (hledáme ID a chybovou hlášku odděleně kvůli formátování SymfonyStyle)
         $this->assertStringContainsString((string) $uuid1, $output);
         $this->assertStringContainsString('Indexace selhala', $output);
-        
+
         // Ověříme, že proces doběhl do konce
         $this->assertStringContainsString('Reindexace dokončena.', $output);
     }
@@ -168,7 +168,7 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
 
         $this->assertSame(0, $commandTester->getStatusCode());
         $output = $commandTester->getDisplay();
-        
+
         // Ověření finální zprávy
         $this->assertStringContainsString('Reindexace dokončena.', $output);
         $this->assertStringContainsString('[OK] Reindexace dokončena.', $output);
@@ -200,7 +200,7 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
         // Ověřujeme přítomnost klíčových informačních zpráv
         $this->assertStringContainsString('Startuji reindexaci 1 článků', $output);
         $this->assertStringContainsString('Reindexace dokončena.', $output);
-        
+
         // Ověřujeme přítomnost formátování (např. [OK] pro success block SymfonyStyle)
         $this->assertStringContainsString('[OK]', $output);
     }
@@ -233,13 +233,13 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
 
         // Ověříme, že výstup obsahuje základní informace
         $this->assertStringContainsString('Startuji reindexaci 3 článků', $output);
-        
+
         // V testovacím prostředí bez TTY se nemusí vypisovat každý krok (1/3, 2/3),
         // ale "3/3" a "100%" by se mělo objevit při dokončení (progressFinish).
         // Tím ověříme, že progress bar došel do konce.
         $this->assertStringContainsString('3/3', $output);
         $this->assertStringContainsString('100%', $output);
-        
+
         $this->assertStringContainsString('[OK] Reindexace dokončena.', $output);
     }
 
@@ -257,14 +257,14 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
         $article2 = $this->createMock(Article::class);
         $article2->method('getId')->willReturn(Uuid::v4()); // Pro výpis chyby
         $article3 = $this->createMock(Article::class);
-        
+
         $articles = [$article1, $article2, $article3];
 
         $articleRepository = $this->createMock(ArticleRepository::class);
         $articleRepository->method('findAll')->willReturn($articles);
 
         $searchIndexer = $this->createMock(SearchIndexer::class);
-        
+
         // Nastavíme chování indexeru: 1. OK, 2. Chyba, 3. OK
         $searchIndexer->expects($this->exactly(3))
             ->method('indexArticle')
@@ -287,7 +287,7 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
         // I když jeden prvek selhal, progress bar by měl být na konci donucen k dokončení (3/3).
         $this->assertStringContainsString('3/3', $output);
         $this->assertStringContainsString('100%', $output);
-        
+
         // 3. Ověříme celkový úspěch příkazu
         $this->assertStringContainsString('[OK] Reindexace dokončena.', $output);
     }
@@ -314,7 +314,7 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
 
         // Ověříme inicializaci s 0 články
         $this->assertStringContainsString('Startuji reindexaci 0 článků', $output);
-        
+
         // Ověříme, že proces skončil bez chyb
         $this->assertStringContainsString('[OK] Reindexace dokončena.', $output);
     }
@@ -353,6 +353,179 @@ class ReindexArticlesCommandIndexerTest extends WebTestCase
 
         // Ověříme, že proces nespadl a došel do konce
         $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertStringContainsString('[OK] Reindexace dokončena.', $output);
+    }
+
+    /**
+     * Testuje zacházení s problémy s připojením k databázi.
+     *
+     * Tato funkce ověřuje, zda příkaz správně zachytí a zaloguje chybu spojenou s připojením k databázi.
+     * Ověřuje, že uživatelsky přívětivá chybová zpráva je zobrazená a že příkaz vrátí Command::SUCCESS
+     * i při selhání databáze.
+     */
+    public function testDatabaseConnectionIssues(): void
+    {
+        $articleRepository = $this->createMock(ArticleRepository::class);
+        $articleRepository->method('findAll')
+            ->willThrowException(new \RuntimeException('Nelze se připojit k databázi'));
+
+        $searchIndexer = $this->createMock(SearchIndexer::class);
+        $searchIndexer->expects($this->never())->method('indexArticle');
+
+        $command = new ReindexArticlesCommand($articleRepository, $searchIndexer);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+
+        $output = $commandTester->getDisplay();
+
+        // Ověříme, že chyba byla zalogována
+        $this->assertStringContainsString('Chyba při načítání článků z databáze', $output);
+        $this->assertStringContainsString('Nelze se připojit k databázi', $output);
+
+        // Ověříme, že příkaz vrátí SUCCESS i při selhání databáze
+        $this->assertSame(0, $commandTester->getStatusCode());
+
+        // Ověříme, že progress bar nebyl spuštěn
+        $this->assertStringNotContainsString('Startuji reindexaci', $output);
+    }
+
+    /**
+     * Testuje zacházení s problémy s připojením k Elasticsearch.
+     *
+     * Tato funkce ověřuje, zda příkaz správně zachytí a zaloguje chybu spojenou s připojením k Elasticsearch.
+     * Ověřuje, že chyby jsou zalogovány pro každý článek a že progress bar dojde do konce.
+     */
+    public function testElasticsearchConnectionIssues(): void
+    {
+        $article1 = $this->createMock(Article::class);
+        $uuid1 = Uuid::v4();
+        $article1->method('getId')->willReturn($uuid1);
+
+        $article2 = $this->createMock(Article::class);
+        $uuid2 = Uuid::v4();
+        $article2->method('getId')->willReturn($uuid2);
+
+        $articles = [$article1, $article2];
+
+        $articleRepository = $this->createMock(ArticleRepository::class);
+        $articleRepository->method('findAll')->willReturn($articles);
+
+        $searchIndexer = $this->createMock(SearchIndexer::class);
+        $searchIndexer->expects($this->exactly(2))
+            ->method('indexArticle')
+            ->willThrowException(new \RuntimeException('Nelze se připojit k Elasticsearch'));
+
+        $command = new ReindexArticlesCommand($articleRepository, $searchIndexer);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+
+        $output = $commandTester->getDisplay();
+
+        // Ověříme, že chyba byla zalogována pro oba články
+        $this->assertStringContainsString((string) $uuid1, $output);
+        $this->assertStringContainsString((string) $uuid2, $output);
+        $this->assertStringContainsString('Nelze se připojit k Elasticsearch', $output);
+
+        // Ověříme, že příkaz vrátí SUCCESS i při selhání Elasticsearch
+        $this->assertSame(0, $commandTester->getStatusCode());
+
+        // Ověříme, že progress bar došel do konce
+        $this->assertStringContainsString('2/2', $output);
+        $this->assertStringContainsString('100%', $output);
+        $this->assertStringContainsString('[OK] Reindexace dokončena.', $output);
+    }
+
+    /**
+     * Testuje zacházení s neplatnými daty článku.
+     *
+     * Tato funkce ověřuje, zda příkaz správně zachytí a zaloguje chybu spojenou s neplatnými daty článku.
+     * Ověřuje, že chyby jsou zalogovány s ID článku a detaily validace a že proces pokračuje dál.
+     */
+    public function testInvalidArticleData(): void
+    {
+        $article1 = $this->createMock(Article::class);
+        $uuid1 = Uuid::v4();
+        $article1->method('getId')->willReturn($uuid1);
+        $article1->method('getTitle')->willReturn(null);
+
+        $article2 = $this->createMock(Article::class);
+        $uuid2 = Uuid::v4();
+        $article2->method('getId')->willReturn($uuid2);
+        $article2->method('getTitle')->willReturn('');
+
+        $articles = [$article1, $article2];
+
+        $articleRepository = $this->createMock(ArticleRepository::class);
+        $articleRepository->method('findAll')->willReturn($articles);
+
+        $searchIndexer = $this->createMock(SearchIndexer::class);
+        $searchIndexer->expects($this->exactly(2))
+            ->method('indexArticle')
+            ->willThrowException(new \InvalidArgumentException('Neplatný název článku'));
+
+        $command = new ReindexArticlesCommand($articleRepository, $searchIndexer);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+
+        $output = $commandTester->getDisplay();
+
+        // Ověříme, že chyba byla zalogována pro oba články
+        $this->assertStringContainsString((string) $uuid1, $output);
+        $this->assertStringContainsString((string) $uuid2, $output);
+        $this->assertStringContainsString('Neplatný název článku', $output);
+
+        // Ověříme, že příkaz vrátí SUCCESS i při selhání validace
+        $this->assertSame(0, $commandTester->getStatusCode());
+
+        // Ověříme, že progress bar došel do konce
+        $this->assertStringContainsString('2/2', $output);
+        $this->assertStringContainsString('100%', $output);
+        $this->assertStringContainsString('[OK] Reindexace dokončena.', $output);
+    }
+
+    /**
+     * Testuje zacházení s chybami oprávnění.
+     *
+     * Tato funkce ověřuje, zda příkaz správně zachytí a zaloguje chybu spojenou s oprávněními.
+     * Ověřuje, že chyby jsou zalogovány s ID článku a detaily oprávnění a že proces pokračuje dál.
+     */
+    public function testPermissionErrors(): void
+    {
+        $article1 = $this->createMock(Article::class);
+        $uuid1 = Uuid::v4();
+        $article1->method('getId')->willReturn($uuid1);
+
+        $article2 = $this->createMock(Article::class);
+        $uuid2 = Uuid::v4();
+        $article2->method('getId')->willReturn($uuid2);
+
+        $articles = [$article1, $article2];
+
+        $articleRepository = $this->createMock(ArticleRepository::class);
+        $articleRepository->method('findAll')->willReturn($articles);
+
+        $searchIndexer = $this->createMock(SearchIndexer::class);
+        $searchIndexer->expects($this->exactly(2))
+            ->method('indexArticle')
+            ->willThrowException(new \RuntimeException('Právo přístupu zamítnuto'));
+
+        $command = new ReindexArticlesCommand($articleRepository, $searchIndexer);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute([]);
+
+        $output = $commandTester->getDisplay();
+
+        // Ověříme, že chyba byla zalogována pro oba články
+        $this->assertStringContainsString((string) $uuid1, $output);
+        $this->assertStringContainsString((string) $uuid2, $output);
+        $this->assertStringContainsString('Právo přístupu zamítnuto', $output);
+
+        // Ověříme, že příkaz vrátí SUCCESS i při selhání oprávnění
+        $this->assertSame(0, $commandTester->getStatusCode());
+
+        // Ověříme, že progress bar došel do konce
+        $this->assertStringContainsString('2/2', $output);
+        $this->assertStringContainsString('100%', $output);
         $this->assertStringContainsString('[OK] Reindexace dokončena.', $output);
     }
 }
