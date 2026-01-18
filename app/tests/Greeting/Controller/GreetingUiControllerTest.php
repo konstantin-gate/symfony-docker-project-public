@@ -68,7 +68,9 @@ class GreetingUiControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/ru/greeting/dashboard');
 
-        $form = $crawler->selectButton('greeting_import[import]')->form();
+        $button = $crawler->selectButton('greeting_import[import]');
+        self::assertCount(1, $button, 'Import button not found');
+        $form = $button->form();
         // Odeslání prázdného formuláře
         $client->submit($form);
 
@@ -89,7 +91,9 @@ class GreetingUiControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/ru/greeting/dashboard');
 
-        $form = $crawler->selectButton('greeting_import[import]')->form();
+        $button = $crawler->selectButton('greeting_import[import]');
+        self::assertCount(1, $button, 'Import button not found');
+        $form = $button->form();
 
         $form['greeting_import[language]'] = 'en';
         $form['greeting_import[emails]'] = 'test@example.com';

@@ -9,12 +9,17 @@ framework:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
                     auto_setup: true
+            polygraphy:
+                dsn: '%env(REDIS_URL)%/messages'
+                options:
+                    auto_setup: true
             # failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
 
         routing:
             # Route your messages to the transports
             'App\Message\SendEmailMessage': async
+            'App\PolygraphyDigest\Message\ProcessSourceMessage': polygraphy
 
 when@test:
     framework:

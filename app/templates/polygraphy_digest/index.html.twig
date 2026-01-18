@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Polygraphy Digest | {{ parent() }}{% endblock %}
+
+{% block body %}
+    <div id="polygraphy-digest-app" data-locale="{{ app.request.locale }}">
+        {# React aplikace se vykreslí sem #}
+        <div class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('polygraphy') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('polygraphy') }}
+{% endblock %}

@@ -18,9 +18,11 @@ RUN apk update && apk add \
 RUN docker-php-ext-install pdo_pgsql opcache intl
 RUN docker-php-ext-enable opcache
 
-# Установка Xdebug (Добавьте linux-headers и другие зависимости)
+# Установка Xdebug и Redis
 RUN apk add --no-cache $PHPIZE_DEPS libtool linux-headers \
     && pecl install xdebug-3.4.7 \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
     && apk del $PHPIZE_DEPS libtool linux-headers
 
 # Активация Xdebug с помощью официального скрипта

@@ -24,6 +24,12 @@ Encore
     .addEntry('app', './assets/app.js')
     .addEntry('greeting', './assets/greeting.js')
     .addEntry('multi_currency_wallet', './assets/multi_currency_wallet/index.tsx')
+    .addEntry('polygraphy', './assets/polygraphy_digest/index.tsx')
+
+    .copyFiles({
+        from: './assets/polygraphy_digest/locales',
+        to: 'locales/[path][name].[ext]',
+    })
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

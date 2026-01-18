@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Integrační testy pro endpoint aktualizace zůstatku.
+ *
  * @see \App\MultiCurrencyWallet\Controller\Api\UpdateBalanceController
  */
 class UpdateBalanceControllerTest extends WebTestCase

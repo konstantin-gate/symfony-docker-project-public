@@ -93,6 +93,36 @@
                     <div class="absolute bottom-0 left-0 h-[4px] w-0 group-hover:w-full transition-all [transition-duration:1000ms] bg-gradient-to-r from-[#2a9d90] to-[#2b849c]"></div>
                 </div>
             </a>
+
+            {# Polygraphy Digest Module Card #}
+            <a href="{{ path('polygraphy_index', {'_locale': app.request.locale}) }}" class="block text-decoration-none">
+                <div class="group relative bg-gradient-to-b from-white to-[#F5F3FF] rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-slate-200 hover:border-transparent cursor-pointer h-full">
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-indigo-500 to-purple-400"
+                         style="mix-blend-mode: multiply; opacity: 0.03;"></div>
+
+                    <div class="relative p-8 h-full flex flex-col">
+                        <div class="flex items-start justify-between mb-6">
+                            <div class="p-4 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 group-hover:scale-110 transition-transform duration-300">
+                                <img src="{{ asset('images/icon_polygraphy.png') }}" 
+                                     alt="Polygraphy Icon" 
+                                     class="w-20 h-20 -m-6 object-contain drop-shadow-sm">
+                            </div>
+
+                            <div class="arrow-circle arrow-polygraphy"></div>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3 group-hover:text-slate-900 transition-colors">
+                            {{'index.title'|trans({}, 'polygraphy_digest')}}
+                        </h3>
+
+                        <p class="text-slate-600 leading-relaxed mb-0">
+                            {{'index.description'|trans({}, 'polygraphy_digest')|raw}}
+                        </p>
+                    </div>
+
+                    <div class="absolute bottom-0 left-0 h-[4px] w-0 group-hover:w-full transition-all [transition-duration:1000ms] bg-gradient-to-r from-[#6366f1] to-[#a855f7]"></div>
+                </div>
+            </a>
         </div>
     </div>
 </div>

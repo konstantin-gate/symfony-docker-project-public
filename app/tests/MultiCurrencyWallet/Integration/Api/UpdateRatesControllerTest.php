@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Integrační testy pro endpoint aktualizace kurzů.
+ *
  * @see \App\MultiCurrencyWallet\Controller\Api\UpdateRatesController
  */
 class UpdateRatesControllerTest extends WebTestCase

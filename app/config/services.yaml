@@ -56,3 +56,18 @@ services:
     App\MultiCurrencyWallet\Service\RateUpdateService:
         arguments:
             $providers: !tagged_iterator app.rate_provider
+
+    # --- Polygraphy Digest Infrastructure ---
+    Elastic\Elasticsearch\ClientBuilder:
+        factory: ['Elastic\Elasticsearch\ClientBuilder', 'create']
+        calls:
+            - [setHosts, [['%env(ELASTICSEARCH_URL)%']]]
+
+    Elastic\Elasticsearch\Client:
+        factory: ['@Elastic\Elasticsearch\ClientBuilder', 'build']
+
+    App\PolygraphyDigest\Service\Search\ElasticsearchClientBridge:
+        arguments:
+            $client: '@Elastic\Elasticsearch\Client'
+
+    App\PolygraphyDigest\Service\Search\ElasticsearchClientInterface: '@App\PolygraphyDigest\Service\Search\ElasticsearchClientBridge'

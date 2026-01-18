@@ -1,0 +1,65 @@
+{
+    "app_title": "Умный поиск",
+    "app_subtitle": "Умный поиск и аналитика для полиграфии",
+    "dashboard_title": "Дашборд и Аналитика",
+    "search_placeholder": "Поиск новостей или товаров...",
+    "search_button": "Найти",
+    "loading": "Поиск лучших результатов...",
+    "no_results": "По вашему запросу ничего не найдено.",
+    "found_articles": "Найдено {{count}} статей",
+    "found_products": "Найдено {{count}} товаров",
+    "page_info": "Страница {{page}} из {{totalPages}}",
+    "prev_page": "Назад",
+    "next_page": "Вперед",
+    "more_link": "Подробнее",
+    "buy_button": "Купить",
+    "active_sources": "Активные источники",
+    "trend_week": "Тренд недели",
+    "total_articles": "Всего статей",
+    "source_distribution": "Распределение источников",
+    "quick_search": "Быстрый поиск",
+    "quick_search_desc": "Найдите самые дешевые услуги печати на рынке за секунды.",
+    "start_search": "Запустить поиск",
+    "filters": {
+        "title": "Фильтры",
+        "sources": "Источники",
+        "period": "Период",
+        "price": "Цена",
+        "all_dates": "Все даты",
+        "today": "Сегодня",
+        "week": "Последняя неделя",
+        "month": "Последний месяц",
+        "min": "Мин",
+        "max": "Макс",
+        "avg": "Среднее",
+        "last_updated": "Последнее обновление"
+    },
+    "nav": {
+        "dashboard": "Дашборд",
+        "search": "Поиск",
+        "settings": "Настройки",
+        "back_to_home": "На главную"
+    },
+    "settings_title": "Настройки",
+    "appearance_section": "Внешний вид",
+    "theme_label": "Цветовая схема",
+    "theme_light": "Светлая",
+    "theme_dark": "Темная",
+    "search_section": "Параметры поиска",
+    "items_per_page": "Результатов на странице",
+    "settings": {
+        "show_disabled_articles": "Показывать скрытые/отключенные статьи"
+    },
+    "action": {
+        "enable": "Включить (Показать)",
+        "disable": "Отключить (Скрыть)"
+    },
+    "actions": {
+        "refresh": "Обновить",
+        "refreshing": "Обновление...",
+        "refresh_sources": "Обновить источники"
+    },
+    "error": {
+        "refresh_failed": "Ошибка при обновлении данных"
+    }
+}

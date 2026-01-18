@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Integrační testy pro endpoint výpočtu celkové hodnoty peněženky.
+ *
  * @see \App\MultiCurrencyWallet\Controller\Api\CalculateTotalController
  */
 class CalculateTotalControllerTest extends WebTestCase

@@ -26,7 +26,7 @@ final class IndexControllerTest extends WebTestCase
 
         $client->followRedirect();
         self::assertResponseIsSuccessful();
-        self::assertSelectorExists('.card', 'Na stránce by měly být karty modulů');
+        self::assertSelectorExists('.group', 'Na stránce by měly být karty modulů');
     }
 
     /**
@@ -41,34 +41,33 @@ final class IndexControllerTest extends WebTestCase
         self::assertResponseIsSuccessful();
 
         // 1. Ověření nadpisu sekce
-        // Check that the H2 contains the translated text "Symfony Modular Suite"
-        // (Assuming the default locale or the test environment locale is English,
-        //  and 'index.connected_modules' translates to that.)
-        self::assertAnySelectorTextContains('h2', 'Symfony Modular Suite');
+        // Check that the H1 contains the translated text "Connected Modules"
+        self::assertAnySelectorTextContains('h1', 'Symfony Modular Suite');
 
         // 2. Ověření Karty "Greeting Module"
         // Hledáme kartu, která obsahuje text "Greeting Module"
-        $greetingCard = $crawler->filter('.card')->reduce(fn ($node) => str_contains($node->text(), 'Greeting Module'));
+        $greetingCard = $crawler->filter('.group')->reduce(fn ($node) => str_contains($node->text(), 'Greeting Module'));
         self::assertGreaterThan(0, $greetingCard->count(), 'Karta Greeting Module nebyla nalezena');
 
         // Ověření ikony
-        $greetingIcon = $greetingCard->filter('img[src*="icon_greeting.png"]');
+        $greetingIcon = $greetingCard->filter('img[src*="icon_greeting_letter.png"]');
         self::assertEquals(1, $greetingIcon->count(), 'Ikona Greeting Module chybí');
 
         // Ověření odkazu
-        $greetingLink = $greetingCard->filter('a[href*="/greeting/dashboard"]');
+        // Odkaz je nadřazený elementu .group, ale v crawleru hledáme v celém dokumentu nebo kontextu
+        $greetingLink = $crawler->filter('a[href*="/greeting/dashboard"]');
         self::assertEquals(1, $greetingLink->count(), 'Odkaz na Greeting Dashboard chybí');
 
         // 3. Ověření Karty "Multi-Currency Wallet"
-        $walletCard = $crawler->filter('.card')->reduce(fn ($node) => str_contains($node->text(), 'Multi-Currency Wallet'));
+        $walletCard = $crawler->filter('.group')->reduce(fn ($node) => str_contains($node->text(), 'Multi-Currency Wallet'));
         self::assertGreaterThan(0, $walletCard->count(), 'Karta Multi-Currency Wallet nebyla nalezena');
 
         // Ověření ikony
-        $walletIcon = $walletCard->filter('img[src*="icon_multi_currency_wallet.png"]');
+        $walletIcon = $walletCard->filter('img[src*="icon_multi_currency_wallet_2.png"]');
         self::assertEquals(1, $walletIcon->count(), 'Ikona Wallet chybí');
 
         // Ověření odkazu
-        $walletLink = $walletCard->filter('a[href*="/multi-currency-wallet"]');
+        $walletLink = $crawler->filter('a[href*="/multi-currency-wallet"]');
         self::assertEquals(1, $walletLink->count(), 'Odkaz na Wallet Dashboard chybí');
     }
 
@@ -86,7 +85,7 @@ final class IndexControllerTest extends WebTestCase
         // Zkontrolujeme alespoň nadpis sekce, pokud je přeložen.
         // Poznámka: Konkrétní texty závisí na translation souborech.
         // Pro tento test ověříme, že URL zůstalo /cs a status je 200.
-        self::assertSelectorExists('h2');
+        self::assertSelectorExists('h1');
 
         // 2. Ruština
         $client->request('GET', '/ru');

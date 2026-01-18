@@ -1,0 +1,12 @@
+index:
+    title: "Polygrafie Digest"
+    description: "Váš denní přehled tiskových a publikačních zpráv"
+    open_tooltip: "Přejít na nástěnku"
+
+actions:
+    refresh: "Aktualizovat"
+    refreshing: "Aktualizace..."
+    refresh_sources: "Aktualizovat zdroje"
+
+error:
+    refresh_failed: "Chyba při aktualizaci dat"
