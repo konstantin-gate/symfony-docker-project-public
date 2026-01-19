@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\PolygraphyDigest\Controller;
+namespace App\Tests\PolygraphyDigest\Integration\Controller;
 
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

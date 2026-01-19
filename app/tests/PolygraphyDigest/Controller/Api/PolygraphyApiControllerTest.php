@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\Api;
+namespace App\Tests\PolygraphyDigest\Controller\Api;
 
 use App\PolygraphyDigest\Controller\Api\PolygraphyApiController;
 use App\PolygraphyDigest\DTO\Search\SearchCriteria;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Controller\Api;
+namespace App\Tests\PolygraphyDigest\Integration\Controller\Api;
 
 use App\PolygraphyDigest\Entity\Article;
 use App\PolygraphyDigest\Entity\Source;
