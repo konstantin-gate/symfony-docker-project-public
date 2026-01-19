@@ -1,6 +1,6 @@
 # Symfony Modular Suite
 
-**Symfony Modular Suite** is a modern web application based on Symfony 8.0, built with a modular architecture. The project demonstrates the integration of classic server-side rendering (Twig) with modern SPA technologies (React) within a single monolith.
+**Symfony Modular Suite** is a modern web application based on Symfony 8.0, built with modular architecture. The project demonstrates the integration of classic server-side rendering (Twig) with modern SPA technologies (React) within a single monolith.
 
 The project is fully dockerized and ready for deployment.
 
@@ -11,45 +11,49 @@ The project is fully dockerized and ready for deployment.
 The application consists of three independent functional modules:
 
 ### 1. Greeting Module
-A classic Symfony module (MVC) for contact management and bulk greeting delivery.
+Classic Symfony module (MVC) for contact management and mass greeting distribution.
 
-*   **Functionality:**
+*   **Features:**
     *   Contact import (XML, Text).
-    *   Asynchronous email delivery via queue (Symfony Messenger) with configurable delay.
+    *   Asynchronous email sending via queue (Symfony Messenger) with configurable delay.
     *   Multilingual dashboard and email templates.
     *   Email address validation.
 
 ### 2. Multi-Currency Wallet
-A financial management module implemented as a **React SPA** (Single Page Application) embedded in Symfony.
+Financial management module implemented as a **React SPA** (Single Page Application) embedded in Symfony.
 
-*   **Functionality:**
-    *   Balance tracking in various currencies (CZK, USD, EUR, JPY, BTC, etc.).
-    *   **Calculation Accuracy:** Uses the `brick/money` library to eliminate floating-point errors.
-    *   **Exchange Rate History:** A dynamic cross-rate table that depends on the selected base currency.
-    *   **Currency Converter:** Instant conversion based on current rates.
-    *   **Auto-update:** Integration with external APIs (Exchangerate.host, CurrencyFreaks) with Failover logic (switching to a backup provider upon failure).
+*   **Features:**
+    *   Balance tracking in multiple currencies (CZK, USD, EUR, JPY, BTC, etc.).
+    *   **Calculation Precision:** Using `brick/money` library to eliminate floating-point errors.
+    *   **Rate History:** Dynamic cross-rate table dependent on the selected base currency.
+    *   **Interactive Charts:** Visualization of rate history using Recharts (7/14/30/90 days).
+    *   **Currency Converter:** Instant conversion using current rates.
+    *   **Auto-update:** Integration with external APIs (Exchangerate.host, CurrencyFreaks) with Failover logic (switching to backup provider on failure).
+    *   **Smart Trend Forecaster:** ML-based rate forecasting using Python/FastAPI microservice with Prophet library. Forecast includes confidence intervals.
 
-### 3. Polygraphy Digest (Smart Search)
-A news and product aggregator for the printing industry with a powerful search engine.
+### 3. Polygraphy Digest
+News and product aggregator for the printing industry with a powerful search engine.
 
-*   **Functionality:**
-    *   **Aggregation:** Automatic data collection from RSS and external websites.
+*   **Features:**
+    *   **Aggregation:** Automatic data collection from RSS and external sites.
     *   **Smart Search:** Full-text search in Elasticsearch with autocomplete and result highlighting.
     *   **Analytics:** Real-time calculation of publication activity trends.
-    *   **Interface:** A modern React interface with facet filtering.
+    *   **Interface:** Modern React interface with faceted filtering.
 
 ---
 
-## 🛠 Tech Stack
+## 🛠 Technology Stack
 
 ### Backend
 *   **Framework:** Symfony 8.0 (PHP 8.4)
+*   **Microservices:** Python 3.11, FastAPI (currency rate forecasting)
 *   **Database:** PostgreSQL 16
 *   **Search Engine:** Elasticsearch 8.x
-*   **Cache/Queue:** KeyDB (Redis-compatible)
+*   **Cache/Queue:** KeyDB (Redis-compatible), Redis (forecast cache)
 *   **ORM:** Doctrine ORM
 *   **Queue:** Symfony Messenger
 *   **Math:** `brick/money`, `brick/math` (for financial operations)
+*   **ML/Analytics:** Prophet (time series forecasting)
 
 ### Frontend
 *   **Build Tool:** Webpack Encore
@@ -59,11 +63,11 @@ A news and product aggregator for the printing industry with a powerful search e
     *   *Polygraphy:* **React 18**, TypeScript, Tailwind CSS.
 
 ### Infrastructure
-*   **Docker:** Nginx, PHP-FPM, Postgres, Elasticsearch, Kibana, KeyDB, Node.js.
+*   **Docker:** Nginx, PHP-FPM, Postgres, Elasticsearch, Kibana, KeyDB, Redis, FastAPI (Python), Node.js.
 
 ---
 
-## 🚀 Installation and Launch
+## 🚀 Installation and Setup
 
 ### Prerequisites
 *   Docker and Docker Compose
@@ -85,35 +89,35 @@ docker compose exec php composer install
 docker compose run --rm node npm install
 ```
 
-### Step 3: Environment Setup (.env.local)
-Create the `app/.env.local` file to configure API keys and email. This is critical for the Wallet module and email delivery.
+### Step 3: Environment Configuration (.env.local)
+Create `app/.env.local` file for API keys and mail configuration. This is critical for the Wallet module and email sending.
 
 ```dotenv
-# --- Email Settings (Greeting Module) ---
+# --- Mail Settings (Greeting Module) ---
 MAILER_SENDER_EMAIL=hello@example.com
 MAILER_SENDER_NAME="My Company"
 # Delivery mode: 'file' (to var/mails folder) or 'smtp'
 EMAIL_DELIVERY_MODE=file
-# Delay between emails (sec)
+# Delay between emails (seconds)
 EMAIL_SEQUENCE_DELAY=2
 
 # --- API Keys for Exchange Rates (Wallet Module) ---
-# Get free keys from the respective services
+# Get free keys from respective services
 EXCHANGERATE_HOST_KEY=your_key_here
 CURRENCYFREAKS_KEY=your_key_here
 ```
 
 ### Step 4: Database Initialization and Build
-Run the full initialization script. It will create the database, run migrations, and **load fixtures** (test data for the wallet and exchange rates).
+Run the full initialization script. It will create the database, run migrations, and **load fixtures** (test data for wallet and exchange rates).
 
 ```bash
-# Database Initialization (Migrations + Fixtures)
+# Database initialization (Migrations + Fixtures)
 docker compose exec php composer db-init
 
-# Initialize search indices (Elasticsearch)
+# Initialize search indexes (Elasticsearch)
 docker compose exec php bin/console polygraphy:search:init
 
-# Frontend Build (Dev mode with watch)
+# Frontend build (Dev mode with watch)
 docker compose run --rm node npm run dev
 ```
 
@@ -121,7 +125,7 @@ docker compose run --rm node npm run dev
 
 ## 🖥 Usage
 
-Once started, the application is available at: **[http://localhost](http://localhost)**
+After startup, the application is available at: **[http://localhost](http://localhost)**
 
 ### Main Sections
 *   **Greeting Dashboard:** `/greeting/dashboard`
@@ -147,10 +151,10 @@ Once started, the application is available at: **[http://localhost](http://local
 ## 🧪 Development and QA
 
 ### Testing
-To run Unit and Integration tests (using a separate test DB):
+To run Unit and Integration tests (uses separate test database):
 
 ```bash
-# Prepare test DB (once)
+# Test DB preparation (once)
 ./bin/setup-test-db
 
 # Run tests
@@ -158,7 +162,7 @@ docker compose exec php bin/phpunit
 ```
 
 ### Code Quality
-The project is configured with strict quality standards:
+The project is configured for strict quality standards:
 
 ```bash
 # Run full QA cycle (CS Fixer + PHPStan)

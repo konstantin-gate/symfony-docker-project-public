@@ -26,8 +26,10 @@
     *   Учет балансов в разных валютах (CZK, USD, EUR, JPY, BTC и др.).
     *   **Точность вычислений:** Использование библиотеки `brick/money` для исключения ошибок плавающей запятой.
     *   **История курсов:** Динамическая таблица кросс-курсов, зависящая от выбранной основной валюты.
+    *   **Интерактивные графики:** Визуализация истории курсов с использованием Recharts (7/14/30/90 дней).
     *   **Конвертер валют:** Мгновенный пересчет по актуальным курсам.
     *   **Автообновление:** Интеграция с внешними API (Exchangerate.host, CurrencyFreaks) с логикой Failover (переключение на запасной провайдер при сбое).
+    *   **Smart Trend Forecaster:** ML-прогнозирование курсов на основе Python/FastAPI микросервиса с использованием библиотеки Prophet. Прогноз включает доверительный интервал.
 
 ### 3. Polygraphy Digest (Интеллектуальный поиск)
 Агрегатор новостей и товаров полиграфической отрасли с мощным поисковым движком.
@@ -44,12 +46,14 @@
 
 ### Backend
 *   **Framework:** Symfony 8.0 (PHP 8.4)
+*   **Microservices:** Python 3.11, FastAPI (прогнозирование курсов валют)
 *   **Database:** PostgreSQL 16
 *   **Search Engine:** Elasticsearch 8.x
-*   **Cache/Queue:** KeyDB (Redis-compatible)
+*   **Cache/Queue:** KeyDB (Redis-compatible), Redis (кеш прогнозов)
 *   **ORM:** Doctrine ORM
 *   **Queue:** Symfony Messenger
 *   **Math:** `brick/money`, `brick/math` (для финансовых операций)
+*   **ML/Analytics:** Prophet (прогнозирование временных рядов)
 
 ### Frontend
 *   **Build Tool:** Webpack Encore
@@ -59,7 +63,7 @@
     *   *Polygraphy:* **React 18**, TypeScript, Tailwind CSS.
 
 ### Infrastructure
-*   **Docker:** Nginx, PHP-FPM, Postgres, Elasticsearch, Kibana, KeyDB, Node.js.
+*   **Docker:** Nginx, PHP-FPM, Postgres, Elasticsearch, Kibana, KeyDB, Redis, FastAPI (Python), Node.js.
 
 ---
 
