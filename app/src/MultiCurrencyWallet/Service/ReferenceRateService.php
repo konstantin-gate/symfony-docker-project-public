@@ -14,8 +14,7 @@ readonly class ReferenceRateService
 {
     public function __construct(
         private CurrencyConverter $currencyConverter,
-    ) {
-    }
+    ) {}
 
     /**
      * Vygeneruje seznam referenčních směnných kurzů pro definované páry měn.
@@ -100,7 +99,7 @@ readonly class ReferenceRateService
      * Určí "pěknou" částku pro převod na základě měny.
      * Pro "levnější" měny (CZK, JPY) vrací vyšší částky (100, 1000), pro ostatní 1.
      */
-    private function getSmartAmount(CurrencyEnum $currency): string
+    public function getSmartAmount(CurrencyEnum $currency): string
     {
         return match ($currency) {
             CurrencyEnum::CZK, CurrencyEnum::RUB => '100',

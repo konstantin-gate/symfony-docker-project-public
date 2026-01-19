@@ -7,6 +7,7 @@ namespace App\MultiCurrencyWallet\Controller\Api;
 use App\MultiCurrencyWallet\Enum\CurrencyEnum;
 use App\MultiCurrencyWallet\Repository\WalletConfigurationRepository;
 use App\MultiCurrencyWallet\Service\RateHistoryService;
+use App\MultiCurrencyWallet\Service\ReferenceRateService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,6 +28,7 @@ class GetRateHistoryController extends AbstractController
     public function __construct(
         private readonly RateHistoryService $rateHistoryService,
         private readonly WalletConfigurationRepository $configurationRepository,
+        private readonly ReferenceRateService $referenceRateService,
     ) {}
 
     /**
@@ -75,6 +77,7 @@ class GetRateHistoryController extends AbstractController
             return $this->json([
                 'success' => true,
                 'base_currency' => $baseCurrency->value,
+                'base_amount' => $this->referenceRateService->getSmartAmount($baseCurrency),
                 'target_currency' => $targetCurrency->value,
                 'days' => $days,
                 'count' => count($history),

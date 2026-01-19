@@ -61,6 +61,8 @@ interface RateHistoryResponse {
     success: boolean;
     /** Kód základní měny (např. CZK) */
     base_currency: string;
+    /** Množství základní měny pro kurz (např. 100) */
+    base_amount?: string;
     /** Kód cílové měny (např. EUR) */
     target_currency: string;
     /** Požadovaný počet dní historie */

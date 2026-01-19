@@ -178,10 +178,10 @@ export function RatesHistoryTable() {
           <Table data-testid="rates-table">
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
-                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground">{translations.rates_source || "Source Amount"}</TableHead>
-                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground">{translations.rates_target || "Result"}</TableHead>
-                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground">{translations.rates_rate || "Rate"}</TableHead>
-                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground">{translations.rates_updated || "Last Updated"}</TableHead>
+                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground" data-testid="rates-table-header-source">{translations.rates_source || "Source Amount"}</TableHead>
+                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground" data-testid="rates-table-header-target">{translations.rates_target || "Result"}</TableHead>
+                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground" data-testid="rates-table-header-rate">{translations.rates_rate || "Rate"}</TableHead>
+                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground" data-testid="rates-table-header-updated">{translations.rates_updated || "Last Updated"}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

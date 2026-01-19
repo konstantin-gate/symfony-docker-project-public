@@ -19,6 +19,7 @@ readonly class RateHistoryService
     public function __construct(
         private ExchangeRateRepository $exchangeRateRepository,
         private CurrencyConverter $currencyConverter,
+        private ReferenceRateService $referenceRateService,
     ) {}
 
     /**
@@ -46,9 +47,10 @@ readonly class RateHistoryService
                 $date = new \DateTimeImmutable($dateString, new \DateTimeZone('Europe/Prague'));
 
                 // Použijeme CurrencyConverter pro získání kurzu k danému datu
-                // Konvertujeme 1 jednotku základní měny na cílovou měnu
-                $oneUnit = Money::of(1, $baseCurrency->toBrickCurrency());
-                $converted = $this->currencyConverter->convert($oneUnit, $targetCurrency, $date);
+                // Používáme "Smart Amount" (např. 100 CZK) místo 1 jednotky pro lepší čitelnost grafu
+                $amount = $this->referenceRateService->getSmartAmount($baseCurrency);
+                $money = Money::of($amount, $baseCurrency->toBrickCurrency());
+                $converted = $this->currencyConverter->convert($money, $targetCurrency, $date);
 
                 $history[] = [
                     'date' => $dateString,
