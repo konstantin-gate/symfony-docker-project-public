@@ -454,6 +454,11 @@ export function RatesChart({
 
                     {/* Přepínač zobrazení prognózy */}
                     <div className="flex items-center gap-2" data-testid="rates-chart-forecast-control">
+                        <div className="w-4 h-4">
+                            {isForecastLoading && (
+                                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" data-testid="rates-chart-forecast-loading" />
+                            )}
+                        </div>
                         <Switch
                             id="show-forecast"
                             checked={showForecast}
@@ -467,9 +472,6 @@ export function RatesChart({
                         >
                             {translations.chart_show_forecast || "Zobrazit prognózu"}
                         </label>
-                        {isForecastLoading && (
-                            <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" data-testid="rates-chart-forecast-loading" />
-                        )}
                     </div>
                 </div>
             </CardHeader>
