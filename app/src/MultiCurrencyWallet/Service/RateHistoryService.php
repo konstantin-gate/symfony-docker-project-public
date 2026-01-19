@@ -31,7 +31,7 @@ readonly class RateHistoryService
      * @param CurrencyEnum $targetCurrency Cílová měna (např. EUR)
      * @param int $days Počet dní historie (výchozí 30)
      *
-     * @return array<int, array{date: string, rate: string}> Pole záznamů s datem a kurzem
+     * @return array<int, array{date: string, rate: float}> Pole záznamů s datem a kurzem
      */
     public function getHistory(CurrencyEnum $baseCurrency, CurrencyEnum $targetCurrency, int $days = 30): array
     {
@@ -52,7 +52,7 @@ readonly class RateHistoryService
 
                 $history[] = [
                     'date' => $dateString,
-                    'rate' => (string) $converted->getAmount(),
+                    'rate' => $converted->getAmount()->toFloat(),
                 ];
             } catch (\Exception) {
                 // Pokud kurz pro dané datum není dostupný, přeskočíme ho

@@ -51,6 +51,13 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
     --color-signature-rich-indigo: 193 57% 39%;
+
+    /* Chart Colors */
+    --chart-1: 173 58% 39%; /* accent */
+    --chart-2: 38 92% 50%; /* warning */
+    --chart-3: 199 89% 48%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
   }
 
   .dark {
@@ -93,6 +100,13 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Chart Colors Dark */
+    --chart-1: 173 58% 39%; /* accent */
+    --chart-2: 38 92% 50%; /* warning */
+    --chart-3: 199 89% 48%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
   }
 }
 
