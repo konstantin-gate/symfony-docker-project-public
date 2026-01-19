@@ -4,9 +4,9 @@ index:
     open_tooltip: Перейти к модулю
 
 language:
-    Czech: 'čeština'
-    English: 'english'
-    Russian: 'русский'
+    Czech: "čeština"
+    English: "english"
+    Russian: "русский"
 
 dashboard:
     title: Мультивалютный кошелёк
@@ -33,7 +33,7 @@ converter:
     from: Из
     to: В
     convert: Конвертировать
-    rate_updated: 'Курс обновлен:'
+    rate_updated: "Курс обновлен:"
 
 quick_tips:
     title: Полезные советы
@@ -77,3 +77,23 @@ total_balance:
     target_currency: Целевая валюта
     calculate: Рассчитать итог
     result_label: Общий баланс
+
+# Переводы для компонента графика RatesChart
+chart:
+    title: График курсов валют
+    history_label: Курс (история)
+    forecast_label: Прогноз
+    confidence_label: Доверительный интервал
+    show_forecast: Показать прогноз
+    today: Сегодня
+    forecast_note: Прогноз носит исключительно информационный характер
+    generated_at: Сгенерировано
+    no_data: Нет данных для отображения
+    period_7days: 7 дней
+    period_14days: 14 дней
+    period_30days: 30 дней
+    period_90days: 90 дней
+    loading_forecast: Загрузка прогноза...
+    forecast_error: Ошибка загрузки прогноза
+    forecast_unavailable: Прогноз недоступен
+    forecast_timeout: Таймаут загрузки прогноза

@@ -29,7 +29,7 @@ const Rates = () => {
   return (
     <>
       <PageHeader />
-      <div className="container pb-8">
+      <div className="container pb-8" data-testid="rates-page">
         <div className="max-w-5xl mx-auto">
           <div className="mb-2">
             <Header />
@@ -38,7 +38,7 @@ const Rates = () => {
             <div className="w-10 h-10 rounded-xl bg-signature-rich-indigo flex items-center justify-center">
               <History className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">
+            <h1 className="text-2xl font-bold text-foreground" data-testid="rates-page-title">
               {translations.rates_title || "Exchange Rates History"}
             </h1>
           </div>
@@ -47,7 +47,7 @@ const Rates = () => {
           <RatesHistoryTable />
 
           {/* Graf kurzů s možností zobrazení prognózy */}
-          <div className="mt-8">
+          <div className="!mt-4" data-testid="rates-chart-section">
             <RatesChart initialCurrency="EUR" initialDays={30} />
           </div>
         </div>

@@ -394,23 +394,23 @@ export function RatesChart({
     // ========================================================================
 
     return (
-        <Card className="bg-card border border-border">
-            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <CardTitle className="text-xl font-semibold text-foreground flex items-center gap-2">
+        <Card className="bg-card border border-border" data-testid="rates-chart-container">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" data-testid="rates-chart-header">
+                <CardTitle className="text-xl font-semibold text-foreground flex items-center gap-2" data-testid="rates-chart-title">
                     <TrendingUp className="w-5 h-5 text-accent" />
                     {translations.chart_title || "Graf kurzů měn"}
                 </CardTitle>
 
                 {/* Ovládací prvky: výběr měny, období a přepínač prognózy */}
-                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto" data-testid="rates-chart-controls">
                     {/* Select pro měnu */}
                     <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
-                        <SelectTrigger className="w-[120px] bg-background">
+                        <SelectTrigger className="w-[120px] bg-background" data-testid="rates-chart-currency-select">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-card border border-border">
                             {availableCurrencies.map(curr => (
-                                <SelectItem key={curr.code} value={curr.code}>
+                                <SelectItem key={curr.code} value={curr.code} data-testid={`rates-chart-currency-option-${curr.code}`}>
                                     {curr.symbol} {curr.code}
                                 </SelectItem>
                             ))}
@@ -422,12 +422,12 @@ export function RatesChart({
                         value={selectedDays.toString()}
                         onValueChange={(val) => setSelectedDays(parseInt(val))}
                     >
-                        <SelectTrigger className="w-[120px] bg-background">
+                        <SelectTrigger className="w-[120px] bg-background" data-testid="rates-chart-period-select">
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-card border border-border">
                             {periodOptions.map(opt => (
-                                <SelectItem key={opt.value} value={opt.value.toString()}>
+                                <SelectItem key={opt.value} value={opt.value.toString()} data-testid={`rates-chart-period-option-${opt.value}`}>
                                     {opt.label}
                                 </SelectItem>
                             ))}
@@ -435,43 +435,45 @@ export function RatesChart({
                     </Select>
 
                     {/* Přepínač zobrazení prognózy */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2" data-testid="rates-chart-forecast-control">
                         <Switch
                             id="show-forecast"
                             checked={showForecast}
                             onCheckedChange={setShowForecast}
+                            data-testid="rates-chart-forecast-toggle"
                         />
                         <label
                             htmlFor="show-forecast"
                             className="text-sm text-muted-foreground cursor-pointer whitespace-nowrap"
+                            data-testid="rates-chart-forecast-label"
                         >
                             {translations.chart_show_forecast || "Zobrazit prognózu"}
                         </label>
                         {isForecastLoading && (
-                            <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                            <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" data-testid="rates-chart-forecast-loading" />
                         )}
                     </div>
                 </div>
             </CardHeader>
 
-            <CardContent>
+            <CardContent data-testid="rates-chart-content">
                 {/* Stav načítání */}
                 {isLoading && (
-                    <div className="h-[400px] flex items-center justify-center">
+                    <div className="h-[400px] flex items-center justify-center" data-testid="rates-chart-loading">
                         <Loader2 className="w-8 h-8 animate-spin text-accent" />
                     </div>
                 )}
 
                 {/* Chybový stav */}
                 {error && (
-                    <div className="h-[400px] flex items-center justify-center">
+                    <div className="h-[400px] flex items-center justify-center" data-testid="rates-chart-error">
                         <p className="text-destructive">{error}</p>
                     </div>
                 )}
 
                 {/* Graf */}
                 {!isLoading && !error && chartData.length > 0 && (
-                    <ChartContainer config={chartConfig} className="h-[400px] w-full">
+                    <ChartContainer config={chartConfig} className="h-[400px] w-full" data-testid="rates-chart-graph">
                         <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                             {/* Mřížka */}
                             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -570,7 +572,7 @@ export function RatesChart({
 
                 {/* Prázdný stav - žádná data */}
                 {!isLoading && !error && chartData.length === 0 && (
-                    <div className="h-[400px] flex items-center justify-center">
+                    <div className="h-[400px] flex items-center justify-center" data-testid="rates-chart-empty">
                         <p className="text-muted-foreground">
                             {translations.chart_no_data || "Žádná data k zobrazení"}
                         </p>
@@ -579,13 +581,13 @@ export function RatesChart({
 
                 {/* Informace o prognóze */}
                 {showForecast && forecastData.length > 0 && (
-                    <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+                    <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground" data-testid="rates-chart-forecast-info">
                         <InfoIcon className="w-3 h-3" />
-                        <span>
+                        <span data-testid="rates-chart-forecast-note">
                             {translations.chart_forecast_note || "Prognóza má pouze informativní charakter"}
                         </span>
                         {forecastGeneratedAt && (
-                            <span className="ml-auto">
+                            <span className="ml-auto" data-testid="rates-chart-forecast-generated-at">
                                 {translations.chart_generated_at || "Vygenerováno"}: {new Date(forecastGeneratedAt).toLocaleString(locale)}
                             </span>
                         )}
