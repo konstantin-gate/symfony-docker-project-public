@@ -138,7 +138,7 @@ export function RatesChart({
     // Hooks & Context
     // ========================================================================
 
-    const { translations, initialBalances, locale } = useAppConfig();
+    const { translations, initialBalances, locale, walletSettings } = useAppConfig();
 
     // ========================================================================
     // State Management
@@ -181,13 +181,13 @@ export function RatesChart({
      */
     const availableCurrencies = useMemo(() => {
         return initialBalances
-            .filter(b => b.code !== "CZK")
+            .filter(b => b.code !== walletSettings.mainCurrency)
             .map(b => ({
                 code: b.code,
                 name: translations[`currency_${b.code.toLowerCase()}`] || b.code,
                 symbol: b.symbol
             }));
-    }, [initialBalances, translations]);
+    }, [initialBalances, translations, walletSettings.mainCurrency]);
 
     /**
      * Možnosti období pro výběr.
@@ -256,6 +256,22 @@ export function RatesChart({
     // ========================================================================
     // Effects
     // ========================================================================
+
+    /**
+     * Effect pro automatickou změnu vybrané měny, pokud se stane základní měnou.
+     * Pokud je aktuálně vybraná měna stejná jako hlavní měna peněženky,
+     * přepneme na první dostupnou měnu (nebo CZK/USD/EUR jako fallback).
+     */
+    useEffect(() => {
+        if (selectedCurrency === walletSettings.mainCurrency) {
+            // Najdeme jinou měnu, na kterou přepnout
+            const newCurrency = availableCurrencies.length > 0
+                ? availableCurrencies[0].code
+                : (walletSettings.mainCurrency === 'CZK' ? 'EUR' : 'CZK');
+
+            setSelectedCurrency(newCurrency);
+        }
+    }, [walletSettings.mainCurrency, selectedCurrency, availableCurrencies]);
 
     /**
      * Effect pro načtení historických dat z API.
