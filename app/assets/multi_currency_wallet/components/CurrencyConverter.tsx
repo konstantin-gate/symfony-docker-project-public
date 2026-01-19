@@ -61,10 +61,10 @@ export function CurrencyConverter() {
   const formatResult = (value: number, currency: string) => {
     const balanceInfo = initialBalances.find(b => b.code === currency);
     const decimals = balanceInfo?.decimals ?? 2;
-    
-    return value.toLocaleString("cs-CZ", { 
-      minimumFractionDigits: decimals, 
-      maximumFractionDigits: decimals 
+
+    return value.toLocaleString("cs-CZ", {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
     });
   };
 
@@ -84,7 +84,7 @@ export function CurrencyConverter() {
   };
 
   return (
-    <Card className="bg-card border border-border">
+    <Card className="bg-card border border-border" data-testid="converter-card">
       <CardHeader>
         <CardTitle className="text-xl font-semibold text-foreground flex items-center gap-2">
           <ArrowRightLeft className="w-5 h-5 text-accent" />
@@ -104,6 +104,7 @@ export function CurrencyConverter() {
               }}
               placeholder={translations.converter_enter_amount || "Enter amount"}
               className="text-lg"
+              data-testid="converter-amount-input"
             />
           </div>
 
@@ -113,7 +114,7 @@ export function CurrencyConverter() {
               setFromCurrency(val);
               setResult(null);
             }}>
-              <SelectTrigger>
+              <SelectTrigger data-testid="converter-from-select">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-card border border-border">
@@ -131,6 +132,7 @@ export function CurrencyConverter() {
             size="icon"
             onClick={handleSwap}
             className="mt-6 shrink-0"
+            data-testid="converter-swap-button"
           >
             <ArrowRightLeft className="w-4 h-4" />
           </Button>
@@ -141,7 +143,7 @@ export function CurrencyConverter() {
               setToCurrency(val);
               setResult(null);
             }}>
-              <SelectTrigger>
+              <SelectTrigger data-testid="converter-to-select">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-card border border-border">
@@ -158,6 +160,7 @@ export function CurrencyConverter() {
             onClick={handleConvert}
             disabled={isConverting}
             className="mt-6 gradient-accent text-accent-foreground border-0 px-8"
+            data-testid="converter-convert-button"
           >
             {isConverting && <RefreshCw className="w-4 h-4 mr-2 animate-spin" />}
             {translations.converter_convert || "Convert"}
@@ -165,7 +168,7 @@ export function CurrencyConverter() {
         </div>
 
         {result && (
-          <div className="mt-6 p-4 bg-muted/50 rounded-lg text-center animate-fade-in border border-border/50">
+          <div className="mt-6 p-4 bg-muted/50 rounded-lg text-center animate-fade-in border border-border/50" data-testid="converter-result-block">
             <p className="text-2xl font-bold text-foreground">
               {parseFloat(amount).toLocaleString("cs-CZ")} {fromCurrency} = {formatResult(result.amount, toCurrency)} {toCurrency}
             </p>

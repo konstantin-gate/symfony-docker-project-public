@@ -1,0 +1,20 @@
+# Python FastAPI Mikroservis - Závislosti
+# Tento soubor obsahuje všechny potřebné knihovny pro běh Smart Trend Forecaster služby.
+
+# Web Framework
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+
+# Data Science / Prognózování
+pandas>=2.2.0
+numpy>=1.26.0
+scikit-learn>=1.4.0
+
+# Redis klient (komunikace s KeyDB)
+redis>=5.0.0
+
+# Validace dat
+pydantic>=2.6.0
+
+# HTTP klient (volání Symfony API)
+httpx>=0.26.0

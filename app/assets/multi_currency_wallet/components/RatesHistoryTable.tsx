@@ -59,10 +59,10 @@ export function RatesHistoryTable() {
     const fetchRates = async () => {
       setIsRatesLoading(true);
       try {
-        const url = selectedDate && selectedDate !== "latest" 
+        const url = selectedDate && selectedDate !== "latest"
           ? `/api/multi-currency-wallet/reference-rates?date=${selectedDate}`
           : '/api/multi-currency-wallet/reference-rates';
-          
+
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error('Failed to fetch rates');
@@ -93,10 +93,10 @@ export function RatesHistoryTable() {
 
     const meta = initialBalances.find(b => b.code === currencyCode);
     const decimals = meta ? meta.decimals : 2;
-    
-    return value.toLocaleString("cs-CZ", { 
-      minimumFractionDigits: decimals, 
-      maximumFractionDigits: decimals 
+
+    return value.toLocaleString("cs-CZ", {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
     });
   };
 
@@ -144,7 +144,7 @@ export function RatesHistoryTable() {
   }
 
   return (
-    <Card className="bg-card border border-border">
+    <Card className="bg-card border border-border" data-testid="rates-table-container">
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <CardTitle className="text-xl font-semibold text-foreground flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-accent" />
@@ -154,7 +154,7 @@ export function RatesHistoryTable() {
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <Calendar className="w-4 h-4 text-muted-foreground" />
           <Select value={selectedDate} onValueChange={setSelectedDate}>
-            <SelectTrigger className="w-full sm:w-[200px] bg-background">
+            <SelectTrigger className="w-full sm:w-[200px] bg-background" data-testid="rates-table-date-select">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-card border border-border">
@@ -175,19 +175,19 @@ export function RatesHistoryTable() {
               <Loader2 className="w-8 h-8 animate-spin text-accent" />
             </div>
           )}
-          <Table>
+          <Table data-testid="rates-table">
             <TableHeader>
               <TableRow className="bg-muted hover:bg-muted">
-                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground">{translations.rates_source || "Source Amount"}</TableHead>
-                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground">{translations.rates_target || "Result"}</TableHead>
-                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground">{translations.rates_rate || "Rate"}</TableHead>
-                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground">{translations.rates_updated || "Last Updated"}</TableHead>
+                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground" data-testid="rates-table-header-source">{translations.rates_source || "Source Amount"}</TableHead>
+                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground" data-testid="rates-table-header-target">{translations.rates_target || "Result"}</TableHead>
+                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground" data-testid="rates-table-header-rate">{translations.rates_rate || "Rate"}</TableHead>
+                <TableHead className="h-10 py-2 px-4 font-semibold text-foreground" data-testid="rates-table-header-updated">{translations.rates_updated || "Last Updated"}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rates.length > 0 ? (
                 rates.map((row, index) => (
-                  <TableRow key={index} className="hover:bg-secondary/50">
+                  <TableRow key={index} className="hover:bg-secondary/50" data-testid={`rates-table-row-${index}`}>
                     <TableCell className="py-2 px-4 font-medium text-foreground">
                       {formatAmount(row.source_amount, row.source_currency, true)} {row.source_currency}
                     </TableCell>

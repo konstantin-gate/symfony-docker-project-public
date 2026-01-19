@@ -4,9 +4,9 @@ index:
     open_tooltip: Přejít na modul
 
 language:
-    Czech: 'čeština'
-    English: 'english'
-    Russian: 'русский'
+    Czech: "čeština"
+    English: "english"
+    Russian: "русский"
 
 dashboard:
     title: Multiměnová peněženka
@@ -33,7 +33,7 @@ converter:
     from: Z
     to: Na
     convert: Převést
-    rate_updated: 'Kurz aktualizován:'
+    rate_updated: "Kurz aktualizován:"
 
 quick_tips:
     title: Rychlé tipy
@@ -77,3 +77,23 @@ total_balance:
     target_currency: Cílová měna
     calculate: Vypočítat celkem
     result_label: Celkový zůstatek
+
+# Překlady pro komponentu grafu RatesChart
+chart:
+    title: Graf kurzů měn
+    history_label: Kurz (historie)
+    forecast_label: Prognóza
+    confidence_label: Interval spolehlivosti
+    show_forecast: Zobrazit prognózu
+    today: Dnes
+    forecast_note: Prognóza má pouze informativní charakter
+    generated_at: Vygenerováno
+    no_data: Žádná data k zobrazení
+    period_7days: 7 dní
+    period_14days: 14 dní
+    period_30days: 30 dní
+    period_90days: 90 dní
+    loading_forecast: Načítám prognózu...
+    forecast_error: Chyba načtení prognózy
+    forecast_unavailable: Prognóza není k dispozici
+    forecast_timeout: Timeout při načítání prognózy

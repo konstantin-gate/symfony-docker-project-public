@@ -4,9 +4,9 @@ index:
     open_tooltip: Go to module
 
 language:
-    Czech: 'čeština'
-    English: 'english'
-    Russian: 'русский'
+    Czech: "čeština"
+    English: "english"
+    Russian: "русский"
 
 dashboard:
     title: Multi-Currency Wallet
@@ -33,7 +33,7 @@ converter:
     from: From
     to: To
     convert: Convert
-    rate_updated: 'Rate updated:'
+    rate_updated: "Rate updated:"
 
 quick_tips:
     title: Quick Tips
@@ -77,3 +77,23 @@ total_balance:
     target_currency: Target Currency
     calculate: Calculate Total
     result_label: Total Balance
+
+# Translations for the RatesChart component
+chart:
+    title: Exchange Rates Chart
+    history_label: Rate (History)
+    forecast_label: Forecast
+    confidence_label: Confidence Interval
+    show_forecast: Show Forecast
+    today: Today
+    forecast_note: Forecast is for informational purposes only
+    generated_at: Generated at
+    no_data: No data to display
+    period_7days: 7 days
+    period_14days: 14 days
+    period_30days: 30 days
+    period_90days: 90 days
+    loading_forecast: Loading forecast...
+    forecast_error: Error loading forecast
+    forecast_unavailable: Forecast unavailable
+    forecast_timeout: Forecast loading timeout
