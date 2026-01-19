@@ -1,9 +1,28 @@
+/**
+ * Stránka historie směnných kurzů.
+ *
+ * Zobrazuje tabulku referenčních kurzů a interaktivní graf
+ * s historií kurzů a možností zobrazení prognózy.
+ *
+ * @module Rates
+ */
+
 import { RatesHistoryTable } from "@/components/RatesHistoryTable";
+import { RatesChart } from "@/components/RatesChart";
 import { Header } from "@/components/Header";
 import { PageHeader } from "@/components/PageHeader";
 import { History } from "lucide-react";
 import { useAppConfig } from "@/context/AppConfigContext";
 
+/**
+ * Hlavní komponenta stránky kurzů.
+ *
+ * Obsahuje:
+ * - Tabulku referenčních kurzů (RatesHistoryTable)
+ * - Interaktivní graf kurzů s prognózou (RatesChart)
+ *
+ * @returns JSX element stránky
+ */
 const Rates = () => {
   const { translations } = useAppConfig();
 
@@ -23,7 +42,14 @@ const Rates = () => {
               {translations.rates_title || "Exchange Rates History"}
             </h1>
           </div>
+
+          {/* Tabulka referenčních kurzů */}
           <RatesHistoryTable />
+
+          {/* Graf kurzů s možností zobrazení prognózy */}
+          <div className="mt-8">
+            <RatesChart initialCurrency="EUR" initialDays={30} />
+          </div>
         </div>
       </div>
     </>
