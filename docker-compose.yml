@@ -29,8 +29,8 @@ services:
       elasticsearch:
         condition: service_healthy
     environment:
-      - COMPOSER_MEMORY_LIMIT=-1  # Odstraňuje limit pro Composer
-      - PHP_MEMORY_LIMIT=2048M    # Zvyšuje limit PHP
+      - COMPOSER_MEMORY_LIMIT=-1 # Odstraňuje limit pro Composer
+      - PHP_MEMORY_LIMIT=2048M # Zvyšuje limit PHP
 
   # 3. Služba pro Webový server (Nginx)
   nginx:
@@ -63,7 +63,11 @@ services:
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -vq '\"status\":\"red\"'"]
+      test:
+        [
+          "CMD-SHELL",
+          'curl -s http://localhost:9200/_cluster/health | grep -vq ''"status":"red"''',
+        ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -95,7 +99,7 @@ services:
       dockerfile: Dockerfile
     restart: always
     volumes:
-      - ./python_service/app:/app/app:delegated  # Hot-reload pro vývoj
+      - ./python_service/app:/app/app:delegated # Hot-reload pro vývoj
     depends_on:
       - keydb
     environment:
@@ -109,8 +113,26 @@ services:
       retries: 3
       start_period: 10s
 
+  # 9. Browserless Chrome (Headless Browser pro scraping)
+  browserless:
+    image: browserless/chrome:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - MAX_CONCURRENT_SESSIONS=5 # Max počet souběžných sezení
+      - CONNECTION_TIMEOUT=60000 # Timeout připojení (ms)
+      - PREBOOT_CHROME=true # Předstartování Chrome pro rychlejší odezvu
+      - DEFAULT_BLOCK_ADS=true # Blokování reklam
+      - DEFAULT_STEALTH=true # Stealth mód proti detekci botů
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/pressure"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
 volumes:
   db-data:
   elasticsearch-data:
   keydb-data:
-
