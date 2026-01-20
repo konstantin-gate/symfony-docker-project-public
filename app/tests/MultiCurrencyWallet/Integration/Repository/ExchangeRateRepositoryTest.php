@@ -167,4 +167,48 @@ class ExchangeRateRepositoryTest extends KernelTestCase
         $this->assertNotNull($found);
         $this->assertSame('21.50', (string) $found->getRate());
     }
+
+    /**
+     * Testuje metodu findExchangeRateAtDate s více záznamy za jeden den.
+     * Ověřuje, že metoda vrátí nejnovější kurz za daný den, nikoliv nejstarší.
+     */
+    public function testFindExchangeRateAtDateReturnsLatestOfDay(): void
+    {
+        $targetDate = new \DateTimeImmutable('2023-05-01 12:00:00');
+
+        // 1. Ranní kurz (nejstarší za den)
+        $morningRate = new ExchangeRate(
+            CurrencyEnum::USD,
+            CurrencyEnum::CZK,
+            BigDecimal::of('20.83'),
+            new \DateTimeImmutable('2023-05-01 06:00:00')
+        );
+
+        // 2. Odpolední kurz (novější)
+        $afternoonRate = new ExchangeRate(
+            CurrencyEnum::USD,
+            CurrencyEnum::CZK,
+            BigDecimal::of('20.76'),
+            new \DateTimeImmutable('2023-05-01 14:00:00')
+        );
+
+        // 3. Večerní kurz (nejnovější za den)
+        $eveningRate = new ExchangeRate(
+            CurrencyEnum::USD,
+            CurrencyEnum::CZK,
+            BigDecimal::of('20.85'),
+            new \DateTimeImmutable('2023-05-01 19:00:00')
+        );
+
+        $this->entityManager->persist($morningRate);
+        $this->entityManager->persist($afternoonRate);
+        $this->entityManager->persist($eveningRate);
+        $this->entityManager->flush();
+
+        // Metoda by měla vrátit večerní kurz (nejnovější za den)
+        $found = $this->repository->findExchangeRateAtDate(CurrencyEnum::USD, CurrencyEnum::CZK, $targetDate);
+
+        $this->assertNotNull($found);
+        $this->assertSame('20.85', (string) $found->getRate(), 'Měl by být vrácen nejnovější kurz za den (19:00), nikoliv nejstarší (06:00)');
+    }
 }
